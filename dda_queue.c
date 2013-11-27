@@ -65,7 +65,7 @@ DDA *queue_current_movement() {
   ATOMIC_START
     current = &movebuffer[mb_tail];
 
-    if ( ! current->live || current->waitfor_temp || current->nullmove)
+    if ( ! current->live || current->waitfor_temp)
       current = NULL;
   ATOMIC_END
 
@@ -127,23 +127,24 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 	}
   dda_create(new_movebuffer, t);
 
-	// make certain all writes to global memory
-	// are flushed before modifying mb_head.
-	MEMORY_BARRIER();
+  if ( ! new_movebuffer->nullmove || new_movebuffer->waitfor_temp) {
+    // make certain all writes to global memory
+    // are flushed before modifying mb_head.
+    MEMORY_BARRIER();
+    mb_head = h;
 
-	mb_head = h;
+    uint8_t isdead;
 
-  uint8_t isdead;
+    ATOMIC_START
+      isdead = (movebuffer[mb_tail].live == 0);
+    ATOMIC_END
 
-  ATOMIC_START
-    isdead = (movebuffer[mb_tail].live == 0);
-  ATOMIC_END
-
-	if (isdead) {
-		next_move();
-		// Compensate for the cli() in setTimer().
-		sei();
-	}
+    if (isdead) {
+      next_move();
+      // Compensate for the cli() in setTimer().
+      sei();
+    }
+  }
 }
 
 /// go to the next move.
@@ -155,7 +156,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 /// move buffer was dead in the non-interrupt case (which indicates that the 
 /// timer interrupt is disabled).
 void next_move() {
-	while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
+  if (queue_empty() == 0) {
 		// next item
 		uint8_t t = mb_tail + 1;
 		t &= (MOVEBUFFER_SIZE - 1);

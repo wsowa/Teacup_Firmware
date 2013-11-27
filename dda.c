@@ -203,6 +203,8 @@ void dda_create(DDA *dda, TARGET *target) {
     sersendf_P(PSTR(" [ts:%lu"), dda->total_steps);
 
 	if (dda->total_steps == 0) {
+    // Tell the queue mechanism to not queue this move, its
+    // changes will be taken into account with the next move.
 		dda->nullmove = 1;
 	}
 	else {
@@ -416,16 +418,25 @@ void dda_create(DDA *dda, TARGET *target) {
 			if (dda->c < c_limit)
 				dda->c = c_limit;
 		#endif
+
+    #ifdef LOOKAHEAD
+      prev_dda = dda;
+    #endif
 	} /* ! dda->total_steps == 0 */
+
+    // Next dda starts where we finish. Ignore nullmoves (e.g. G1 F1500 or
+    // moves to small to cause a single step) to take their change into
+    // account with the next move. This makes the queue smaller and eases
+    // keeping speed up with lookahead.
+    //
+    // However, startpoint is required for relative movements calculation,
+    // see gcode_process.c, line 65. Accordingly, w... hmja, was denn jetzt?
+//  Wenn wir Nullmoves zulassen, muss dda_join_moves auch mit Null Schritten umgehen können.
+    if ( ! dda->nullmove && ! next_target.option_all_relative)
+      memcpy(&startpoint, target, sizeof(TARGET));
 
 	if (DEBUG_DDA && (debug_flags & DEBUG_DDA))
 		serial_writestr_P(PSTR("] }\n"));
-
-	// next dda starts where we finish
-	memcpy(&startpoint, target, sizeof(TARGET));
-  #ifdef LOOKAHEAD
-    prev_dda = dda;
-  #endif
 }
 
 /*! Start a prepared DDA
@@ -447,45 +458,41 @@ void dda_start(DDA *dda) {
                dda->endpoint.X, dda->endpoint.Y,
                dda->endpoint.Z, dda->endpoint.F);
 
-	if ( ! dda->nullmove) {
-		// get ready to go
-		psu_timeout = 0;
-		if (dda->z_delta)
-			z_enable();
-		if (dda->endstop_check)
-			endstops_on();
+  psu_timeout = 0;
+  if (dda->z_delta)
+    z_enable();
+  if (dda->endstop_check)
+    endstops_on();
 
-		// set direction outputs
-		x_direction(dda->x_direction);
-		y_direction(dda->y_direction);
-		z_direction(dda->z_direction);
-		e_direction(dda->e_direction);
+  // set direction outputs
+  x_direction(dda->x_direction);
+  y_direction(dda->y_direction);
+  z_direction(dda->z_direction);
+  e_direction(dda->e_direction);
 
-		#ifdef	DC_EXTRUDER
-		if (dda->e_delta)
-			heater_set(DC_EXTRUDER, DC_EXTRUDER_PWM);
-		#endif
+  #ifdef DC_EXTRUDER
+    if (dda->e_delta)
+      heater_set(DC_EXTRUDER, DC_EXTRUDER_PWM);
+  #endif
 
-		// initialise state variable
-		move_state.x_counter = move_state.y_counter = move_state.z_counter = \
-			move_state.e_counter = -(dda->total_steps >> 1);
-		memcpy(&move_state.x_steps, &dda->x_delta, sizeof(uint32_t) * 4);
-    move_state.endstop_stop = 0;
-		#ifdef ACCELERATION_RAMPING
-			move_state.step_no = 0;
-		#endif
-		#ifdef ACCELERATION_TEMPORAL
-		move_state.x_time = move_state.y_time = \
-			move_state.z_time = move_state.e_time = 0UL;
-		#endif
+  // initialise state variable
+  move_state.x_counter = move_state.y_counter = move_state.z_counter = \
+    move_state.e_counter = -(dda->total_steps >> 1);
+  memcpy(&move_state.x_steps, &dda->x_delta, sizeof(uint32_t) * 4);
+  move_state.endstop_stop = 0;
+  #ifdef ACCELERATION_RAMPING
+    move_state.step_no = 0;
+  #endif
+  #ifdef ACCELERATION_TEMPORAL
+    move_state.x_time = move_state.y_time = \
+      move_state.z_time = move_state.e_time = 0UL;
+  #endif
 
-		// ensure this dda starts
-		dda->live = 1;
+  // ensure this dda starts
+  dda->live = 1;
 
-		// set timeout for first step
-    setTimer(dda->c >> 8);
-	}
-	// else just a speed change, keep dda->live = 0
+  // set timeout for first step
+  setTimer(dda->c >> 8);
 
 	current_position.F = dda->endpoint.F;
 }

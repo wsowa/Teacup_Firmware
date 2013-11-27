@@ -168,8 +168,8 @@ void dda_find_crossing_speed(DDA *prev, DDA *current) {
   int32_t prevFx, prevFy, prevFz, prevFe;
   int32_t currFx, currFy, currFz, currFe;
 
-  // Bail out if there's nothing to join (e.g. G1 F1500).
-  if ( ! prev || prev->nullmove)
+  // Bail out if there's nothing to join.
+  if ( ! prev) {
     return;
 
   // We always look at the smaller of both combined speeds,
@@ -318,7 +318,7 @@ void dda_join_moves(DDA *prev, DDA *current) {
   moveno++;
   #endif
 
-  // Bail out if there's nothing to join (e.g. G1 F1500).
+  // Bail out if there's nothing to join.
   if ( ! prev || prev->nullmove || current->crossF == 0)
     return;
 
