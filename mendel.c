@@ -49,6 +49,8 @@
 #include	"clock.h"
 #include	"intercom.h"
 #include "simulator.h"
+#include "lcd.h"
+
 
 #ifdef SIMINFO
   #include "../simulavr/src/simulavr_info.h"
