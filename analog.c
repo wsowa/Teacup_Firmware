@@ -34,6 +34,8 @@ static uint8_t adc_channel[NUM_TEMP_SENSORS] =
 };
 #undef DEFINE_TEMP_SENSOR
 
+static uint16_t useless;
+
 //! Configure all registers, start interrupt loop
 void analog_init() {
 	if (analog_mask > 0) {
@@ -72,11 +74,14 @@ void analog_init() {
 	} /* analog_mask > 0 */
 }
 
+#include "sersendf.h"
 /*! Analog Interrupt
 
 	This is where we read our analog value and store it in an array for later retrieval
 */
 ISR(ADC_vect, ISR_NOBLOCK) {
+
+useless++;
 	// emulate free-running mode but be more deterministic about exactly which result we have, since this project has long-running interrupts
 	if (analog_mask > 0) { // at least one temp sensor uses an analog channel
 		// store next result
@@ -108,6 +113,9 @@ ISR(ADC_vect, ISR_NOBLOCK) {
 	\return analog reading, 10-bit right aligned
 */
 uint16_t	analog_read(uint8_t index) {
+sersendf_P(PSTR("u %u\n"), useless);
+useless = 0;
+
 	if (analog_mask > 0) {
 		uint16_t r;
 
