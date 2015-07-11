@@ -49,7 +49,7 @@
 #include	"clock.h"
 #include	"intercom.h"
 #include "simulator.h"
-
+#include "hd44780lcd.c"
 #ifdef SIMINFO
   #include "../simulavr/src/simulavr_info.h"
   SIMINFO_DEVICE(MCU_STR);
@@ -230,7 +230,9 @@ void init(void) {
 
   // prepare the power supply
   power_init();
-
+	
+	//init the lcd
+	lcd_init();
 	// say hi to host
 	serial_writestr_P(PSTR("start\nok\n"));
 
