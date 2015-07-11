@@ -83,6 +83,24 @@
 //#define STEPPER_ENABLE_PIN       xxxx
 //#define STEPPER_INVERT_ENABLE
 
+#define BEEPER             DIO44
+#define LCD_PINS_RS        DIO19
+#define LCD_PINS_ENABLE    DIO42
+#define LCD_PINS_D4        DIO18
+#define LCD_PINS_D5        DIO38
+#define LCD_PINS_D6        DIO41
+#define LCD_PINS_D7        DIO40
+#define BTN_EN1            DIO11
+#define BTN_EN2            DIO12
+#define BTN_ENC            DIO43
+
+
+
+
+
+
+
+
 /** \def DEBUG_LED_PIN
 
   Enable flashing of a LED during motor stepping.
