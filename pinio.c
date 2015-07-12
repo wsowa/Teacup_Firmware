@@ -10,7 +10,11 @@ void power_on() {
 
 	if (ps_is_on == 0) {
 		#ifdef	PS_ON_PIN
-			WRITE(PS_ON_PIN, 0);
+      #ifdef PS_INVERT_ON
+        WRITE(PS_ON_PIN, 1);
+      #else
+        WRITE(PS_ON_PIN, 0);
+      #endif
 			SET_OUTPUT(PS_ON_PIN);
 			delay_ms(500);
 		#endif
