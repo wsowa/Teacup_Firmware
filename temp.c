@@ -12,7 +12,6 @@
 #include	<stdlib.h>
 #ifdef __AVR__
 #include	<avr/eeprom.h>
-#include	<avr/pgmspace.h>
 #endif
 
 #include	"arduino.h"
