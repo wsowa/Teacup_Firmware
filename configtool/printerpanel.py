@@ -152,7 +152,7 @@ class PrinterPanel(wx.Panel):
     if not self.confirmLoseChanges("load a new printer configuration"):
       return
 
-    if platform == "darwin":
+    if platform.startswith("darwin"):
       # Mac OS X appears to be a bit limited on wildcards.
       wildcard = "Printer configuration (printer.*.h)|*.h"
     else:
