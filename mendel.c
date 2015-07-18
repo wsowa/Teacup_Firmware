@@ -42,7 +42,6 @@
 #include	"temp.h"
 #include	"watchdog.h"
 #include	"debug.h"
-#include	"sersendf.h"
 #include	"heater.h"
 #include	"analog.h"
 #include	"pinio.h"
