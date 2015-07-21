@@ -44,7 +44,9 @@
 #include	"debug.h"
 #include	"heater.h"
 #include	"analog.h"
+#endif /* __ARMEL_NOTYET__ */
 #include	"pinio.h"
+#ifndef __ARMEL_NOTYET__
 #include	"arduino.h"
 #include	"clock.h"
 #include	"intercom.h"
