@@ -10,7 +10,9 @@
 #include "config_wrapper.h"
 #include "data_recorder.h"
 
-uint8_t ACSR;
+void cpu_init(void) {
+}
+
 uint8_t TIMSK1;
 uint16_t
   TCCR0A,
