@@ -49,7 +49,6 @@
 #include	"intercom.h"
 #include "spi.h"
 #include "sd.h"
-#include "simulator.h"
 
 #ifdef SIMINFO
   #include "../simulavr/src/simulavr_info.h"

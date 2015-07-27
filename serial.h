@@ -7,7 +7,6 @@
 #include	<avr/io.h>
 #include	<avr/pgmspace.h>
 #endif
-#include "simulator.h"
 
 #ifdef USB_SERIAL
   #include "usb_serial.h"
