@@ -7,7 +7,7 @@
 // If no time scale specified, use 1/10th real-time for simulator
 #define DEFAULT_TIME_SCALE 10
 
-#include "simulator.h"
+#include "config_wrapper.h"
 #include "data_recorder.h"
 
 uint8_t ACSR;
@@ -127,20 +127,30 @@ void sim_start(int argc, char** argv) {
   NAME_PIN(X_STEP_PIN);
   NAME_PIN(X_DIR_PIN);
   NAME_PIN(X_MIN_PIN);
-  NAME_PIN(X_ENABLE_PIN);
+  #ifdef X_ENABLE_PIN
+    NAME_PIN(X_ENABLE_PIN);
+  #endif
   NAME_PIN(Y_STEP_PIN);
   NAME_PIN(Y_DIR_PIN);
   NAME_PIN(Y_MIN_PIN);
-  NAME_PIN(Y_ENABLE_PIN);
+  #ifdef Y_ENABLE_PIN
+    NAME_PIN(Y_ENABLE_PIN);
+  #endif
   NAME_PIN(Z_STEP_PIN);
   NAME_PIN(Z_DIR_PIN);
   NAME_PIN(Z_MIN_PIN);
-  NAME_PIN(Z_ENABLE_PIN);
+  #ifdef Z_ENABLE_PIN
+    NAME_PIN(Z_ENABLE_PIN);
+  #endif
   NAME_PIN(E_STEP_PIN);
   NAME_PIN(E_DIR_PIN);
-  NAME_PIN(E_ENABLE_PIN);
+  #ifdef E_ENALBE_PIN
+    NAME_PIN(E_ENABLE_PIN);
+  #endif
 
-  NAME_PIN(STEPPER_ENABLE_PIN);
+  #ifdef STEPPER_ENABLE_PIN
+    NAME_PIN(STEPPER_ENABLE_PIN);
+  #endif
 }
 
 /* -- debugging ------------------------------------------------------------ */
@@ -205,7 +215,7 @@ void sim_tick(char ch) {
   fflush(stdout);
 }
 
-static char gcode_buffer[300]; 
+static char gcode_buffer[300];
 static int gcode_buffer_index;
 void sim_gcode_ch(char ch) {
   // Got CR, LF or buffer full

@@ -1,30 +1,5 @@
 #ifdef SIMULATOR
 
-#undef X_STEP_PIN
-#undef X_DIR_PIN
-#undef X_MIN_PIN
-#undef X_ENABLE_PIN
-#undef Y_STEP_PIN
-#undef Y_DIR_PIN
-#undef Y_MIN_PIN
-#undef Y_ENABLE_PIN
-#undef Z_STEP_PIN
-#undef Z_DIR_PIN
-#undef Z_MIN_PIN
-#undef Z_ENABLE_PIN
-#undef E_STEP_PIN
-#undef E_DIR_PIN
-#undef E_ENABLE_PIN
-#undef STEPPER_ENABLE_PIN
-
-#undef PS_MOSFET_PIN
-#undef PS_ON_PIN
-#undef RX_ENABLE_PIN
-#undef TX_ENABLE_PIN
-#undef X_MAX_PIN
-#undef Y_MAX_PIN
-#undef Z_MAX_PIN
-
 #undef READ
 #undef WRITE
 #undef TOGGLE
@@ -73,41 +48,16 @@
 #define eeprom_write_word(ptr16, i16) (*(ptr16)=i16)
 
 typedef enum {
-  // Define pins used
-  X_STEP_PIN,
-  X_DIR_PIN,
-  X_MIN_PIN,
-  X_ENABLE_PIN,
-  Y_STEP_PIN,
-  Y_DIR_PIN,
-  Y_MIN_PIN,
-  Y_ENABLE_PIN,
-  Z_STEP_PIN,
-  Z_DIR_PIN,
-  Z_MIN_PIN,
-  Z_ENABLE_PIN,
-  E_STEP_PIN,
-  E_DIR_PIN,
-  E_ENABLE_PIN,
-
-  STEPPER_ENABLE_PIN,
-
-  SCK,
-  MOSI,
-  MISO,
-  SS,
-
-  RX_ENABLE_PIN,
-  TX_ENABLE_PIN,
-/*
- * Not used in the simulator.  Add them to this list to enable them if needed.
-  PS_MOSFET_PIN,
-  PS_ON_PIN,
-  X_MAX_PIN,
-  Y_MAX_PIN,
-  Z_MAX_PIN,
-*/
-  PIN_NB  /* End of PINS marker; Put all new pins before this one */
+  DIO0, DIO1, DIO2, DIO3, DIO4, DIO5, DIO6, DIO7, DIO8, DIO9,
+  DIO10, DIO11, DIO12, DIO13, DIO14, DIO15, DIO16, DIO17, DIO18, DIO19,
+  DIO20, DIO21, DIO22, DIO23, DIO24, DIO25, DIO26, DIO27, DIO28, DIO29,
+  DIO30, DIO31, DIO32, DIO33, DIO34, DIO35, DIO36, DIO37, DIO38, DIO39,
+  DIO40, DIO41, DIO42, DIO43, DIO44, DIO45, DIO46, DIO47, DIO48, DIO49,
+  DIO50, DIO51, DIO52, DIO53, DIO54, DIO55, DIO56, DIO57, DIO58, DIO59,
+  DIO60, DIO61, DIO62, DIO63, DIO64, DIO65, DIO66, DIO67, DIO68, DIO69,
+  AIO0, AIO1, AIO2, AIO3, AIO4, AIO5, AIO6, AIO7, AIO8, AIO9,
+  AIO10, AIO11, AIO12, AIO13, AIO14, AIO15,
+  PIN_NB
 } pin_t;
 
 // AVR stand-ins
