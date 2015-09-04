@@ -5,9 +5,6 @@
 */
 
 #include	<string.h>
-#ifndef SIMULATOR
-#include	<avr/interrupt.h>
-#endif
 
 #include	"config_wrapper.h"
 #include	"timer.h"
@@ -17,6 +14,7 @@
 #include	"delay.h"
 #include	"sersendf.h"
 #include	"clock.h"
+#include "cpu.h"
 #include	"memory_barrier.h"
 
 /// movebuffer head pointer. Points to the last move in the queue.
@@ -40,11 +38,7 @@ DDA BSS movebuffer[MOVEBUFFER_SIZE];
 /// check if the queue is completely full
 uint8_t queue_full() {
 	MEMORY_BARRIER();
-	if (mb_tail > mb_head) {
-		return ((mb_tail - mb_head - 1) == 0) ? 255 : 0;
-	} else {
-		return ((mb_tail + MOVEBUFFER_SIZE - mb_head - 1) == 0) ? 255 : 0;
-	}
+  return MB_NEXT(mb_head) == mb_tail;
 }
 
 /// check if the queue is completely empty
@@ -52,7 +46,7 @@ uint8_t queue_empty() {
   uint8_t result;
 
   ATOMIC_START
-    result = ((mb_tail == mb_head) && (movebuffer[mb_tail].live == 0))?255:0;
+    result = (mb_tail == mb_head && movebuffer[mb_tail].live == 0);
   ATOMIC_END
 
 	return result;
@@ -89,7 +83,6 @@ void queue_step() {
 			}
       else {
         temp_print(TEMP_SENSOR_none);
-        serial_writechar('\n');
       }
 		}
 		else {
@@ -110,8 +103,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 	while (queue_full())
 		delay_us(100);
 
-	uint8_t h = mb_head + 1;
-	h &= (MOVEBUFFER_SIZE - 1);
+  uint8_t h = MB_NEXT(mb_head);
 
 	DDA* new_movebuffer = &(movebuffer[h]);
 
@@ -142,6 +134,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
   ATOMIC_END
 
 	if (isdead) {
+    timer_reset();
 		next_move();
     // Compensate for the cli() in timer_set().
 		sei();
@@ -150,21 +143,20 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 
 /// go to the next move.
 /// be aware that this is sometimes called from interrupt context, sometimes not.
-/// Note that if it is called from outside an interrupt it must not/can not by
+/// Note that if it is called from outside an interrupt it must not/can not
 /// be interrupted such that it can be re-entered from within an interrupt.
 /// The timer interrupt MUST be disabled on entry. This is ensured because
 /// the timer was disabled at the start of the ISR or else because the current
-/// move buffer was dead in the non-interrupt case (which indicates that the 
+/// move buffer was dead in the non-interrupt case (which indicates that the
 /// timer interrupt is disabled).
 void next_move() {
 	while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
 		// next item
-		uint8_t t = mb_tail + 1;
-		t &= (MOVEBUFFER_SIZE - 1);
+    uint8_t t = MB_NEXT(mb_tail);
 		DDA* current_movebuffer = &movebuffer[t];
     // Tail must be set before calling timer_set(), as timer_set() reenables
     // the timer interrupt, potentially exposing mb_tail to the timer
-    // interrupt routine. 
+    // interrupt routine.
 		mb_tail = t;
 		if (current_movebuffer->waitfor_temp) {
 			serial_writestr_P(PSTR("Waiting for target temp\n"));
@@ -174,13 +166,13 @@ void next_move() {
 		else {
 			dda_start(current_movebuffer);
 		}
-	} 
+	}
 }
 
 /// DEBUG - print queue.
 /// Qt/hs format, t is tail, h is head, s is F/full, E/empty or neither
 void print_queue() {
-	sersendf_P(PSTR("Q%d/%d%c"), mb_tail, mb_head, (queue_full()?'F':(queue_empty()?'E':' ')));
+  sersendf_P(PSTR("Queue: %d/%d%c\n"), mb_tail, mb_head, (queue_full()?'F':(queue_empty()?'E':' ')));
 }
 
 /// dump queue for emergency stop.

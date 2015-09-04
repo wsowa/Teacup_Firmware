@@ -113,6 +113,7 @@ TARGET = $(PROGRAM).hex
 # to keep this working and can take a shortcut:
 SOURCES = $(wildcard *.c)
 
+CFLAGS  = $(EXTRA_CFLAGS)
 CFLAGS += -DF_CPU=$(F_CPU)
 CFLAGS += -DMCU_STR=\"$(MCU)\"
 CFLAGS += -mmcu=$(MCU)
@@ -132,6 +133,7 @@ CFLAGS += -ffunction-sections
 CFLAGS += -finline-functions-called-once
 CFLAGS += -mcall-prologues
 CFLAGS += -Wa,-adhlns=$(@:.o=.al)
+#CFLAGS += -dM -E # To list all predefined macros into the .o file.
 
 LDFLAGS  = -Wl,--as-needed
 
@@ -150,7 +152,7 @@ LIBS  = -lm
 
 # Architecture specific targets
 
-.PHONY: program size
+.PHONY: all program size
 
 all: $(PROGRAM).hex $(BUILDDIR)/$(PROGRAM).lst $(BUILDDIR)/$(PROGRAM).sym size
 

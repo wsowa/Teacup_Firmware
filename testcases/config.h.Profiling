@@ -262,8 +262,6 @@
 	- comment out pins not in use, as this drops the corresponding code and makes operations faster
 */
 
-#include	"arduino.h"
-
 /** \def USE_INTERNAL_PULLUPS
 	internal pullup resistors
 		the ATmega has internal pullup resistors on it's input pins which are counterproductive with the commonly used eletronic endstops, so they should be switched off. For other endstops, like mechanical ones, you may want to uncomment this.
@@ -328,6 +326,20 @@
   http://reprap.org/wiki/Teacup_Firmware#Doing_precision_profiling
 */
 #define DEBUG_LED_PIN DIO21
+
+/** \def SD_CARD_SELECT_PIN
+
+  Chip Select pin of the SD card.
+
+  SD cards work over SPI and have a Chip Select or Slave Select (SS) pin.
+  Choose this pin according to where on the board your SD card adapter is
+  connected. Disabling this pin also disables SD card support and makes the
+  firmware binary about 4.5 kB smaller.
+
+  Connecting a device to SPI actually uses 4 signal lines, the other three
+  pins are choosen by Teacup automatically.
+*/
+//#define SD_CARD_SELECT_PIN       xxxx
 
 
 
@@ -435,6 +447,9 @@ DEFINE_TEMP_SENSOR(bed,       TT_THERMISTOR,  AIO0,      THERMISTOR_EXTRUDER)
 * are defined or the order of the definitions differs. The first defined    *
 * device has the index 0 (zero).                                            *
 *                                                                           *
+* Set 'invert' to 0 for normal heaters. Setting it to 1 inverts the pin     *
+* signal for this pin, e.g. for a MOSFET with a driver.                     *
+*                                                                           *
 * Set 'pwm' to ...                                                          *
 *  1  for using PWM on a PWM-able pin and on/off on other pins.             *
 *  0  for using on/off on a PWM-able pin, too.                              *
@@ -448,9 +463,9 @@ DEFINE_TEMP_SENSOR(bed,       TT_THERMISTOR,  AIO0,      THERMISTOR_EXTRUDER)
 	#define DEFINE_HEATER(...)
 #endif
 
-//            name      port   pwm
-DEFINE_HEATER(extruder, DIO4,  1)
-DEFINE_HEATER(bed,      DIO3,  1)
+//            name      pin      invert  pwm
+DEFINE_HEATER(extruder, DIO4,    0,      1)
+DEFINE_HEATER(bed,      DIO3,    0,      1)
 
 /// and now because the c preprocessor isn't as smart as it could be,
 /// uncomment the ones you've listed above and comment the rest.

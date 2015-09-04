@@ -182,23 +182,11 @@ class MechanicalPage(wx.Panel, Page):
         self.radioButtons[k].SetToolTipString(ht['KINEMATICS'])
 
   def insertValues(self, cfgValues):
-    self.assertValid(True)
-    for k in self.fieldValid.keys():
-      self.fieldValid[k] = True
-    for k in self.textControls.keys():
-      if k in cfgValues.keys():
-        self.textControls[k].SetValue(cfgValues[k])
-      else:
-        self.textControls[k].SetValue("")
+    Page.insertValues(self, cfgValues)
 
-    for k in self.checkBoxes.keys():
-      if k in cfgValues.keys() and cfgValues[k]:
-        self.checkBoxes[k].SetValue(True)
-      else:
-        self.checkBoxes[k].SetValue(False)
-
-    if 'KINEMATICS' in cfgValues.keys():
-      k = cfgValues['KINEMATICS']
+    k = 'KINEMATICS'
+    if k in cfgValues.keys():
+      k = cfgValues[k]
       if k in self.kinematicsKeys:
         self.radioButtons[k].SetValue(True)
       else:
@@ -206,22 +194,13 @@ class MechanicalPage(wx.Panel, Page):
     else:
       self.radioButtons[self.kinematicsKeys[0]].SetValue(True)
 
-    self.assertModified(False)
-    self.enableAll(True)
-
   def getValues(self):
     result = Page.getValues(self)
 
     for tag in self.kinematicsKeys:
       rb = self.radioButtons[tag]
       if rb.GetValue():
-        result['KINEMATICS'] = tag
+        result['KINEMATICS'] = tag, True
         break
-
-    for tag in self.kinematicsKeys:
-      try:
-        del result[tag]
-      except:
-        pass
 
     return result

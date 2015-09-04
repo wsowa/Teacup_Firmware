@@ -951,6 +951,51 @@ FRESULT pf_read (
 
     return FR_OK;
 }
+
+
+
+FRESULT pf_parse_line (
+    uint8_t (*parser)(uint8_t)    /* Pointer to the parser function, which
+                                    should return 1 on EOL, else zero. */
+)
+{
+    DRESULT dr;
+    CLUST clst;
+    DWORD sect;
+    UINT rcnt;
+    BYTE cs;
+    FATFS *fs = FatFs;
+
+
+    if (!fs) return FR_NOT_ENABLED;     /* Check file system */
+    if (!(fs->flag & FA_OPENED))        /* Check if opened */
+        return FR_NOT_OPENED;
+
+    while (fs->fptr < fs->fsize) {                  /* Repeat until EOF. */
+        if ((fs->fptr % 512) == 0) {                /* On the sector boundary? */
+            cs = (BYTE)(fs->fptr / 512 & (fs->csize - 1));  /* Sector offset in the cluster */
+            if (!cs) {                              /* On the cluster boundary? */
+                if (fs->fptr == 0)                  /* On the top of the file? */
+                    clst = fs->org_clust;
+                else
+                    clst = get_fat(fs->curr_clust);
+                if (clst <= 1) ABORT(FR_DISK_ERR);
+                fs->curr_clust = clst;              /* Update current cluster */
+            }
+            sect = clust2sect(fs->curr_clust);      /* Get current sector */
+            if (!sect) ABORT(FR_DISK_ERR);
+            fs->dsect = sect + cs;
+        }
+        dr = disk_parsep(fs->dsect, (UINT)fs->fptr % 512, &rcnt, parser);
+        if (dr != RES_OK && dr != RES_EOL_FOUND)
+          ABORT(FR_DISK_ERR);
+        fs->fptr += rcnt;                           /* Update pointers and counters */
+        if (dr == RES_EOL_FOUND)
+          return FR_OK;
+    }
+
+    return FR_END_OF_FILE;
+}
 #endif
 
 

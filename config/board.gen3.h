@@ -42,6 +42,9 @@
 *                                                                           *
 \***************************************************************************/
 
+#define TX_ENABLE_PIN            DIO12
+#define RX_ENABLE_PIN            DIO13
+
 #define X_STEP_PIN               DIO15
 #define X_DIR_PIN                DIO18
 #define X_MIN_PIN                DIO20
@@ -94,6 +97,20 @@
   http://reprap.org/wiki/Teacup_Firmware#Doing_precision_profiling
 */
 //#define DEBUG_LED_PIN            DIO21
+
+/** \def SD_CARD_SELECT_PIN
+
+  Chip Select pin of the SD card.
+
+  SD cards work over SPI and have a Chip Select or Slave Select (SS) pin.
+  Choose this pin according to where on the board your SD card adapter is
+  connected. Disabling this pin also disables SD card support and makes the
+  firmware binary about 4.5 kB smaller.
+
+  Connecting a device to SPI actually uses 4 signal lines, the other three
+  pins are choosen by Teacup automatically.
+*/
+#define SD_CARD_SELECT_PIN       DIO4
 
 
 /***************************************************************************\
@@ -187,6 +204,9 @@ DEFINE_TEMP_SENSOR(noheater, TT_INTERCOM,   AIO0,  0)
   are defined or the order of the definitions differs. The first defined
   device has the index 0 (zero).
 
+  Set 'invert' to 0 for normal heaters. Setting it to 1 inverts the pin signal
+  for this pin, e.g. for a MOSFET with a driver.
+
   Set 'pwm' to ...
     1  for using PWM on a PWM-able pin and on/off on other pins.
     0  for using on/off on a PWM-able pin, too.
@@ -196,7 +216,7 @@ DEFINE_TEMP_SENSOR(noheater, TT_INTERCOM,   AIO0,  0)
   influenced globally with FAST_PWM, see below.
 */
 //DEFINE_HEATERS_START
-//            name      port   pwm
+//            name      pin      invert  pwm
 
 //DEFINE_HEATERS_END
 

@@ -234,24 +234,11 @@ class MiscellaneousPage(wx.Panel, Page):
     self.choices[k].SetSelection(v)
 
   def insertValues(self, cfgValues):
-    self.assertValid(True)
-    for k in self.fieldValid.keys():
-      self.fieldValid[k] = True
+    Page.insertValues(self, cfgValues)
 
-    for k in self.checkBoxes.keys():
-      if k in cfgValues.keys() and cfgValues[k]:
-        self.checkBoxes[k].SetValue(True)
-      else:
-        self.checkBoxes[k].SetValue(False)
-
-    for k in self.textControls.keys():
+    for k in self.choices.keys():
       if k in cfgValues.keys():
-        self.textControls[k].SetValue(str(cfgValues[k]))
-      else:
-        self.textControls[k].SetValue("")
-
-    self.assertModified(False)
-    self.enableAll(True)
+        self.choicesOriginal[k] = cfgValues[k]
 
   def getValues(self):
     result = Page.getValues(self)
@@ -260,8 +247,11 @@ class MiscellaneousPage(wx.Panel, Page):
     s = self.choices[k].GetSelection()
     v = self.choices[k].GetString(s)
     if v == self.heaterNameNone:
-      result[k] = ""
+      if k in self.choicesOriginal.keys():
+        result[k] = self.choicesOriginal[k][0], False
+      else:
+        result[k] = "", False
     else:
-      result[k] = "HEATER_%s" % v
+      result[k] = "HEATER_%s" % v, True
 
     return result

@@ -25,14 +25,6 @@
 #undef Y_MAX_PIN
 #undef Z_MAX_PIN
 
-#undef READ
-#undef WRITE
-#undef TOGGLE
-#undef SET_INPUT
-#undef SET_OUTPUT
-#undef GET_INPUT
-#undef GET_OUTPUT
-
 // Compiler appeasement
 #undef disable_transmit
 #undef enable_transmit
@@ -54,14 +46,6 @@
 #include <stdbool.h>
 #include "simulator/data_recorder.h"
 
-#define PROGMEM
-#define PGM_P const char *
-#define PSTR(x) (x)
-#define pgm_read_byte(x) (*((uint8_t *)(x)))
-#define pgm_read_word(x) (*((uint16_t *)(x)))
-#define pgm_read_dword(x) (*((uint32_t *)(x)))
-
-#define MASK(PIN)   (1 << PIN)
 #define ACD         7
 #define OCIE1A      1
 
@@ -129,11 +113,6 @@ typedef enum {
 extern uint8_t ACSR;
 extern uint8_t TIMSK1;
 extern volatile bool sim_interrupts;
-
-bool READ(pin_t pin);
-void WRITE(pin_t pin, bool on);
-void SET_OUTPUT(pin_t pin);
-void SET_INPUT(pin_t pin);
 
 // Simulate AVR interrupts.
 #define ISR(fn) void fn (void)

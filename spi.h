@@ -3,10 +3,19 @@
 
 #include "config_wrapper.h"
 #include "arduino.h"
+#include "pinio.h"
+
+#ifdef SPI
+
+/**
+  Test configuration.
+*/
+#ifdef __ARMEL__
+  #error SPI (SD_CARD_SELECT_PIN, TEMP_MAX6675) not yet supported on ARM.
+#endif
 
 // Uncomment this to double SPI frequency from (F_CPU / 4) to (F_CPU / 2).
 //#define SPI_2X
-
 
 /** Initialise SPI subsystem.
 */
@@ -98,5 +107,7 @@ inline uint8_t spi_rw(uint8_t byte) {
   loop_until_bit_is_set(SPSR, SPIF);
   return SPDR;
 }
+
+#endif /* SPI */
 
 #endif /* _SPI_H */

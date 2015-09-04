@@ -13,7 +13,7 @@ from configtool.data import (defineValueFormat,
                              reCandProcessors, reCandCPUClocks, reFloatAttr,
                              reDefine, reDefineBL, reDefQS, reDefQSm,
                              reDefQSm2, reDefBool, reDefBoolBL, reDefHT,
-                             reDefTS, reDefTT, reSensor, reHeater,
+                             reDefTS, reDefTT, reSensor, reHeater3, reHeater4,
                              reTempTable4, reTempTable7)
 from configtool.pinoutspage import PinoutsPage
 from configtool.sensorpage import SensorsPage
@@ -40,6 +40,7 @@ class BoardPanel(wx.Panel):
     self.candHeatPins = []
     self.candThermPins = []
     self.dir = os.path.join(self.settings.folder, "config")
+    self.cfgDir = os.path.join(self.settings.folder, "configtool")
 
     self.SetBackgroundColour(self.deco.getBackgroundColour())
     self.Bind(wx.EVT_PAINT, self.deco.onPaintBackground)
@@ -107,11 +108,11 @@ class BoardPanel(wx.Panel):
   def getCPUInfo(self):
     vF_CPU = None
     if 'F_CPU' in self.cfgValues.keys():
-      vF_CPU = self.cfgValues['F_CPU']
+      vF_CPU = self.cfgValues['F_CPU'][0]
 
     vCPU = None
     if 'CPU' in self.cfgValues.keys():
-      vCPU = self.cfgValues['CPU']
+      vCPU = self.cfgValues['CPU'][0]
 
     return vF_CPU, vCPU
 
@@ -210,20 +211,26 @@ class BoardPanel(wx.Panel):
       return
 
     self.dir = os.path.dirname(path)
-    rc = self.loadConfigFile(path)
+    rc, efn = self.loadConfigFile(path)
 
     if not rc:
-      dlg = wx.MessageDialog(self, "Unable to process file %s." % path,
+      dlg = wx.MessageDialog(self, "Unable to process file %s." % efn,
                              "File error", wx.OK + wx.ICON_ERROR)
       dlg.ShowModal()
       dlg.Destroy()
       return
 
   def loadConfigFile(self, fn):
+    cfgFn = os.path.join(self.cfgDir, "board.generic.h")
     try:
-      self.cfgBuffer = list(open(fn))
+      self.cfgBuffer = list(open(cfgFn))
     except:
-      return False
+      return False, cfgFn
+
+    try:
+      self.userBuffer = list(open(fn))
+    except:
+      return False, fn
 
     self.configFile = fn
 
@@ -234,12 +241,13 @@ class BoardPanel(wx.Panel):
     self.candThermPins = []
     self.candProcessors = []
     self.candClocks = []
-    tempTables = {}
+    self.tempTables = {}
     gatheringHelpText = False
     helpTextString = ""
     helpKey = None
 
     self.cfgValues = {}
+    self.cfgNames = []
     self.helpText = {}
 
     prevLines = ""
@@ -280,76 +288,44 @@ class BoardPanel(wx.Panel):
         ln = prevLines + ln
         prevLines = ""
 
-      if ln.lstrip().startswith("//"):
-        m = reCandThermPins.match(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 1:
-            self.candThermPins.append(t[0])
-            continue
-
-        m = reCandHeatPins.match(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 1:
-            self.candHeatPins.append(t[0])
-            continue
-
-        m = reCandProcessors.match(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 1:
-            self.candProcessors.append(t[0])
-            continue
-
-        m = reCandCPUClocks.match(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 1:
-            self.candClocks.append(t[0])
-            continue
-
-        m = reDefTT.match(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 2:
-            s = self.parseTempTable(t[1])
-            if s:
-              tempTables[t[0]] = s
-            continue
-
+      if self.parseCandidateValues(ln):
         continue
 
-      if ln.lstrip().startswith("#define"):
-        m = reDefQS.search(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 2:
-            m = reDefQSm.search(ln)
-            if m:
-              t = m.groups()
-              tt = re.findall(reDefQSm2, t[1])
-              if len(tt) == 1:
-                self.cfgValues[t[0]] = tt[0]
-                continue
-              elif len(tt) > 1:
-                self.cfgValues[t[0]] = tt
-                continue
+      if self.parseDefineName(ln):
+        continue
 
-        m = reDefine.search(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 2:
-            self.cfgValues[t[0]] = t[1]
-            if reFloatAttr.search(ln):
-              pass
-            continue
+    # Ignore candidates in the metadata file.
+    self.candHeatPins = []
+    self.candThermPins = []
+    self.candProcessors = []
+    self.candClocks = []
+    self.tempTables = {}
+    gatheringHelpText = False
 
-        m = reDefBool.search(ln)
-        if m:
-          t = m.groups()
-          if len(t) == 1:
-            self.cfgValues[t[0]] = True
+    prevLines = ""
+    for ln in self.userBuffer:
+      if gatheringHelpText:
+        if reHelpTextEnd.match(ln):
+          gatheringHelpText = False
+        continue
+
+      if reHelpTextStart.match(ln):
+        gatheringHelpText = True
+        continue
+
+      if ln.rstrip().endswith("\\"):
+        prevLines += ln.rstrip()[:-1]
+        continue
+
+      if prevLines != "":
+        ln = prevLines + ln
+        prevLines = ""
+
+      if self.parseCandidateValues(ln):
+        continue
+
+      elif self.parseDefineValue(ln):
+        continue
 
       else:
         m = reDefTS.search(ln)
@@ -359,7 +335,7 @@ class BoardPanel(wx.Panel):
             s = self.parseSensor(t[0])
             if s:
               self.sensors.append(s)
-            continue
+              continue
 
         m = reDefHT.search(ln)
         if m:
@@ -368,12 +344,12 @@ class BoardPanel(wx.Panel):
             s = self.parseHeater(t[0])
             if s:
               self.heaters.append(s)
-            continue
+              continue
 
     for k in range(len(self.sensors)):
       tn = self.sensors[k][0].upper()
-      if tn in tempTables.keys():
-        self.sensors[k][3] = tempTables[tn]
+      if tn in self.tempTables.keys():
+        self.sensors[k][3] = self.tempTables[tn]
       else:
         self.sensors[k][3] = None
 
@@ -396,7 +372,92 @@ class BoardPanel(wx.Panel):
     self.pgSensors.setSensors(self.sensors)
     self.pgHeaters.setHeaters(self.heaters)
 
-    return True
+    return True, None
+
+  def parseDefineName(self, ln):
+    m = reDefBool.search(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.cfgNames.append(t[0])
+      return True
+
+    return False
+
+  def parseDefineValue(self, ln):
+    m = reDefQS.search(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 2:
+        m = reDefQSm.search(ln)
+        if m:
+          t = m.groups()
+          tt = re.findall(reDefQSm2, t[1])
+          if len(tt) == 1 and (t[0] in self.cfgNames):
+            self.cfgValues[t[0]] = tt[0], True
+            return True
+          elif len(tt) > 1 and (t[0] in self.cfgNames):
+            self.cfgValues[t[0]] = tt, True
+            return True
+
+    m = reDefine.search(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 2 and (t[0] in self.cfgNames):
+        if reDefineBL.search(ln):
+          self.cfgValues[t[0]] = t[1], True
+        else:
+          self.cfgValues[t[0]] = t[1], False
+        return True
+
+    m = reDefBoolBL.search(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1 and (t[0] in self.cfgNames):
+        self.cfgValues[t[0]] = True
+        return True
+
+    return False
+
+  def parseCandidateValues(self, ln):
+    m = reCandThermPins.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candThermPins.append(t[0])
+      return True
+
+    m = reCandHeatPins.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candHeatPins.append(t[0])
+      return True
+
+    m = reCandProcessors.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candProcessors.append(t[0])
+      return True
+
+    m = reCandCPUClocks.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candClocks.append(t[0])
+      return True
+
+    m = reDefTT.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 2:
+        s = self.parseTempTable(t[1])
+        if s:
+          self.tempTables[t[0]] = s
+      return True
+
+    return False
 
   def parseSensor(self, s):
     m = reSensor.search(s)
@@ -407,11 +468,20 @@ class BoardPanel(wx.Panel):
     return None
 
   def parseHeater(self, s):
-    m = reHeater.search(s)
+    m = reHeater4.search(s)
+    if m:
+      t = m.groups()
+      if len(t) == 4:
+        return list(t)
+    # reHeater3 deprecated, for compatibility with old config files only.
+    m = reHeater3.search(s)
     if m:
       t = m.groups()
       if len(t) == 3:
-        return list(t)
+        t = list(t)
+        t.insert(2, '0')
+        return t
+    # End of deprecated part.
     return None
 
   def parseTempTable(self, s):
@@ -456,7 +526,8 @@ class BoardPanel(wx.Panel):
 
   def saveConfigFile(self, path):
     if os.path.basename(path) in protectedFiles:
-      dlg = wx.MessageDialog(self, "Unable to overwrite %s." % path,
+      dlg = wx.MessageDialog(self, "It's not allowed to overwrite files "
+                             "distributed by Teacup. Choose another name.",
                              "Protected file error", wx.OK + wx.ICON_ERROR)
       dlg.ShowModal()
       dlg.Destroy()
@@ -488,7 +559,6 @@ class BoardPanel(wx.Panel):
     self.configFile = path
 
     values = {}
-    labelFound = []
 
     for pg in self.pages:
       v1 = pg.getValues()
@@ -498,6 +568,10 @@ class BoardPanel(wx.Panel):
     skipToSensorEnd = False
     skipToHeaterEnd = False
     tempTables = {}
+    candThermPinsWritten = False
+    candHeatPinsWritten = False
+    candProcessorsWritten = False
+    candCPUClocksWritten = False
     for ln in self.cfgBuffer:
       m = reStartSensors.match(ln)
       if m:
@@ -539,9 +613,10 @@ class BoardPanel(wx.Panel):
       m = reStartHeaters.match(ln)
       if m:
         fp.write(ln)
-        fp.write("//            name      port   pwm\n")
+        fp.write("//            name      pin      invert  pwm\n")
         for s in self.heaters:
-          sstr = "%-10s%-7s%s" % ((s[0] + ","), (s[1] + ","), s[2])
+          sstr = "%-10s%-9s%-8s%s" % ((s[0] + ","), (s[1] + ","),
+                                      (s[2] + ","), s[3])
           fp.write("DEFINE_HEATER(%s)\n" % sstr)
         fp.write("\n")
         for s in self.heaters:
@@ -556,89 +631,67 @@ class BoardPanel(wx.Panel):
           skipToHeaterEnd = False
         continue
 
-      m = reDefineBL.match(ln)
+      if reCandThermPins.match(ln):
+        if not candThermPinsWritten:
+          for pin in self.candThermPins:
+            fp.write("//#define TEMP_SENSOR_PIN " + pin + "\n")
+          candThermPinsWritten = True
+        continue
+
+      if reCandHeatPins.match(ln):
+        if not candHeatPinsWritten:
+          for pin in self.candHeatPins:
+            fp.write("//#define HEATER_PIN " + pin + "\n")
+          candHeatPinsWritten = True
+        continue
+
+      if reCandProcessors.match(ln):
+        if not candProcessorsWritten:
+          for pin in self.candProcessors:
+            fp.write("//#define CPU_TYPE " + pin + "\n")
+          candProcessorsWritten = True
+        continue
+
+      if reCandCPUClocks.match(ln):
+        if not candCPUClocksWritten:
+          for pin in self.candClocks:
+            fp.write("//#define F_CPU_OPT " + pin + "\n")
+          candCPUClocksWritten = True
+        continue
+
+      m = reDefine.match(ln)
       if m:
         t = m.groups()
-        if len(t) == 2:
-          if t[0] in values.keys() and values[t[0]] != "":
-            fp.write(defineValueFormat % (t[0], values[t[0]]))
-            self.cfgValues[t[0]] = values[t[0]]
-            labelFound.append(t[0])
-          elif t[0] in values.keys():
-            fp.write("//" + ln)
-            if t[0] in self.cfgValues.keys():
-              del self.cfgValues[t[0]]
-            labelFound.append(t[0])
-          else:
-            fp.write(ln)
-          continue
+        if len(t) == 2 and t[0] in values.keys():
+          v = values[t[0]]
+          self.cfgValues[t[0]] = v
+          if v[1] == False:
+            fp.write("//")
+          fp.write(defineValueFormat % (t[0], v[0]))
+        else:
+          print "Value key " + t[0] + " not found in GUI."
+
+        continue
 
       m = reDefBoolBL.match(ln)
       if m:
         t = m.groups()
-        if len(t) == 1:
-          if t[0] in values.keys() and values[t[0]]:
-            fp.write(defineBoolFormat % t[0])
-            self.cfgValues[t[0]] = True
-            labelFound.append(t[0])
-          elif t[0] in values.keys():
-            fp.write("//" + ln)
-            if t[0] in self.cfgValues.keys():
-              del self.cfgValues[t[0]]
-            labelFound.append(t[0])
-          else:
+        if len(t) == 1 and t[0] in values.keys():
+          v = values[t[0]]
+          self.cfgValues[t[0]] = v
+          if v == "" or v == False:
+            fp.write("//")
+          fp.write(defineBoolFormat % t[0])
+        else:
+          if t[0] == 'MOTHERBOARD':
+            # Known to be absent in the GUI, also won't be added anytime soon.
             fp.write(ln)
-          continue
+          else:
+            print "Boolean key " + t[0] + " not found in GUI."
 
-      m = reCommDefBL.match(ln)
-      if m:
-        t = m.groups()
-        if len(t) == 2:
-          if t[0] in values.keys() and values[t[0]] != "":
-            fp.write(defineValueFormat % (t[0], values[t[0]]))
-            self.cfgValues[t[0]]  = values[t[0]]
-            labelFound.append(t[0])
-          elif t[0] in values.keys():
-            fp.write(ln)
-            labelFound.append(t[0])
-          else:
-            fp.write(ln)
-          continue
-
-      m = reCommDefBoolBL.match(ln)
-      if m:
-        t = m.groups()
-        if len(t) == 1:
-          if t[0] in values.keys() and values[t[0]]:
-            fp.write(defineBoolFormat % t[0])
-            self.cfgValues[t[0]] = True
-            labelFound.append(t[0])
-          elif t[0] in values.keys():
-            fp.write(ln)
-            labelFound.append(t[0])
-          else:
-            fp.write(ln)
-          continue
+        continue
 
       fp.write(ln)
-
-    for k in labelFound:
-      del values[k]
-
-    newLabels = ""
-    for k in values.keys():
-      if newLabels == "":
-        newLabels = k
-      else:
-        newLabels += ", " + k
-      self.addNewDefine(fp, k, values[k])
-
-    if newLabels != "":
-      dlg = wx.MessageDialog(self, "New defines added to board config:\n" +
-                             newLabels, "New defines",
-                             wx.OK + wx.ICON_INFORMATION)
-      dlg.ShowModal()
-      dlg.Destroy()
 
     fp.close()
     return self.generateTempTables()
@@ -652,17 +705,3 @@ class BoardPanel(wx.Panel):
       return False
 
     return True
-
-  def addNewDefine(self, fp, key, val):
-    fp.write("\n")
-    fp.write("/** \\def %s\n" % key)
-    fp.write("  Add help text here.\n")
-    fp.write("*/\n")
-    if val == True:
-      fp.write(defineBoolFormat % key)
-    elif val == False:
-      fp.write("//#define %s\n" % key)
-    elif val == "":
-      fp.write("//#define %s\n" % key)
-    else:
-      fp.write(defineValueFormat % (key, val))

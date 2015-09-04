@@ -114,7 +114,7 @@ DSTATUS disk_initialize(void) {
         for (timeout = 10000; timeout && send_cmd(ACMD41, 1UL << 30); timeout--)
           delay_us(100);
 
-        /* Find out wether it's a block device (CCS bit in OCR). */
+        /* Find out whether it's a block device (CCS bit in OCR). */
         if (timeout && send_cmd(CMD58, 0) == 0) {
           for (n = 0; n < 4; n++)
             ocr[n] = spi_rw(0xFF);
@@ -201,6 +201,80 @@ DRESULT disk_readp(BYTE* buffer, DWORD sector, UINT offset, UINT count) {
         spi_rw(0xFF);
 
       result = RES_OK;
+    }
+  }
+
+  spi_deselect_sd();        /* Every send_cmd() selects. */
+  spi_rw(0xFF);
+
+  return result;
+}
+
+/** Read and parse a line.
+
+  \param sector  Sector number (LBA).
+  \param offset  Offset into the sector.
+  \param count   Number of bytes read.
+  \param parser  Pointer to the parser function, which should return 1 on EOL,
+                 else zero.
+
+  \return RES_OK on success, else RES_ERROR.
+
+  This starts reading a sector at offset and sends each character to the
+  parser. The parser reports back whether an end of line (EOL) was reached,
+  which ends this function. If end of the sector is reached without finding
+  an EOL, this function should be called again with the next sector of the
+  file.
+
+  Reading lines of code this way should be more efficient than reading all the
+  bytes into a small, not line-aligned buffer, just to read this buffer(s)
+  right again byte by byte for parsing. It makes buffering entirely obsolete.
+*/
+DRESULT disk_parsep(DWORD sector, UINT offset, UINT* count,
+                    uint8_t (*parser)(uint8_t)) {
+  DRESULT result;
+  BYTE token = 0xFF;
+  uint16_t timeout;
+  UINT trailing = 514 - offset, read = 0;  /* 514 = block size + 2 bytes CRC */
+
+  /* Convert to byte address on non-block cards. */
+  if ( ! (card_type & CT_BLOCK))
+    sector *= 512;
+
+  /* Read one sector, copy only as many bytes as required. */
+  result = RES_ERROR;
+  spi_speed_max();
+  if (send_cmd(CMD17, sector) == 0) {  /* Read single block. */
+    /* Wait for data packet. */
+    for (timeout = 40000; timeout && (token == 0xFF); timeout--)
+      token = spi_rw(0xFF);
+
+    if (token == 0xFE) {    /* Valid data arrived. */
+      /* Skip leading bytes. */
+      while (offset--)
+        spi_rw(0xFF);
+
+      /* Receive and parse the sector up to EOL or end of the sector. */
+      do {
+        /**
+          Note that this isn't optimised for performance. See
+          http://www.matuschek.net/atmega-spi/.
+        */
+        result = parser(spi_rw(0xFF));
+        read++;
+        trailing--;
+      } while (trailing > 2 && ! result);
+
+      *count = read;
+
+      /* Skip trailing bytes and CRC. */
+      while (trailing--)
+        spi_rw(0xFF);
+
+      if (result)
+        result = RES_EOL_FOUND;
+      else
+        result = RES_OK;
     }
   }
 

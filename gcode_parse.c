@@ -19,6 +19,20 @@
 #endif
 
 
+/** Bitfield for available sources of G-code.
+
+  A typical source is the SD card or canned G-code. Serial is currently never
+  turned off.
+*/
+enum gcode_source gcode_sources = GCODE_SOURCE_SERIAL;
+
+/** Bitfield for the current source of G-code.
+
+  Only one bit should be set at a time. The bit is set at start reading a
+  line and cleared when a line is done.
+*/
+enum gcode_source gcode_active = 0;
+
 /// current or previous gcode word
 /// for working out what to do with data just received
 uint8_t last_field = 0;
@@ -100,9 +114,16 @@ void gcode_init(void) {
 	#endif
 }
 
-/// Character Received - add it to our command
-/// \param c the next character to process
-void gcode_parse_char(uint8_t c) {
+/** Character received - add it to our command.
+
+  \param c The next character to process.
+
+  \return Whether end of line was reached.
+
+  This parser operates character by character, so there's no need for a
+  buffer holding the entire line of G-code.
+*/
+uint8_t gcode_parse_char(uint8_t c) {
 	uint8_t checksum_char = c;
 
 	// uppercase
@@ -366,9 +387,9 @@ void gcode_parse_char(uint8_t c) {
 				#endif
 				) {
 				// process
-				serial_writestr_P(PSTR("ok "));
 				process_gcode_command();
-				serial_writechar('\n');
+
+        // Acknowledgement ("ok") is sent in the main loop, in mendel.c.
 
 				// expect next line number
 				if (next_target.seen_N == 1)
@@ -401,6 +422,8 @@ void gcode_parse_char(uint8_t c) {
 		if (next_target.option_all_relative || next_target.option_e_relative) {
       next_target.target.axis[E] = 0;
 		}
+
+    return 1;
 	}
 
   #ifdef SD
@@ -417,6 +440,8 @@ void gcode_parse_char(uint8_t c) {
     }
   }
   #endif /* SD */
+
+  return 0;
 }
 
 /***************************************************************************\

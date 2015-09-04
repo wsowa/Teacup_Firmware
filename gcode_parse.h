@@ -6,11 +6,11 @@
 #include	"dda.h"
 #include "sd.h"
 
-// wether to insist on N line numbers
+// whether to insist on N line numbers
 // if not defined, N's are completely ignored
 //#define	REQUIRE_LINENUMBER
 
-// wether to insist on a checksum
+// whether to insist on a checksum
 //#define	REQUIRE_CHECKSUM
 
 /// this is a very crude decimal-based floating point structure.
@@ -45,21 +45,30 @@ typedef struct {
 		uint8_t					option_inches				:1; ///< inches or millimeters?
 	};
 
+  uint32_t          N;          ///< line number
+  uint32_t          N_expected; ///< expected line number
+
+  int32_t           S;          ///< S word (various uses)
+  uint16_t          P;          ///< P word (various uses)
+
 	uint8_t						G;				///< G command number
 	uint8_t						M;				///< M command number
 	TARGET						target;		///< target position: X, Y, Z, E and F
 
-	int32_t						S;				///< S word (various uses)
-	uint16_t					P;				///< P word (various uses)
-
 	uint8_t						T;				///< T word (tool index)
-
-	uint32_t					N;				///< line number
-	uint32_t					N_expected;	///< expected line number
 
 	uint8_t						checksum_read;				///< checksum in gcode command
 	uint8_t						checksum_calculated;	///< checksum we calculated
 } GCODE_COMMAND;
+
+enum gcode_source {
+  GCODE_SOURCE_SERIAL  = 0b00000001,
+  GCODE_SOURCE_SD      = 0b00000010,
+};
+
+
+extern enum gcode_source gcode_sources;
+extern enum gcode_source gcode_active;
 
 /// the command being processed
 extern GCODE_COMMAND next_target;
@@ -72,7 +81,7 @@ extern GCODE_COMMAND next_target;
 void gcode_init(void);
 
 /// accept the next character and process it
-void gcode_parse_char(uint8_t c);
+uint8_t gcode_parse_char(uint8_t c);
 
 // uses the global variable next_target.N
 void request_resend(void);

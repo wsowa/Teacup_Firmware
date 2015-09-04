@@ -10,7 +10,9 @@
 #include "simulator.h"
 #include "data_recorder.h"
 
-uint8_t ACSR;
+void cpu_init(void) {
+}
+
 uint8_t TIMSK1;
 uint16_t
   TCCR0A,
@@ -50,7 +52,8 @@ struct option opts[] = {
   { "gcode", no_argument, NULL, 'g' },
   { "pos", no_argument, NULL, 'p' },
   { "time-scale", required_argument, NULL, 't' },
-  { "tracefile", optional_argument, NULL, 'o' }
+  { "tracefile", optional_argument, NULL, 'o' },
+  { 0, 0, 0, 0 }
 };
 
 static void usage(const char *name) {
@@ -94,7 +97,7 @@ void sim_start(int argc, char** argv) {
       recorder_init(optarg ? optarg : "datalog.out");
       break;
     default:
-      sim_error("Unexpected result in getopt_long handler");
+      exit(1);
     }
 
   // Record the command line arguments to the datalog, if active
@@ -204,7 +207,7 @@ void sim_tick(char ch) {
   fflush(stdout);
 }
 
-static char gcode_buffer[300]; 
+static char gcode_buffer[300];
 static int gcode_buffer_index;
 void sim_gcode_ch(char ch) {
   // Got CR, LF or buffer full
@@ -299,13 +302,13 @@ static void print_pos(void) {
   }
 }
 
-bool READ(pin_t pin) {
+bool _READ(pin_t pin) {
   sim_assert(pin < PIN_NB, "READ: Pin number out of range");
   // Add any necessary reactive pin-handlers here.
   return state[pin];
 }
 
-void WRITE(pin_t pin, bool s) {
+void _WRITE(pin_t pin, bool s) {
   bool old_state = state[pin];
   uint64_t nseconds = sim_runtime_ns();
   sim_assert(pin < PIN_NB, "WRITE: Pin number out of range");
@@ -377,12 +380,12 @@ void WRITE(pin_t pin, bool s) {
   }
 }
 
-void SET_OUTPUT(pin_t pin) {
+void _SET_OUTPUT(pin_t pin) {
   sim_assert(pin < PIN_NB, "Pin number out of range");
   direction[pin] = out;
 }
 
-void SET_INPUT(pin_t pin) {
+void _SET_INPUT(pin_t pin) {
   sim_assert(pin < PIN_NB, "Pin number out of range");
   direction[pin] = in;
 }

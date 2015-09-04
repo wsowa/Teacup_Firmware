@@ -10,23 +10,27 @@
 */
 
 #include	<stdlib.h>
-#ifndef SIMULATOR
-#include	<avr/eeprom.h>
-#include	<avr/pgmspace.h>
-#endif
-#include "simulator.h"
-
 #include	"arduino.h"
+#include "serial.h"
 #include	"debug.h"
 #ifndef	EXTRUDER
 	#include	"sersendf.h"
 #endif
 #include	"heater.h"
+#include "simulator.h"
+
 #ifdef	TEMP_INTERCOM
+  #ifdef __ARMEL__
+    #error TEMP_INTERCOM not yet supported on ARM.
+  #endif
 	#include	"intercom.h"
+  #include "pinio.h"
 #endif
 
 #ifdef	TEMP_MAX6675
+  #ifdef __ARMEL__
+    #error MAX6675 sensors (TEMP_MAX6675) not yet supported on ARM.
+  #endif
   #include "spi.h"
 #endif
 
@@ -124,6 +128,7 @@ void temp_init() {
 /// called every 10ms from clock.c - check all temp sensors that are ready for checking
 void temp_sensor_tick() {
 	temp_sensor_t i = 0;
+
 	for (; i < NUM_TEMP_SENSORS; i++) {
 		if (temp_sensors_runtime[i].next_read_time) {
 			temp_sensors_runtime[i].next_read_time--;
@@ -387,5 +392,6 @@ void temp_print(temp_sensor_t index) {
 		sersendf_P(PSTR("T[%su]:"), index);
 		single_temp_print(index);
 	}
+  serial_writechar('\n');
 }
 #endif
