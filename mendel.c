@@ -43,6 +43,7 @@
 #include	"clock.h"
 #include	"intercom.h"
 #include "spi.h"
+#include "i2c_bus.h"
 #include "sd.h"
 #include "simulator.h"
 
@@ -133,6 +134,7 @@ int main (void)
   uint8_t c, line_done, ack_waiting = 0;
 
 	init();
+        i2c_bus_init();
 
 	// main loop
 	for (;;)
