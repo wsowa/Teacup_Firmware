@@ -1,4 +1,3 @@
-
 import os
 import wx
 import re
@@ -11,11 +10,13 @@ from configtool.data import (defineValueFormat,
                              reStartSensors, reEndSensors, reStartHeaters,
                              reEndHeaters, reCandHeatPins, reCandThermPins,
                              reCandProcessors, reCandCPUClocks, reFloatAttr,
+                             reCandDisplayBuses, reCandDisplayTypes,
                              reDefine, reDefineBL, reDefQS, reDefQSm,
                              reDefQSm2, reDefBool, reDefBoolBL, reDefHT,
                              reDefTS, reDefTT, reSensor, reHeater3, reHeater4,
                              reTempTable4, reTempTable7)
 from configtool.pinoutspage import PinoutsPage
+from configtool.displaypage import DisplayPage
 from configtool.sensorpage import SensorsPage
 from configtool.heaterspage import HeatersPage
 from configtool.communicationspage import CommunicationsPage
@@ -56,54 +57,26 @@ class BoardPanel(wx.Panel):
     self.pageModified = []
     self.pageValid = []
 
-    self.pgCpu = CpuPage(self, self.nb, len(self.pages), self.settings.font)
-    text = "CPU"
-    self.nb.AddPage(self.pgCpu, text)
-    self.pages.append(self.pgCpu)
-    self.titles.append(text)
-    self.pageModified.append(False)
-    self.pageValid.append(True)
-
-    self.pgPins = PinoutsPage(self, self.nb, len(self.pages),
-                              self.settings.font)
-    text = "Pinouts"
-    self.nb.AddPage(self.pgPins, text)
-    self.pages.append(self.pgPins)
-    self.titles.append(text)
-    self.pageModified.append(False)
-    self.pageValid.append(True)
-
-    self.pgHeaters = HeatersPage(self, self.nb, len(self.pages),
-                                 self.settings.font)
-    text = "Heaters"
-    self.nb.AddPage(self.pgHeaters, text)
-    self.pages.append(self.pgHeaters)
-    self.titles.append(text)
-    self.pageModified.append(False)
-    self.pageValid.append(True)
-
-    self.pgSensors = SensorsPage(self, self.nb, len(self.pages), self.pgHeaters,
-                                 self.settings.font)
-    text = "Temperature Sensors"
-    self.nb.AddPage(self.pgSensors, text)
-    self.pages.append(self.pgSensors)
-    self.titles.append(text)
-    self.pageModified.append(False)
-    self.pageValid.append(True)
-
-    self.pgCommunications = CommunicationsPage(self, self.nb, len(self.pages),
-                                               self.settings.font)
-    text = "Communications"
-    self.nb.AddPage(self.pgCommunications, text)
-    self.pages.append(self.pgCommunications)
-    self.titles.append(text)
-    self.pageModified.append(False)
-    self.pageValid.append(True)
+    self.pgCpu = self._register_page(CpuPage, 'CPU')
+    self.pgPins = self._register_page(PinoutsPage, 'Pinouts')
+    self.pgDisplay = self._register_page(DisplayPage, 'Display')
+    self.pgHeaters = self._register_page(HeatersPage, 'Heaters', )
+    self.pgSensors = self._register_page(SensorsPage, 'Temperature Sensors', heatersPage=self.pgHeaters)
+    self.pgCommunications = self._register_page(CommunicationsPage, 'Communications')
 
     sz.Add(self.nb, 1, wx.EXPAND + wx.ALL, 5)
 
     self.SetSizer(sz)
     self.Fit()
+
+  def _register_page(self, klass, label, *args, **kwargs):
+    page = klass(self, self.nb, len(self.pages), *args, font=self.settings.font, **kwargs)
+    self.nb.AddPage(page, label)
+    self.pages.append(page)
+    self.titles.append(label)
+    self.pageModified.append(False)
+    self.pageValid.append(True)
+    return page
 
   def getCPUInfo(self):
     vF_CPU = None
@@ -172,7 +145,7 @@ class BoardPanel(wx.Panel):
     self.Destroy()
 
   def confirmLoseChanges(self, msg):
-    if True not in self.pageModified:
+    if not any(self.pageModified):
       return True
 
     dlg = wx.MessageDialog(self, "Are you sure you want to " + msg + "?\n"
@@ -241,6 +214,8 @@ class BoardPanel(wx.Panel):
     self.candThermPins = []
     self.candProcessors = []
     self.candClocks = []
+    self.candDisplayBuses = []
+    self.candDisplayTypes = []
     self.tempTables = {}
     gatheringHelpText = False
     helpTextString = ""
@@ -299,6 +274,8 @@ class BoardPanel(wx.Panel):
     self.candThermPins = []
     self.candProcessors = []
     self.candClocks = []
+    # self.candDisplayBuses = []
+    # self.candDisplayTypes = []
     self.tempTables = {}
     gatheringHelpText = False
 
@@ -364,6 +341,8 @@ class BoardPanel(wx.Panel):
     self.pgSensors.setCandidatePins(self.candThermPins)
     self.pgCpu.setCandidateProcessors(self.candProcessors)
     self.pgCpu.setCandidateClocks(self.candClocks)
+    self.pgDisplay.setCandidateDisplayBuses(self.candDisplayBuses)
+    self.pgDisplay.setCandidateDisplayTypes(self.candDisplayTypes)
 
     for pg in self.pages:
       pg.insertValues(self.cfgValues)
@@ -448,6 +427,20 @@ class BoardPanel(wx.Panel):
         self.candClocks.append(t[0])
       return True
 
+    m = reCandDisplayBuses.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candDisplayBuses.append(t[0])
+      return True
+
+    m = reCandDisplayTypes.match(ln)
+    if m:
+      t = m.groups()
+      if len(t) == 1:
+        self.candDisplayTypes.append(t[0])
+      return True
+
     m = reDefTT.match(ln)
     if m:
       t = m.groups()
@@ -524,7 +517,7 @@ class BoardPanel(wx.Panel):
       self.parent.enableSaveBoard(True, True)
     return rc
 
-  def saveConfigFile(self, path):
+  def is_allowed_path(self, path):
     if os.path.basename(path) in protectedFiles:
       dlg = wx.MessageDialog(self, "It's not allowed to overwrite files "
                              "distributed by Teacup. Choose another name.",
@@ -532,13 +525,23 @@ class BoardPanel(wx.Panel):
       dlg.ShowModal()
       dlg.Destroy()
       return False
+    return True
 
+  def is_board_file(self, path):
     if not os.path.basename(path).startswith("board."):
       dlg = wx.MessageDialog(self, "Illegal file name: %s.\n"
-                                   "File name must begin with \"board.\"" % path,
+                             "File name must begin with \"board.\"" % path,
                              "Illegal file name", wx.OK + wx.ICON_ERROR)
       dlg.ShowModal()
       dlg.Destroy()
+      return False
+    return True
+
+  def saveConfigFile(self, path):
+    if not self.is_allowed_path(path):
+      return False
+
+    if not self.is_board_file(path):
       return False
 
     ext = os.path.splitext(os.path.basename(path))[1]
@@ -567,11 +570,13 @@ class BoardPanel(wx.Panel):
 
     skipToSensorEnd = False
     skipToHeaterEnd = False
-    tempTables = {}
     candThermPinsWritten = False
     candHeatPinsWritten = False
     candProcessorsWritten = False
     candCPUClocksWritten = False
+    candDisplayBusesWritten = False
+    candDisplayTypesWritten = False
+
     for ln in self.cfgBuffer:
       m = reStartSensors.match(ln)
       if m:
@@ -657,6 +662,20 @@ class BoardPanel(wx.Panel):
           for pin in self.candClocks:
             fp.write("//#define F_CPU_OPT " + pin + "\n")
           candCPUClocksWritten = True
+        continue
+
+      if reCandDisplayBuses.match(ln):
+        if not candDisplayBusesWritten:
+          for value in self.candDisplayBuses:
+            fp.write("//#define DISPLAY_BUS {} \n".format(value))
+          candDisplayBusesWritten = True
+        continue
+
+      if reCandDisplayTypes.match(ln):
+        if not candDisplayTypesWritten:
+          for value in self.candDisplayTypes:
+            fp.write("//#define DISPLAY_TYPE {} \n".format(value))
+          candDisplayTypesWritten = True
         continue
 
       m = reDefine.match(ln)

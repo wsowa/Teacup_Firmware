@@ -1,4 +1,3 @@
-
 import wx
 from configtool.page import Page
 

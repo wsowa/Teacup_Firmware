@@ -14,6 +14,9 @@ sensorTypes = {'MAX6675': "TT_MAX6675", 'Thermistor': "TT_THERMISTOR",
                'AD595': "TT_AD595", 'PT100': "TT_PT100",
                'Intercom': "TT_INTERCOM"}
 
+displayBuses = ['Direct 4bit', 'Direct 8bit', 'I2C/TWI', 'SPI'];
+displayTypes = ['SSD1306', 'LCD1602']
+
 BSIZE = (100, 60)
 BSIZESMALL = (90, 30)
 
@@ -51,6 +54,8 @@ reCandHeatPins = re.compile("^\s*//\s*#define\s+HEATER_PIN\s+(\w+)")
 reCandThermPins = re.compile("^\s*//\s*#define\s+TEMP_SENSOR_PIN\s+(\w+)")
 reCandProcessors = re.compile("^\s*//\s*#define\s+CPU_TYPE\s+(\w+)")
 reCandCPUClocks = re.compile("^\s*//\s*#define\s+F_CPU_OPT\s+(\w+)")
+reCandDisplayBuses = re.compile("^\s*//\s*#define\s+DISPLAY_BUS\s+(\w+)")
+reCandDisplayTypes = re.compile("^\s*//\s*#define\s+DISPLAY_TYPE\s+(\w+)")
 
 reHelpTextStart = re.compile("^\s*/\*\*\s+\\\\def\s+(.*)")
 reHelpTextEnd = re.compile("^\s*\*/")

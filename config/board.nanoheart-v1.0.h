@@ -261,3 +261,25 @@ DEFINE_HEATER(bed,      DIO3,    0,      1)
   USB-equipped ATmegas, like the ATmega32U4, only.
 */
 //#define USB_SERIAL
+
+/***************************************************************************\
+*                                                                           *
+* 6. DISPLAY SUPPORT                                                        *
+*                                                                           *
+\***************************************************************************/
+
+/** \def DISPLAY_BUS
+  Display buses a user should be able to choose from in configtool. All
+  commented out.
+*/
+//#define DISPLAY_BUS disabled
+//#define DISPLAY_BUS direct_4bit
+//#define DISPLAY_BUS direct_8bit
+//#define DISPLAY_BUS i2c_twi
+//#define DISPLAY_BUS spi
+
+/** \def DISPLAY_TYPE
+  The type of display.
+*/
+//#define DISPLAY_TYPE ssd1306
+//#define DISPLAY_TYPE lcd1602
