@@ -249,3 +249,29 @@
   USB-equipped ATmegas, like the ATmega32U4, only.
 */
 #define USB_SERIAL
+
+/***************************************************************************\
+*                                                                           *
+* 6. DISPLAY SUPPORT                                                        *
+*                                                                           *
+\***************************************************************************/
+
+/** \def DISPLAY_BUS
+  Display buses a user should be able to choose from in configtool. All
+  commented out.
+*/
+//#define DISPLAY_BUS_OPTS disabled
+//#define DISPLAY_BUS_OPTS direct_4bit
+//#define DISPLAY_BUS_OPTS direct_8bit
+//#define DISPLAY_BUS_OPTS i2c_twi
+//#define DISPLAY_BUS_OPTS spi
+
+#define DISPLAY_BUS disabled
+
+/** \def DISPLAY_TYPE
+  The type of display.
+*/
+//#define DISPLAY_TYPE_OPTS ssd1306
+//#define DISPLAY_TYPE_OPTS lcd1602
+
+#define DISPLAY_TYPE ssd1306
