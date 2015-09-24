@@ -61,7 +61,7 @@ class PinoutsPage(wx.Panel, Page):
                    'STEPPER_ENABLE_PIN': "Stepper Enable Pin:",
                    'STEPPER_INVERT_ENABLE': "Stepper Invert Enable",
 
-                   'SD_CARD_SELECT_PIN': "SD Card Pin:",
+                   'SD_CARD_SELECT_PIN': "SD Card Select Pin:",
                    'DEBUG_LED_PIN': "Debug LED Pin:"}
 
     labelWidth = 120
