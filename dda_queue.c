@@ -35,6 +35,9 @@ uint8_t	mb_tail = 0;
 /// The size does not need to be a power of 2 anymore!
 DDA BSS movebuffer[MOVEBUFFER_SIZE];
 
+/// Find the next DDA index after 'x', where 0 <= x < MOVEBUFFER_SIZE
+#define MB_NEXT(x) ((x) < MOVEBUFFER_SIZE - 1 ? (x) + 1 : 0)
+
 /// check if the queue is completely full
 uint8_t queue_full() {
 	MEMORY_BARRIER();
