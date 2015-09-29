@@ -1,6 +1,8 @@
 #ifndef	_I2C_BUS_H
 #define	_I2C_BUS_H
 
+#include	<stdint.h>
+
 // uncomment if we act as slave device
 // #define I2C_SLAVE_MODE
 // uncomment if we act as master device

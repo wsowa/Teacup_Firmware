@@ -44,7 +44,15 @@
 #include	"intercom.h"
 #include "spi.h"
 
-#include "displays/config.h"
+#define DISPLAY_BUS_DISABLED   0
+#define DISPLAY_BUS_DIRECT4BIT 1
+#define DISPLAY_BUS_DIRECT8BIT 2
+#define DISPLAY_BUS_I2CTWI     3
+#define DISPLAY_BUS_SPI        4
+#define DISPLAY_TYPE_SSD1306   1
+#define DISPLAY_TYPE_LCD1602   2
+
+#include "display_config.h"
 #include "sd.h"
 #include "simulator.h"
 

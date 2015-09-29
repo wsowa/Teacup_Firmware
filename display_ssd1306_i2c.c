@@ -1,4 +1,5 @@
-#include "displays/ssd1306_i2c.h"
+#include "i2c_bus.h"
+#include "display_ssd1306_i2c.h"
 
 
 void display_init(void) {

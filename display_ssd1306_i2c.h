@@ -3,7 +3,7 @@
 
 #include	<stdint.h>
 
-#include	"../config_wrapper.h"
+#include	"config_wrapper.h"
 
 
 #define DISPLAY_LINES              4
