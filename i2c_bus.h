@@ -1,8 +1,12 @@
 #ifndef	_I2C_BUS_H
 #define	_I2C_BUS_H
 
-#define I2C_SLAVE_MODE          0
-// define I2C_EEPROM_SUPPORT
+// uncomment if we act as slave device
+// #define I2C_SLAVE_MODE
+// uncomment if we act as master device
+#define I2C_MASTER_MODE
+// uncomment if we use EEPROM chips
+// #define I2C_EEPROM_SUPPORT
 
 #define I2C_PORT                PORTC
 #define I2C_DDR		        DDRC
@@ -16,7 +20,7 @@
 #define I2C_PAGE_ADDRESS_SIZE	2 // depends on EEPROM type, usually it is 1 or 2 bytes
 #endif /* I2C_EEPROM_SUPPORT */
 
-#if 1 == I2C_SLAVE_MODE
+#ifdef I2C_SLAVE_MODE
 #define I2C_SLAVE_RX_BUFFER_SIZE 1
 #define I2C_SLAVE_TX_BUFFER_SIZE 1
 #endif /* I2C_SLAVE_MODE */
@@ -51,7 +55,7 @@
 #define I2C_STATE_SLAW_LP               0x68
 #define I2C_STATE_SLAW_LP_ANY           0x78
 
-#if 1 == I2C_SLAVE_MODE
+#ifdef I2C_SLAVE_MODE
 #define I2C_STATE_SLAW                  0x60
 #define I2C_STATE_SLAW_ANY              0x70
 #define I2C_STATE_RCV_BYTE              0x80
@@ -66,29 +70,31 @@
 #define I2C_STATE_SND_LAST_BYTE_ACK     0xC0
 #endif /* I2C_SLAVE_MODE */
 
-#define MACRO_I2C_ERROR         (i2c_error_func)()
-#if 1 == I2C_SLAVE_MODE
-#define MACRO_I2C_SLAVE         (i2c_slave_func)()
-#else
-#define MACRO_I2C_MASTER        (i2c_master_func)()
-#endif /* I2C_SLAVE_MODE */
-
 
 typedef void (*I2C_HANDLER)(void);
 
 extern I2C_HANDLER i2c_error_func;
-#if 1 == I2C_SLAVE_MODE
-extern I2C_HANDLER i2c_slave_func;
-#else
+#ifdef I2C_MASTER_MODE
 extern I2C_HANDLER i2c_master_func;
+#endif /* I2C_MASTER_MODE */
+#ifdef I2C_SLAVE_MODE
+extern I2C_HANDLER i2c_slave_func;
 #endif /* I2C_SLAVE_MODE */
 
+#define MACRO_I2C_ERROR         (i2c_error_func)()
+#ifdef I2C_MASTER_MODE
+#define MACRO_I2C_MASTER        (i2c_master_func)()
+#endif /* I2C_MASTER_MODE */
+#ifdef I2C_SLAVE_MODE
+#define MACRO_I2C_SLAVE         (i2c_slave_func)()
+#endif /* I2C_SLAVE_MODE */
 
-#if 1 == I2C_SLAVE_MODE
+typedef enum {I2C_MASTER, I2C_SLACE} I2C_MODE_T;
+
 void i2c_bus_init(uint8_t address, I2C_HANDLER func);
-#else
-void i2c_bus_init(void);
-#endif /* I2C_SLAVE_MODE */
+void i2c_mode_set(I2C_MODE_T mode);
+void i2c_send_to(uint8_t address);
+void i2c_do_nothing(void);
 
 
 #endif	/* _I2C_BUS_H */

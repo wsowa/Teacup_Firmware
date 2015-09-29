@@ -256,22 +256,30 @@
 *                                                                           *
 \***************************************************************************/
 
+#define DISPLAY_BUS_DISABLED   0
+#define DISPLAY_BUS_DIRECT4BIT 1
+#define DISPLAY_BUS_DIRECT8BIT 2
+#define DISPLAY_BUS_I2CTWI     3
+#define DISPLAY_BUS_SPI        4
+#define DISPLAY_TYPE_SSD1306   1
+#define DISPLAY_TYPE_LCD1602   2
+
 /** \def DISPLAY_BUS
   Display buses a user should be able to choose from in configtool. All
   commented out.
 */
-//#define DISPLAY_BUS_OPTS disabled
-//#define DISPLAY_BUS_OPTS direct_4bit
-//#define DISPLAY_BUS_OPTS direct_8bit
-//#define DISPLAY_BUS_OPTS i2c_twi
-//#define DISPLAY_BUS_OPTS spi
+//#define DISPLAY_BUS_OPTS DISPLAY_BUS_DISABLED
+//#define DISPLAY_BUS_OPTS DISPLAY_BUS_DIRECT4BIT
+//#define DISPLAY_BUS_OPTS DISPLAY_BUS_DIRECT8BIT
+//#define DISPLAY_BUS_OPTS DISPLAY_BUS_I2CTWI
+//#define DISPLAY_BUS_OPTS DISPLAY_BUS_SPI
 
-#define DISPLAY_BUS disabled
+#define DISPLAY_BUS DISPLAY_BUS_DISABLED
 
 /** \def DISPLAY_TYPE
   The type of display.
 */
-//#define DISPLAY_TYPE_OPTS ssd1306
-//#define DISPLAY_TYPE_OPTS lcd1602
+//#define DISPLAY_TYPE_OPTS DISPLAY_TYPE_SSD1306
+//#define DISPLAY_TYPE_OPTS DISPLAY_TYPE_LCD1602
 
-#define DISPLAY_TYPE ssd1306
+#define DISPLAY_TYPE DISPLAY_TYPE_SSD1306

@@ -43,7 +43,8 @@
 #include	"clock.h"
 #include	"intercom.h"
 #include "spi.h"
-#include "i2c_bus.h"
+
+#include "displays/config.h"
 #include "sd.h"
 #include "simulator.h"
 
@@ -71,53 +72,56 @@ void init(void) {
 
   cpu_init();
 
-	// set up watchdog
-	wd_init();
+  // set up watchdog
+  wd_init();
 
-	// set up serial
-	serial_init();
+  // set up serial
+  serial_init();
 
-	// set up G-code parsing
-	gcode_init();
+  // set up G-code parsing
+  gcode_init();
 
-	// set up inputs and outputs
+  // set up inputs and outputs
   pinio_init();
 
-  #ifdef SPI
-    spi_init();
-  #endif
+#ifdef SPI
+  spi_init();
+#endif
 
-	// set up timers
-	timer_init();
+#if DISPLAY_BUS != DISPLAY_BUS_DISABLED
+  display_init();
+#endif
 
-	heater_init();
+  // set up timers
+  timer_init();
 
-	// set up dda
-	dda_init();
+  heater_init();
 
-	// start up analog read interrupt loop,
-	// if any of the temp sensors in your config.h use analog interface
-	analog_init();
+  // set up dda
+  dda_init();
 
-	// set up temperature inputs
-	temp_init();
+  // start up analog read interrupt loop,
+  // if any of the temp sensors in your config.h use analog interface
+  analog_init();
+
+  // set up temperature inputs
+  temp_init();
 
   #ifdef SD
-    sd_init();
+  sd_init();
   #endif
 
-	// enable interrupts
-	sei();
+  // enable interrupts
+  sei();
 
-	// reset watchdog
-	wd_reset();
+  // reset watchdog
+  wd_reset();
 
   // prepare the power supply
   power_init();
 
-	// say hi to host
-	serial_writestr_P(PSTR("start\nok\n"));
-
+  // say hi to host
+  serial_writestr_P(PSTR("start\nok\n"));
 }
 
 /// this is where it all starts, and ends
@@ -134,7 +138,6 @@ int main (void)
   uint8_t c, line_done, ack_waiting = 0;
 
 	init();
-        i2c_bus_init();
 
 	// main loop
 	for (;;)

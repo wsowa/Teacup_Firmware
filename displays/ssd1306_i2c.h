@@ -3,20 +3,15 @@
 
 #include	<stdint.h>
 
-#include	"config_wrapper.h"
+#include	"../config_wrapper.h"
 
 
-typedef enum {
-  LCD1602I2C,
-  OLED128X32I2C
-} DISPLAY_TYPE_T;
-
-
-#define DISPLAY_TYPE      OLED128X32
 #define DISPLAY_LINES              4
 #define DISPLAY_SYMBOLS_PER_LINE  16
 #define HOTENDS_COUNT              1
 #define HOTBED_ZONES               1
+
+#define DISPLAY_I2C_ADDRESS        0x3C
 
 #define DISPLAY_PLACE_HOTEND       0, 0, 8
 #define DISPLAY_PLACE_HOTBED       0, 8, 8
