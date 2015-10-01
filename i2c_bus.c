@@ -14,7 +14,7 @@ uint8_t i2c_index; // an index inside the buffer
 uint8_t i2c_byte_count; // the count of bytes it should send
 
 #ifdef I2C_MASTER_MODE
-uint8_t i2c_buffer[I2C_BUFFER_SIZE];
+uint8_t* i2c_buffer;
 #endif /* I2C_MASTER_MODE */
 
 #ifdef I2C_SLAVE_MODE
@@ -36,6 +36,9 @@ I2C_HANDLER i2c_master_func = &i2c_do_nothing;
 #ifdef I2C_SLAVE_MODE
 I2C_HANDLER i2c_slave_func = &i2c_do_nothing;
 #endif /* I2C_SLAVE_MODE */
+
+
+void i2c_send_to_handler(void);
 
 
 void i2c_bus_init(uint8_t address, I2C_HANDLER func) {
@@ -71,6 +74,33 @@ void i2c_bus_init(uint8_t address, I2C_HANDLER func) {
 
 void i2c_mode_set(I2C_MODE_T mode) {
   i2c_current_mode = mode;
+}
+
+
+/**
+ * Function sends a data block to slave device.
+ */
+void i2c_send_to(uint8_t address, uint8_t* block, uint8_t tx_len) {
+  i2c_address = address;
+  i2c_buffer = block;
+  i2c_index = 0;
+  i2c_byte_count = tx_len;
+
+  i2c_send_to_handler();
+}
+
+void i2c_send_to_handler(void) {
+  if (i2c_state & I2C_MODE_BUSY) {
+    // not now
+    return;
+  }
+
+  i2c_state = I2C_MODE_SARP; // just sent
+  i2c_master_func = &i2c_send_to_handler;
+  i2c_error_func = &i2c_send_to_handler;
+
+  TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
+  i2c_state |= I2C_MODE_BUSY;
 }
 
 
