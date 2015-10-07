@@ -22,6 +22,6 @@ void display_init(void) {
     0xAF //display on
   };
 
-  i2c_bus_init(DISPLAY_I2C_ADDRESS, i2c_do_nothing);
+  i2c_bus_init(DISPLAY_I2C_ADDRESS);
   i2c_send_to(DISPLAY_I2C_ADDRESS, commands, sizeof(commands));
 }

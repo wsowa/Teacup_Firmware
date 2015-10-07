@@ -16,6 +16,9 @@
 #ifdef TEMP_INTERCOM
 #include "intercom.h"
 #endif
+#if DISPLAY_BUS == DISPLAY_BUS_I2CTWI
+#include "i2c_bus.h"
+#endif
 #include "memory_barrier.h"
 
 /**
@@ -110,6 +113,11 @@ static void clock_250ms(void) {
   }
 #ifdef TEMP_INTERCOM
   start_send();
+#endif
+
+#if DISPLAY_BUS == DISPLAY_BUS_I2CTWI
+  // start the transmission if there are messages in i2c queue
+  i2c_send_handler();
 #endif
 }
 

@@ -93,9 +93,18 @@ extern I2C_HANDLER i2c_slave_func;
 
 typedef enum {I2C_MASTER, I2C_SLACE} I2C_MODE_T;
 
-void i2c_bus_init(uint8_t address, I2C_HANDLER func);
+typedef struct {
+  uint8_t address; // an address of a slace device
+  uint8_t* data; // a data to be sent
+  uint8_t size; // no more 256 bytes in a packet
+  uint8_t index; // current position
+} I2C_MSG_T;
+
+
+void i2c_bus_init(uint8_t address);
 void i2c_mode_set(I2C_MODE_T mode);
 void i2c_send_to(uint8_t address, uint8_t* block, uint8_t tx_len);
+void i2c_send_handler(void);
 void i2c_do_nothing(void);
 
 

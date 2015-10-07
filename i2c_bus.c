@@ -7,6 +7,15 @@
  * See section 22 of atmega328 datasheet.
  */
 
+// the queue for a message to be sent
+#define I2C_QUEUE_SIZE 8
+// find the next message index after 'x', where 0 <= x < I2C_QUEUE_SIZE
+#define I2CQ_NEXT(x) ((x) < I2C_QUEUE_SIZE-1 ? (x)+1 : 0)
+
+I2C_MSG_T i2c_queue[I2C_QUEUE_SIZE];
+uint8_t i2c_queue_head = 0;
+uint8_t i2c_queue_tail = 0;
+
 uint8_t i2c_current_mode = I2C_MASTER;
 uint8_t i2c_address; // the address of a device that is used in communication process
 uint8_t i2c_state; // the state if TWI component of MCU
@@ -38,17 +47,13 @@ I2C_HANDLER i2c_slave_func = &i2c_do_nothing;
 #endif /* I2C_SLAVE_MODE */
 
 
-void i2c_send_to_handler(void);
-
-
-void i2c_bus_init(uint8_t address, I2C_HANDLER func) {
+void i2c_bus_init(uint8_t address) {
   i2c_address = address;
 #ifdef I2C_MASTER_MODE
  #ifdef I2C_ENABLE_PULLUPS
   I2C_PORT |= (1 << I2C_SCL_PIN) | (1 << I2C_SDA_PIN);
   I2C_DDR &= ~((1 << I2C_SCL_PIN) | (1 << I2C_SDA_PIN));
  #endif /* I2C_ENABLE_PULLUPS */
-  i2c_master_func = func;
 
   /**
    * TWI Bit Rate Register
@@ -65,7 +70,6 @@ void i2c_bus_init(uint8_t address, I2C_HANDLER func) {
 #endif /* I2C_MASTER_MODE */
 
 #ifdef I2C_SLAVE_MODE
-  i2c_slave_func = func;
   TWAR = i2c_address; // we listen to broadcasts if lowest bit is set
   TWCR = (0<<TWINT)|(0<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
 #endif
@@ -78,27 +82,41 @@ void i2c_mode_set(I2C_MODE_T mode) {
 
 
 /**
- * Function sends a data block to slave device.
+ * Function places a data for slave device in the queue.
  */
 void i2c_send_to(uint8_t address, uint8_t* block, uint8_t tx_len) {
-  i2c_address = address;
-  i2c_buffer = block;
-  i2c_index = 0;
-  i2c_byte_count = tx_len;
-
-  i2c_send_to_handler();
+  I2C_MSG_T message = {address, block, tx_len, 0};
+  uint8_t index = I2CQ_NEXT(i2c_queue_head);
+  i2c_queue[index] = message;
 }
 
-void i2c_send_to_handler(void) {
+
+/**
+ * This function is used to start I2C transmission, also it is
+ * involved into end and error event handling.
+ */
+void i2c_send_handler(void) {
   if (i2c_state & I2C_MODE_BUSY) {
-    // not now
+    // not now coz it's busy
     return;
   }
 
-  i2c_state = I2C_MODE_SARP; // just sent
-  i2c_master_func = &i2c_send_to_handler;
-  i2c_error_func = &i2c_send_to_handler;
+  uint8_t index = I2CQ_NEXT(i2c_queue_tail);
+  I2C_MSG_T message = i2c_queue[index];
 
+  /**
+   * TODO: TWI interrupt handler should directly work with I2C_MST_T queue.
+   */
+  i2c_address = message.address;
+  i2c_buffer = message.data;
+  i2c_byte_count = message.size;
+  i2c_index = message.index;
+
+  i2c_state = I2C_MODE_SARP; // just sent
+  i2c_master_func = &i2c_send_handler;
+  i2c_error_func = &i2c_send_handler;
+
+  // start I2C transmission
   TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
   i2c_state |= I2C_MODE_BUSY;
 }
