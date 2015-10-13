@@ -1,47 +1,47 @@
 /** \file
-	\brief Main file - this is where it all starts, and ends
+  \brief Main file - this is where it all starts, and ends
 */
 
 /** \mainpage Teacup Reprap Firmware
-	\section intro_sec Introduction
-		Teacup Reprap Firmware (originally named FiveD on Arduino) is a firmware package for numerous reprap electronics sets.
+  \section intro_sec Introduction
+    Teacup Reprap Firmware (originally named FiveD on Arduino) is a firmware package for numerous reprap electronics sets.
 
-		Please see README for a full introduction and long-winded waffle about this project
-	\section install_sec	Installation
-		\subsection step1 Step 1: Download
-			\code git clone git://github.com/traumflug/Teacup_Firmware \endcode
-		\subsection step2 Step 2: configure
-			\code cp config.[yourboardhere].h config.h \endcode
-			Edit config.h to suit your machone
-			Edit Makefile to select the correct chip and programming settings
-		\subsection step3 Step 3: Compile
-			\code make \endcode
-			\code make program \endcode
-		\subsection step4 Step 4: Test!
-			\code ./func.sh mendel_reset
-			./func.sh mendel_talk
-			M115
-			ctrl+d \endcode
+  Please see README for a full introduction and long-winded waffle about this project
+  \section install_sec  Installation
+    \subsection step1 Step 1: Download
+      \code git clone git://github.com/traumflug/Teacup_Firmware \endcode
+    \subsection step2 Step 2: configure
+      \code cp config.[yourboardhere].h config.h \endcode
+      Edit config.h to suit your machone
+      Edit Makefile to select the correct chip and programming settings
+    \subsection step3 Step 3: Compile
+      \code make \endcode
+      \code make program \endcode
+    \subsection step4 Step 4: Test!
+      \code ./func.sh mendel_reset
+      ./func.sh mendel_talk
+      M115
+      ctrl+d \endcode
 */
 
 #ifdef __AVR__
-#include	<avr/interrupt.h>
+#include <avr/interrupt.h>
 #endif
 
-#include	"config_wrapper.h"
+#include "config_wrapper.h"
 #include "cpu.h"
-#include	"serial.h"
-#include	"dda_queue.h"
-#include	"gcode_parse.h"
-#include	"timer.h"
-#include	"temp.h"
-#include	"watchdog.h"
-#include	"debug.h"
-#include	"heater.h"
-#include	"analog.h"
-#include	"pinio.h"
-#include	"clock.h"
-#include	"intercom.h"
+#include "serial.h"
+#include "dda_queue.h"
+#include "gcode_parse.h"
+#include "timer.h"
+#include "temp.h"
+#include "watchdog.h"
+#include "debug.h"
+#include "heater.h"
+#include "analog.h"
+#include "pinio.h"
+#include "clock.h"
+#include "intercom.h"
 #include "spi.h"
 
 #define DISPLAY_BUS_DISABLED   0
@@ -152,12 +152,12 @@ int main (void)
 #endif
   uint8_t c, line_done, ack_waiting = 0;
 
-	init();
+  init();
 
-	// main loop
-	for (;;)
-	{
-		// if queue is full, no point in reading chars- host will just have to wait
+  // main loop
+  for (;;)
+  {
+    // if queue is full, no point in reading chars- host will just have to wait
     if (queue_full() == 0) {
       /**
         Postpone sending acknowledgement until there's a free slot in the
@@ -223,8 +223,8 @@ int main (void)
           canned_gcode_pos = 0;
 
       #endif /* CANNED_CYCLE */
-		}
+    }
 
-		clock();
-	}
+    clock();
+  }
 }
