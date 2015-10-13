@@ -1,9 +1,15 @@
+#include <string.h>
 #include "i2c_bus.h"
+#include "font_8x4.h"
 #include "display_ssd1306_i2c.h"
 
 
+/**
+ * Initializes the display's controller configuring the way of
+ * displaying data.
+ */
 void display_init(void) {
-  uint8_t commands[] = {
+  uint8_t block[] = {
     0x00, // command marker
     0xAE, // display off
     0xD5, 0x80, // display clock divider (reset)
@@ -23,5 +29,31 @@ void display_init(void) {
   };
 
   i2c_bus_init(DISPLAY_I2C_ADDRESS);
-  i2c_send_to(DISPLAY_I2C_ADDRESS, commands, sizeof(commands));
+  i2c_send_to(DISPLAY_I2C_ADDRESS, block, sizeof(block));
+}
+
+
+/**
+ * Prints the text at a given position.
+ */
+void display_text(uint8_t page, uint8_t column, char* message) {
+  uint8_t block[128];
+  uint8_t* pointer = block + 1;
+
+  // setup cursor on display
+  block[0] = 0x00;
+  block[1] = 0xB0 | page;
+  block[2] = 0x00 | (column & 0x0F);
+  block[3] = 0x10 | ((column >> 4) & 0x0F);
+  i2c_send_to(DISPLAY_I2C_ADDRESS, block, 4);
+
+  //render text to bitmap
+  while (*message) {
+    SYMBOL symbol = font_8x4[((uint8_t) *message)-0x20];
+    memcpy(pointer, symbol.data, symbol.columns);
+    pointer += symbol.columns + FONT_SYMBOLS_SPACE;
+    message++;
+  }
+  block[0] = 0x40; // data marker
+  i2c_send_to(DISPLAY_I2C_ADDRESS, block, pointer-block);
 }
