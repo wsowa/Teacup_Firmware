@@ -96,17 +96,6 @@ void init(void) {
   spi_init();
 #endif
 
-#if DISPLAY_BUS != DISPLAY_BUS_DISABLED
-  display_init();
-  display_text(0, 0, "test");
-  display_text(1, 16, "test");
-  display_text(2, 32, "test");
-  display_text(4, 48, "test");
-  display_text(0, 64, "test");
-  display_text(1, 80, "test");
-  display_text(2, 96, "test");
-#endif
-
   // set up timers
   timer_init();
 
@@ -135,6 +124,10 @@ void init(void) {
   // prepare the power supply
   power_init();
 
+#if DISPLAY_BUS != DISPLAY_BUS_DISABLED
+  display_init();
+#endif
+
   // say hi to host
   serial_writestr_P(PSTR("start\nok\n"));
 }
@@ -153,6 +146,16 @@ int main (void)
   uint8_t c, line_done, ack_waiting = 0;
 
   init();
+
+#if DISPLAY_BUS != DISPLAY_BUS_DISABLED
+  /* display_text(0, 0, "test"); */
+  /* display_text(1, 16, "test"); */
+  /* display_text(2, 32, "test"); */
+  /* display_text(4, 48, "test"); */
+  /* display_text(0, 64, "test"); */
+  /* display_text(1, 80, "test"); */
+  /* display_text(2, 96, "test"); */
+#endif
 
   // main loop
   for (;;)

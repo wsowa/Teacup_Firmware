@@ -11,7 +11,7 @@
 #define HOTENDS_COUNT              1
 #define HOTBED_ZONES               1
 
-#define DISPLAY_I2C_ADDRESS        0x3C
+#define DISPLAY_I2C_ADDRESS        (0x3C << 1)
 
 #define DISPLAY_PLACE_HOTEND       0, 0, 8
 #define DISPLAY_PLACE_HOTBED       0, 8, 8

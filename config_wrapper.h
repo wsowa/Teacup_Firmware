@@ -42,6 +42,13 @@
 #endif
 
 /**
+  Check weither we need TWI.
+*/
+#ifdef DISPLAY_BUS_I2CTWI
+  #define TWI
+#endif
+
+/**
   ACCELERATION_TEMPORAL doesn't support lookahead, yet.
 */
 #if defined ACCELERATION_TEMPORAL && defined LOOKAHEAD

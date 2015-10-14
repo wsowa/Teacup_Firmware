@@ -60,7 +60,7 @@ void i2c_bus_init(uint8_t address) {
    * SCL_freq = CPU_freq / (16 + 2*TWBR * value)
    * See: page 235 of atmega328 datasheet.
    */
-  TWBR = 0x80;  //
+  TWBR = ((F_CPU / I2C_BITRATE) - 16) / 2;
   /**
    * TWI Status Register
    * Lower two bits set the prescaler value.
@@ -112,7 +112,7 @@ void i2c_send_handler(void) {
   i2c_byte_count = message.size;
   i2c_index = message.index;
 
-  i2c_state = I2C_MODE_SARP; // just sent
+  i2c_state = I2C_MODE_SAWP; // just sent
   i2c_master_func = &i2c_send_handler;
   i2c_error_func = &i2c_send_handler;
 

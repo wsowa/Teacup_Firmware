@@ -10,7 +10,6 @@
 #include <avr/io.h>
 #include "pinio.h"
 
-
 /** Initialise the CPU.
 
   This sets up the CPU the way we need it. It disables modules we don't use,
@@ -18,17 +17,25 @@
 */
 void cpu_init() {
   #ifdef PRR
+    #warning CPU init
     #if defined SPI
       PRR = MASK(PRTWI) | MASK(PRADC);
     #else
       PRR = MASK(PRTWI) | MASK(PRADC) | MASK(PRSPI);
     #endif
+
+    #warning "Enable TWI: Don't understand how to make it right here."
+    PRR &= ~(1<<PRTWI);
   #elif defined PRR0
-    #if defined SPI
+    #if (defined TWI || defined SPI)
+      PRR0 = MASK(PRADC)
+    #elif defined SPI
       PRR0 = MASK(PRTWI) | MASK(PRADC);
     #else
       PRR0 = MASK(PRTWI) | MASK(PRADC) | MASK(PRSPI);
     #endif
+    #warning "Enable TWI: Don't understand how to make it right here."
+    PRR0 &= ~(1<<PRTWI);
     #if defined(PRUSART3)
       // Don't use USART2 or USART3. Leave USART1 for GEN3 and derivatives.
       PRR1 |= MASK(PRUSART3) | MASK(PRUSART2);

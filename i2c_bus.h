@@ -1,7 +1,7 @@
-#ifndef	_I2C_BUS_H
-#define	_I2C_BUS_H
+#ifndef _I2C_BUS_H
+#define _I2C_BUS_H
 
-#include	<stdint.h>
+#include <stdint.h>
 
 // uncomment if we act as slave device
 // #define I2C_SLAVE_MODE
@@ -10,16 +10,17 @@
 // uncomment if we use EEPROM chips
 // #define I2C_EEPROM_SUPPORT
 
+#define I2C_BITRATE             100000
 #define I2C_PORT                PORTC
-#define I2C_DDR		        DDRC
+#define I2C_DDR                 DDRC
 
-#define I2C_SCL_PIN	        0
-#define I2C_SDA_PIN	        1
-#define I2C_ENABLE_PULLUPS      1
+#define I2C_SCL_PIN              0
+#define I2C_SDA_PIN              1
+#define I2C_ENABLE_PULLUPS       1
 
-#define I2C_BUFFER_SIZE	        4
+#define I2C_BUFFER_SIZE          4
 #ifdef I2C_EEPROM_SUPPORT
-#define I2C_PAGE_ADDRESS_SIZE	2 // depends on EEPROM type, usually it is 1 or 2 bytes
+#define I2C_PAGE_ADDRESS_SIZE  2 // depends on EEPROM type, usually it is 1 or 2 bytes
 #endif /* I2C_EEPROM_SUPPORT */
 
 #ifdef I2C_SLAVE_MODE
@@ -31,16 +32,16 @@
 #define I2C_MODE_SARP           0b00000000 // Start-Addr_R-Read-Stop: just read mode
 #define I2C_MODE_SAWP           0b00000100 // Start-Addr_W-Write-Stop: just write mode
 #define I2C_MODE_ENHA           0b00001000 // Start-Addr_W-WrPageAdr-rStart-Addr_R-Read-Stop
-#define I2C_MODE_BUSY		0b01000000 // Transponder is busy
-#define I2C_MODE_FREE		0b10111111 // Transponder is free
+#define I2C_MODE_BUSY           0b01000000 // Transponder is busy
+#define I2C_MODE_FREE           0b10111111 // Transponder is free
 
-#define I2C_INTERRUPTED		0b10000000	// Transmiting Interrupted
-#define I2C_NOINTERRUPTED 	0b01111111  	// Transmiting No Interrupted
+#define I2C_INTERRUPTED         0b10000000  // Transmiting Interrupted
+#define I2C_NOINTERRUPTED       0b01111111    // Transmiting No Interrupted
 
-#define I2C_ERROR_BUS_FAIL	0b00000001
+#define I2C_ERROR_BUS_FAIL      0b00000001
 #define I2C_ERROR_NACK          0b00000010
 #define I2C_ERROR_NO_ANSWER     0b00010000
-#define I2C_ERROR_LOW_PRIO	0b00100000
+#define I2C_ERROR_LOW_PRIO      0b00100000
 
 #define I2C_STATE_BUS_FAIL              0x00
 #define I2C_STATE_START                 0x08
@@ -108,4 +109,4 @@ void i2c_send_handler(void);
 void i2c_do_nothing(void);
 
 
-#endif	/* _I2C_BUS_H */
+#endif /* _I2C_BUS_H */
