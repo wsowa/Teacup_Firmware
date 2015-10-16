@@ -30,8 +30,11 @@ void display_init(void) {
   };
 
   i2c_bus_init(DISPLAY_I2C_ADDRESS);
+
+  sersendf_P(PSTR("\nD: display init\n"));
+  sersendf_P(PSTR("\nD: block %lx, tx_len %sd\n"), block, sizeof(block));
+
   i2c_send_to(DISPLAY_I2C_ADDRESS, block, sizeof(block));
-  sersendf_P(PSTR("D: display init\n"));
 }
 
 
@@ -47,8 +50,8 @@ void display_text(uint8_t page, uint8_t column, char* message) {
   block[1] = 0xB0 | page;
   block[2] = 0x00 | (column & 0x0F);
   block[3] = 0x10 | ((column >> 4) & 0x0F);
+  sersendf_P(PSTR("\nD: cursor set\n"));
   i2c_send_to(DISPLAY_I2C_ADDRESS, block, 4);
-  sersendf_P(PSTR("D: cursor set\n"));
 
   //render text to bitmap
   while (*message) {
@@ -58,6 +61,6 @@ void display_text(uint8_t page, uint8_t column, char* message) {
     message++;
   }
   block[0] = 0x40; // data marker
+  sersendf_P(PSTR("\nD: text print, %s\n"), message);
   i2c_send_to(DISPLAY_I2C_ADDRESS, block, pointer-block);
-  sersendf_P(PSTR("D: text print, %s\n"), message);
 }

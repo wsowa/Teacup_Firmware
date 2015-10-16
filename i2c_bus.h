@@ -104,7 +104,7 @@ typedef struct {
 
 void i2c_bus_init(uint8_t address);
 void i2c_mode_set(I2C_MODE_T mode);
-void i2c_send_to(uint8_t address, uint8_t* block, uint8_t tx_len);
+void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len);
 void i2c_send_handler(void);
 void i2c_do_nothing(void);
 

@@ -1,11 +1,14 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "sersendf.h"
 #include "i2c_bus.h"
 
 /**
  * I2C bus implementation.
  * See section 22 of atmega328 datasheet.
  */
+
+#define TWI_DEBUG
 
 // the queue for a message to be sent
 #define I2C_QUEUE_SIZE 8
@@ -57,7 +60,7 @@ void i2c_bus_init(uint8_t address) {
 
   /**
    * TWI Bit Rate Register
-   * SCL_freq = CPU_freq / (16 + 2*TWBR * value)
+   * SCL_freq = CPU_freq / (16 + 2*TWBR)
    * See: page 235 of atmega328 datasheet.
    */
   TWBR = ((F_CPU / I2C_BITRATE) - 16) / 2;
@@ -84,16 +87,23 @@ void i2c_mode_set(I2C_MODE_T mode) {
 /**
  * Function places a data for slave device in the queue.
  */
-void i2c_send_to(uint8_t address, uint8_t* block, uint8_t tx_len) {
+void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len) {
   I2C_MSG_T message = {address, block, tx_len, 0};
   uint8_t index = I2CQ_NEXT(i2c_queue_head);
   i2c_queue[index] = message;
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\nI2C_sender[%sx]: block %lx, sizeof %sd, block[%sx, %sx, %sx, %sx]\n"),
+             address, block, tx_len, block[0], block[1], block[2], block[3]);
+  sersendf_P(PSTR("\nI2C_sender[%sx]: message index is %sd, head is %sd, tail is %sd\n"),
+             index, i2c_queue_head, i2c_queue_tail);
+#endif
 }
 
 
 /**
  * This function is used to start I2C transmission, also it is
  * involved into end and error event handling.
+ * It is triggered from clock.c:clock_250ms.
  */
 void i2c_send_handler(void) {
   if (i2c_state & I2C_MODE_BUSY) {
@@ -116,6 +126,13 @@ void i2c_send_handler(void) {
   i2c_master_func = &i2c_send_handler;
   i2c_error_func = &i2c_send_handler;
 
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\nI2C_handler[%sx]: start transmission of message with index %sd, head is %sd, tail is %sd\n"),
+             index, i2c_queue_head, i2c_queue_tail);
+  sersendf_P(PSTR("\nI2C_handler[%sx]: block[%sx, %sx, %sx, %sx], address %lx, lenght %sd\n"),
+             message.address, message.data[0], message.data[1], message.data[2],
+             message.data[3], message.data, message.size);
+#endif
   // start I2C transmission
   TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
   i2c_state |= I2C_MODE_BUSY;
