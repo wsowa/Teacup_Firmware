@@ -10,7 +10,7 @@
  * displaying data.
  */
 void display_init(void) {
-  uint8_t block[] = {
+  static const uint8_t block[] = {
     0x00, // command marker
     0xAE, // display off
     0xD5, 0x80, // display clock divider (reset)
@@ -30,11 +30,8 @@ void display_init(void) {
   };
 
   i2c_bus_init(DISPLAY_I2C_ADDRESS);
-
-  sersendf_P(PSTR("\nD: display init\n"));
-  sersendf_P(PSTR("\nD: block %lx, tx_len %sd\n"), block, sizeof(block));
-
-  i2c_send_to(DISPLAY_I2C_ADDRESS, block, sizeof(block));
+  i2c_send_to(DISPLAY_I2C_ADDRESS, (uint8_t*) block, sizeof(block));
+  sersendf_P(PSTR("\nDEBUG: display init\n"));
 }
 
 
