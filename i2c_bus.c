@@ -89,13 +89,12 @@ void i2c_mode_set(I2C_MODE_T mode) {
  */
 void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len) {
   I2C_MSG_T message = {address, block, tx_len, 0};
-  uint8_t index = I2CQ_NEXT(i2c_queue_head);
-  i2c_queue[index] = message;
+  uint8_t i2c_queue_head = I2CQ_NEXT(i2c_queue_head);
+  i2c_queue[i2c_queue_head] = message;
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\nI2C_sender[%sx]: block %lx, sizeof %su, block[%sx, %sx, %sx, %sx]\n"),
-             address, block, tx_len, block[0], block[1], block[2], block[3]);
-  sersendf_P(PSTR("\nI2C_sender[%sx]: message index is %su, head is %su, tail is %su\n"),
-             address, index, i2c_queue_head, i2c_queue_tail);
+  sersendf_P(PSTR("\ni2c_send_to[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, index %su, head %su, tail %su"),
+             address, block, block[0], block[1], block[2], block[3],
+             (uint16_t) tx_len, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
 #endif
 }
 
@@ -111,8 +110,8 @@ void i2c_send_handler(void) {
     return;
   }
 
-  uint8_t index = I2CQ_NEXT(i2c_queue_tail);
-  I2C_MSG_T message = i2c_queue[index];
+  uint8_t i2c_queue_tail = I2CQ_NEXT(i2c_queue_tail);
+  I2C_MSG_T message = i2c_queue[i2c_queue_tail];
 
   /**
    * TODO: TWI interrupt handler should directly work with I2C_MST_T queue.
@@ -127,11 +126,9 @@ void i2c_send_handler(void) {
   i2c_error_func = &i2c_send_handler;
 
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\nI2C_handler[%sx]: start transmission of message with index %sd, head is %sd, tail is %sd\n"),
-             message.address, index, i2c_queue_head, i2c_queue_tail);
-  sersendf_P(PSTR("\nI2C_handler[%sx]: block[%sx, %sx, %sx, %sx], address %lx, lenght %sd\n"),
-             message.address, message.data[0], message.data[1], message.data[2],
-             message.data[3], message.data, message.size);
+  sersendf_P(PSTR("\ni2c_send_hanlder[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, index %su, head %su, tail %su"),
+             message.address, message.data, message.data[0], message.data[1], message.data[2], message.data[3],
+             (uint16_t) message.size, (uint16_t) i2c_queue_tail, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
 #endif
   // start I2C transmission
   TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);

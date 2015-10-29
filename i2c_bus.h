@@ -10,9 +10,9 @@
 // uncomment if we use EEPROM chips
 // #define I2C_EEPROM_SUPPORT
 
-#define I2C_BITRATE             100000
-#define I2C_PORT                PORTC
-#define I2C_DDR                 DDRC
+#define I2C_BITRATE              100000
+#define I2C_PORT                 PORTC
+#define I2C_DDR                  DDRC
 
 #define I2C_SCL_PIN              0
 #define I2C_SDA_PIN              1
@@ -20,7 +20,7 @@
 
 #define I2C_BUFFER_SIZE          4
 #ifdef I2C_EEPROM_SUPPORT
-#define I2C_PAGE_ADDRESS_SIZE  2 // depends on EEPROM type, usually it is 1 or 2 bytes
+#define I2C_PAGE_ADDRESS_SIZE    2 // depends on EEPROM type, usually it is 1 or 2 bytes
 #endif /* I2C_EEPROM_SUPPORT */
 
 #ifdef I2C_SLAVE_MODE
@@ -95,7 +95,7 @@ extern I2C_HANDLER i2c_slave_func;
 typedef enum {I2C_MASTER, I2C_SLACE} I2C_MODE_T;
 
 typedef struct {
-  uint8_t address; // an address of a slace device
+  uint8_t address; // an address of a slave device
   uint8_t* data; // a data to be sent
   uint8_t size; // no more 256 bytes in a packet
   uint8_t index; // current position
