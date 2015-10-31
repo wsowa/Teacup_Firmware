@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "sersendf.h"
+#include "memory_barrier.h"
 #include "i2c_bus.h"
 
 /**
@@ -16,8 +17,9 @@
 #define I2CQ_NEXT(x) ((x) < I2C_QUEUE_SIZE-1 ? (x)+1 : 0)
 
 I2C_MSG_T i2c_queue[I2C_QUEUE_SIZE];
-uint8_t i2c_queue_head = 0;
-uint8_t i2c_queue_tail = 0;
+uint16_t i2c_queue_head = 0;
+uint16_t i2c_queue_tail = 0;
+uint16_t dummy_counter = 0;
 
 uint8_t i2c_current_mode = I2C_MASTER;
 uint8_t i2c_address; // the address of a device that is used in communication process
@@ -48,6 +50,27 @@ I2C_HANDLER i2c_master_func = &i2c_do_nothing;
 #ifdef I2C_SLAVE_MODE
 I2C_HANDLER i2c_slave_func = &i2c_do_nothing;
 #endif /* I2C_SLAVE_MODE */
+
+uint8_t i2c_queue_full(void);
+uint8_t i2c_queue_empty(void);
+
+/// check if the queue is completely full
+uint8_t i2c_queue_full(void) {
+  MEMORY_BARRIER();
+  return I2CQ_NEXT(i2c_queue_head) == i2c_queue_tail;
+}
+
+
+/// check if the queue is completely empty
+uint8_t i2c_queue_empty(void) {
+  uint8_t result;
+
+  ATOMIC_START;
+  result = (i2c_queue_tail == i2c_queue_head);
+  ATOMIC_END;
+
+  return result;
+}
 
 
 void i2c_bus_init(uint8_t address) {
@@ -89,12 +112,22 @@ void i2c_mode_set(I2C_MODE_T mode) {
  */
 void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len) {
   I2C_MSG_T message = {address, block, tx_len, 0};
-  uint8_t i2c_queue_head = I2CQ_NEXT(i2c_queue_head);
   i2c_queue[i2c_queue_head] = message;
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\ni2c_send_to[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, index %su, head %su, tail %su"),
+  sersendf_P(PSTR("\ni2c_send_to[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, head %su, tail %su"),
              address, block, block[0], block[1], block[2], block[3],
-             (uint16_t) tx_len, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
+             (uint16_t) tx_len, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
+#endif
+
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npre state for i2c_send_to: head: %su, tail: %su, dummy: %su"),
+             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
+#endif
+  i2c_queue_head = I2CQ_NEXT(i2c_queue_head);
+  dummy_counter++;
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npost state for i2c_send_to: head: %su, tail: %su, dummy: %su"),
+             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
 #endif
 }
 
@@ -110,7 +143,10 @@ void i2c_send_handler(void) {
     return;
   }
 
-  uint8_t i2c_queue_tail = I2CQ_NEXT(i2c_queue_tail);
+  if (i2c_queue_empty()) {
+    return;
+  }
+
   I2C_MSG_T message = i2c_queue[i2c_queue_tail];
 
   /**
@@ -126,13 +162,24 @@ void i2c_send_handler(void) {
   i2c_error_func = &i2c_send_handler;
 
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\ni2c_send_hanlder[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, index %su, head %su, tail %su"),
+  sersendf_P(PSTR("\ni2c_send_hanlder[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, head %su, tail %su"),
              message.address, message.data, message.data[0], message.data[1], message.data[2], message.data[3],
-             (uint16_t) message.size, (uint16_t) i2c_queue_tail, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
+             (uint16_t) message.size, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
 #endif
   // start I2C transmission
   TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
   i2c_state |= I2C_MODE_BUSY;
+
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npre state for i2c_send_handler: head: %su, tail: %su, dummy: %su"),
+             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
+#endif
+  i2c_queue_tail = I2CQ_NEXT(i2c_queue_tail);
+  dummy_counter++;
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npost state for i2c_send_handler: head: %su, tail: %su, dummy: %su"),
+             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
+#endif
 }
 
 
@@ -215,6 +262,7 @@ ISR(TWI_vect) {
       if (i2c_index == i2c_byte_count) { // last byte
         // send stop
         TWCR = (1<<TWINT)|(i2c_current_mode<<TWEA)|(0<<TWSTA)|(1<<TWSTO)|(1<<TWEN)|(1<<TWIE);
+        i2c_state &= I2C_MODE_FREE; // free the bus
         MACRO_I2C_MASTER; // process stop state
       } else {
         TWDR = i2c_buffer[i2c_index++]; // send the next byte

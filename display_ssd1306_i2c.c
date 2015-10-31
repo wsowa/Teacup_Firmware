@@ -48,7 +48,7 @@ void display_text(uint8_t page, uint8_t column, char* message) {
   block[2] = 0x00 | (column & 0x0F);
   block[3] = 0x10 | ((column >> 4) & 0x0F);
   sersendf_P(PSTR("\nD: cursor set\n"));
-  i2c_send_to(DISPLAY_I2C_ADDRESS, block, 4);
+  i2c_send_to(DISPLAY_I2C_ADDRESS, (uint8_t*)block, 4);
 
   //render text to bitmap
   while (*message) {
@@ -59,5 +59,5 @@ void display_text(uint8_t page, uint8_t column, char* message) {
   }
   block[0] = 0x40; // data marker
   sersendf_P(PSTR("\nD: text print, %s\n"), message);
-  i2c_send_to(DISPLAY_I2C_ADDRESS, block, pointer-block);
+  i2c_send_to(DISPLAY_I2C_ADDRESS, (uint8_t*)block, pointer-block);
 }
