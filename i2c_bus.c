@@ -13,13 +13,10 @@
 
 // the queue for a message to be sent
 #define I2C_QUEUE_SIZE 8
-// find the next message index after 'x', where 0 <= x < I2C_QUEUE_SIZE
-#define I2CQ_NEXT(x) ((x) < I2C_QUEUE_SIZE-1 ? (x)+1 : 0)
 
 I2C_MSG_T i2c_queue[I2C_QUEUE_SIZE];
-uint16_t i2c_queue_head = 0;
-uint16_t i2c_queue_tail = 0;
-uint16_t dummy_counter = 0;
+uint16_t i2c_queue_in = 0;
+uint16_t i2c_queue_out = 0;
 
 uint8_t i2c_current_mode = I2C_MASTER;
 uint8_t i2c_address; // the address of a device that is used in communication process
@@ -50,27 +47,6 @@ I2C_HANDLER i2c_master_func = &i2c_do_nothing;
 #ifdef I2C_SLAVE_MODE
 I2C_HANDLER i2c_slave_func = &i2c_do_nothing;
 #endif /* I2C_SLAVE_MODE */
-
-uint8_t i2c_queue_full(void);
-uint8_t i2c_queue_empty(void);
-
-/// check if the queue is completely full
-uint8_t i2c_queue_full(void) {
-  MEMORY_BARRIER();
-  return I2CQ_NEXT(i2c_queue_head) == i2c_queue_tail;
-}
-
-
-/// check if the queue is completely empty
-uint8_t i2c_queue_empty(void) {
-  uint8_t result;
-
-  ATOMIC_START;
-  result = (i2c_queue_tail == i2c_queue_head);
-  ATOMIC_END;
-
-  return result;
-}
 
 
 void i2c_bus_init(uint8_t address) {
@@ -111,23 +87,20 @@ void i2c_mode_set(I2C_MODE_T mode) {
  * Function places a data for slave device in the queue.
  */
 void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len) {
-  I2C_MSG_T message = {address, block, tx_len, 0};
-  i2c_queue[i2c_queue_head] = message;
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\ni2c_send_to[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, head %su, tail %su"),
-             address, block, block[0], block[1], block[2], block[3],
-             (uint16_t) tx_len, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
-#endif
+  if (i2c_queue_in == ((i2c_queue_out - 1 + I2C_QUEUE_SIZE) % I2C_QUEUE_SIZE)) {
+    return; /* queue full */
+  }
 
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npre state for i2c_send_to: head: %su, tail: %su, dummy: %su"),
-             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
+  sersendf_P(PSTR("\npre state for i2c_send_to: IN: %su, OUT: %su"),
+             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
 #endif
-  i2c_queue_head = I2CQ_NEXT(i2c_queue_head);
-  dummy_counter++;
+  I2C_MSG_T message = {address, block, tx_len, 0};
+  i2c_queue[i2c_queue_in] = message;
+  i2c_queue_in = (i2c_queue_in + 1) % I2C_QUEUE_SIZE;
 #ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npost state for i2c_send_to: head: %su, tail: %su, dummy: %su"),
-             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
+  sersendf_P(PSTR("\npost state for i2c_send_to: IN: %su, OUT: %su"),
+             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
 #endif
 }
 
@@ -143,11 +116,20 @@ void i2c_send_handler(void) {
     return;
   }
 
-  if (i2c_queue_empty()) {
-    return;
+  if (i2c_queue_in == i2c_queue_out) {
+    return; /* queue empty - nothing to get */
   }
 
-  I2C_MSG_T message = i2c_queue[i2c_queue_tail];
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npre state for i2c_send_handler: IN: %su, OUT: %su"),
+             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
+#endif
+  I2C_MSG_T message = i2c_queue[i2c_queue_out];
+  i2c_queue_out = (i2c_queue_out + 1) % I2C_QUEUE_SIZE;
+#ifdef TWI_DEBUG
+  sersendf_P(PSTR("\npost state for i2c_send_handler: IN: %su, OUT: %su"),
+             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
+#endif
 
   /**
    * TODO: TWI interrupt handler should directly work with I2C_MST_T queue.
@@ -161,25 +143,9 @@ void i2c_send_handler(void) {
   i2c_master_func = &i2c_send_handler;
   i2c_error_func = &i2c_send_handler;
 
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\ni2c_send_hanlder[%sx]: block %lx [%sx, %sx, %sx, %sx], count %su, head %su, tail %su"),
-             message.address, message.data, message.data[0], message.data[1], message.data[2], message.data[3],
-             (uint16_t) message.size, (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail);
-#endif
   // start I2C transmission
   TWCR = (1<<TWINT)|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN)|(1<<TWIE);
   i2c_state |= I2C_MODE_BUSY;
-
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npre state for i2c_send_handler: head: %su, tail: %su, dummy: %su"),
-             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
-#endif
-  i2c_queue_tail = I2CQ_NEXT(i2c_queue_tail);
-  dummy_counter++;
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npost state for i2c_send_handler: head: %su, tail: %su, dummy: %su"),
-             (uint16_t) i2c_queue_head, (uint16_t) i2c_queue_tail, (uint16_t) dummy_counter);
-#endif
 }
 
 
