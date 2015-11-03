@@ -148,13 +148,8 @@ int main (void)
   init();
 
 #if DISPLAY_BUS != DISPLAY_BUS_DISABLED
-  /* display_text(0, 0, "test"); */
-  /* display_text(1, 16, "test"); */
-  /* display_text(2, 32, "test"); */
-  /* display_text(4, 48, "test"); */
-  /* display_text(0, 64, "test"); */
-  /* display_text(1, 80, "test"); */
-  /* display_text(2, 96, "test"); */
+  /* display_clear(); */
+  display_text(0, 0, "2015 NANOHEART");
 #endif
 
   // main loop

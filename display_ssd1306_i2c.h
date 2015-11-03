@@ -46,6 +46,7 @@ void display_progress(uint8_t value);
 void display_timer(uint32_t value);
 void display_off(void);
 
+void display_clear(void);
 void display_text(uint8_t page, uint8_t column, char* message);
 
 

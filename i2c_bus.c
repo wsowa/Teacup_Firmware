@@ -1,15 +1,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "sersendf.h"
-#include "memory_barrier.h"
 #include "i2c_bus.h"
 
 /**
  * I2C bus implementation.
  * See section 22 of atmega328 datasheet.
  */
-
-#define TWI_DEBUG
 
 // the queue for a message to be sent
 #define I2C_QUEUE_SIZE 8
@@ -91,17 +87,9 @@ void i2c_send_to(uint8_t address, uint8_t* block, size_t tx_len) {
     return; /* queue full */
   }
 
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npre state for i2c_send_to: IN: %su, OUT: %su"),
-             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
-#endif
   I2C_MSG_T message = {address, block, tx_len, 0};
   i2c_queue[i2c_queue_in] = message;
   i2c_queue_in = (i2c_queue_in + 1) % I2C_QUEUE_SIZE;
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npost state for i2c_send_to: IN: %su, OUT: %su"),
-             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
-#endif
 }
 
 
@@ -120,16 +108,8 @@ void i2c_send_handler(void) {
     return; /* queue empty - nothing to get */
   }
 
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npre state for i2c_send_handler: IN: %su, OUT: %su"),
-             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
-#endif
   I2C_MSG_T message = i2c_queue[i2c_queue_out];
   i2c_queue_out = (i2c_queue_out + 1) % I2C_QUEUE_SIZE;
-#ifdef TWI_DEBUG
-  sersendf_P(PSTR("\npost state for i2c_send_handler: IN: %su, OUT: %su"),
-             (uint16_t) i2c_queue_in, (uint16_t) i2c_queue_out);
-#endif
 
   /**
    * TODO: TWI interrupt handler should directly work with I2C_MST_T queue.

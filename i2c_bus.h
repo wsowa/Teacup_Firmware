@@ -2,6 +2,7 @@
 #define _I2C_BUS_H
 
 #include <stdint.h>
+#include <stddef.h>  // for size_t type
 
 // uncomment if we act as slave device
 // #define I2C_SLAVE_MODE
