@@ -134,5 +134,3 @@ void clock() {
   sim_time_warp();
 #endif
 }
-
-
