@@ -208,11 +208,12 @@ uint16_t int_sqrt(uint32_t a) {
 
   This is a binary search but it uses only the minimum required bits for each step.
 */
-uint16_t int_inv_sqrt(uint16_t a) {
+uint16_t int_inv_sqrt(uint32_t a) {
   /// 16bits inverse (much faster than doing a full 32bits inverse)
   /// the 0xFFFFU instead of 0x10000UL hack allows using 16bits and 8bits
   /// variable for the first 8 steps without overflowing and it seems to
   /// give better results for the ramping equation too :)
+  if (a >= 0xffff) return 16;
   uint8_t z = 0, i;
   uint16_t x, j;
   uint32_t q = ((uint32_t)(0xFFFFU / a)) << 8;

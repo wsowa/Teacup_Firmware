@@ -44,7 +44,7 @@ uint32_t approx_distance_3(uint32_t dx, uint32_t dy, uint32_t dz);
 uint16_t int_sqrt(uint32_t a);
 
 // integer inverse square root, 12bits precision
-uint16_t int_inv_sqrt(uint16_t a);
+uint16_t int_inv_sqrt(uint32_t a);
 
 // this is an ultra-crude pseudo-logarithm routine, such that:
 // 2 ^ msbloc(v) >= v
