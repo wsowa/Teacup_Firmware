@@ -153,6 +153,16 @@ uint32_t approx_distance_3(uint32_t dx, uint32_t dy, uint32_t dz) {
   return (( approx + 512 ) >> 10 );
 }
 
+#if defined __ARMEL__
+  #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+    #define int_sqrt_FPU int_sqrt
+  #else
+    #define int_sqrt_ARM int_sqrt
+  #endif
+#else
+  #define int_sqrt_AVR int_sqrt
+#endif
+
 /*!
   integer square root algorithm
   \param a find square root of this number
@@ -161,7 +171,7 @@ uint32_t approx_distance_3(uint32_t dx, uint32_t dy, uint32_t dz) {
   This is a binary search but it uses only the minimum required bits for
   each step.
 */
-uint16_t int_sqrt(uint32_t a) {
+uint16_t int_sqrt_AVR(uint32_t a) {
   uint16_t b = a >> 16;
   uint8_t c = b >> 8;
   uint16_t x = 0;
@@ -199,6 +209,43 @@ uint16_t int_sqrt(uint32_t a) {
   }
 
   return x;
+}
+
+uint16_t int_sqrt_ARM(uint32_t a)
+{
+    // 32-bit square root - thanks to Wilco Dijksra for this efficient ARM algorithm
+    uint16_t res = 0;
+
+    #define iter32(N)           \
+    {                   \
+      uint32_t temp = res | (1 << N);   \
+      if (a >= temp << N)       \
+      {                 \
+        a -= temp << N;       \
+        res |= 2 << N;          \
+      }                 \
+    }
+
+    // We need to do 16 iterations
+    iter32(15); iter32(14); iter32(13); iter32(12);
+    iter32(11); iter32(10); iter32(9); iter32(8);
+    iter32(7); iter32(6); iter32(5); iter32(4);
+    iter32(3); iter32(2); iter32(1); iter32(0);
+
+    return res >> 1;
+}
+
+uint16_t int_sqrt_FPU(uint32_t a) {
+  // using FPUs floating square root to return an unsigned 16bit result
+  float result;
+
+  __ASM volatile ("VCVT.F32.U32 %0, %1;"
+                  "VSQRT.F32 %0, %0;"
+                  : "=t" (result)
+                  : "t" (a));
+
+
+  return (uint16_t)(result);
 }
 
 /*!
@@ -273,4 +320,3 @@ uint32_t acc_ramp_len(uint32_t feedrate, uint32_t steps_per_m) {
   return (feedrate * feedrate) /
          (((uint32_t)7200000UL * ACCELERATION) / steps_per_m);
 }
-
