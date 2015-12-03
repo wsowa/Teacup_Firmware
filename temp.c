@@ -315,6 +315,9 @@ void temp_sensor_tick() {
 	}
   if (DEBUG_PID && (debug_flags & DEBUG_PID))
     sersendf_P(PSTR("\n"));
+  #ifdef __ARM_STM32F411__
+    analog_tick();  // restart the adc
+  #endif
 }
 
 /**

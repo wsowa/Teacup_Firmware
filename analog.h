@@ -55,4 +55,8 @@ void 			analog_init(void);
 
 uint16_t	analog_read(uint8_t index);
 
+#ifdef __ARM_STM32F411__
+    void analog_tick(void);  // restart the adc
+#endif
+
 #endif	/* _ANALOG_H */
