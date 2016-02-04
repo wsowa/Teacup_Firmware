@@ -94,10 +94,13 @@ TARGET = $(PROGRAM).hex
 
 # Arduino IDE takes the "compile everything available"-approach, so we have
 # to keep this working and can take a shortcut:
-SOURCES = $(wildcard *.c)
+SOURCES = $(wildcard $(ARDUINO_SOURCE_DIR)/*.c)
 
+LPC_SOURCE_DIR = $(ARDUINO_SOURCE_DIR)
+
+## FIXME: Doesn't the wildcard above already include this file?
 ifeq ($(MCU), lpc1114)
-  SOURCES += cmsis-system_lpc11xx.c
+  SOURCES += $(LPC_SOURCE_DIR)/cmsis-system_lpc11xx.c
 endif
 
 # Other target MCU specific adjustments:
@@ -121,7 +124,7 @@ CFLAGS += -fdata-sections
 LDFLAGS  = --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
 ifeq ($(MCU), lpc1114)
-  LDFLAGS += -T cmsis-lpc1114.ld
+  LDFLAGS += -T $(LPC_SOURCE_DIR)/cmsis-lpc1114.ld
 endif
 LDFLAGS += -Wl,--as-needed
 LDFLAGS += -Wl,--gc-sections
@@ -147,7 +150,7 @@ program: $(PROGRAM).hex config.h
 
 $(BUILDDIR)/teacup.elf: $(BUILDDIR)/startup.o
 
-$(BUILDDIR)/startup.o: cmsis-startup_lpc11xx.s | $(BUILDDIR)
+$(BUILDDIR)/startup.o: $(LPC_SOURCE_DIR)/cmsis-startup_lpc11xx.s | $(BUILDDIR)
 	@echo "  CC        $@"
 	@$(CC) -c $(CFLAGS) -o $@ $<
 

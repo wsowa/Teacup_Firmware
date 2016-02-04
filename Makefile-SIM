@@ -34,15 +34,19 @@
 
 TARGET = sim
 
+ARDUINO_SOURCE_DIR = Teacup_Firmware
 SIM_PATH = simulator
 BUILD_FLAVOR = $(TARGET)
 
 # Arduino IDE takes the "compile everything available"-approach, so we have
 # to keep this working and can take a shortcut:
-SOURCES = $(wildcard *.c)
+SOURCES = $(wildcard $(ARDUINO_SOURCE_DIR)/*.c)
 
+# Collect all the simulator replacements from the SIM_PATH folder
 SIM_SOURCES = $(subst $(SIM_PATH)/,,$(wildcard $(SIM_PATH)/*.c))
-SOURCES := $(filter-out $(subst _sim.c,.c,$(SIM_SOURCES)),$(SOURCES)) $(SIM_SOURCES)
+
+# Replace the Arduino source with the simulator replacements
+SOURCES := $(filter-out $(addprefix $(ARDUINO_SOURCE_DIR)/,$(subst _sim.c,.c,$(SIM_SOURCES))),$(SOURCES)) $(SIM_SOURCES)
 
 CFLAGS  = $(EXTRA_CFLAGS)
 CFLAGS += -g -Wall -Wstrict-prototypes -Wno-format -Os $(DEFS) -std=gnu99

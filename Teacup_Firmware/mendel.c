@@ -47,7 +47,7 @@
 #include "simulator.h"
 
 #ifdef SIMINFO
-  #include "../simulavr/src/simulavr_info.h"
+  #include "../../simulavr/src/simulavr_info.h"
   SIMINFO_DEVICE(MCU_STR);
   SIMINFO_CPUFREQUENCY(F_CPU);
   #ifdef BAUD

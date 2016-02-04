@@ -31,6 +31,7 @@
 #                                                                            #
 ##############################################################################
 
+ARDUINO_SOURCE_DIR = Teacup_Firmware
 BUILDDIR = build
 USER_CONFIG ?= config.h
 
@@ -43,13 +44,14 @@ BUILDDIR := $(BUILDDIR)/$(USER_CONFIG:.h=)
 endif
 
 CFLAGS += -save-temps=obj -DUSER_CONFIG='"$(USER_CONFIG)"'
+CFLAGS += -I "$(ARDUINO_SOURCE_DIR)"
 
 CC = $(TOOLCHAIN)gcc
 OBJDUMP = $(TOOLCHAIN)objdump
 OBJCOPY = $(TOOLCHAIN)objcopy
 
 
-OBJ = $(patsubst %.c,$(BUILDDIR)/%.o,$(SOURCES))
+OBJ = $(patsubst %.c,$(BUILDDIR)/%.o,$(notdir $(SOURCES)))
 
 .PHONY: all clean doc functionsbysize
 .PRECIOUS: %.o %.elf
@@ -64,6 +66,8 @@ doc: Doxyfile *.c *.h
 
 functionsbysize: $(OBJ)
 	@$(OBJDUMP) -h $^ | grep '\.text\.' | perl -ne '/\.text\.(\S+)\s+([0-9a-f]+)/ && printf "%u\t%s\n", eval("0x$$2"), $$1;' | sort -n
+
+vpath %.c $(ARDUINO_SOURCE_DIR)
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
