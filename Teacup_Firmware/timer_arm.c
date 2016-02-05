@@ -7,7 +7,7 @@
 
 #if defined TEACUP_C_INCLUDE && defined __ARMEL__
 
-#include "cmsis-core_cm0.h"
+#include "cmsis_core_cm0.h"
 #include "clock.h"
 #include "pinio.h"
 #include "dda_queue.h"
@@ -34,11 +34,11 @@ void timer_init() {
     Initialise the system tick timer.
 
     We enable the system tick timer with interrupts. A similar function is
-    SysTick_Config(uint32_t ticks) in cmsis-core_cm0.h
+    SysTick_Config(uint32_t ticks) in cmsis_core_cm0.h
 
     Register name mapping from LPC111x User Manual to CMSIS headers:
 
-      chap. 24.5     cmsis-core_cm0.h  description
+      chap. 24.5     cmsis_core_cm0.h  description
 
       SYST_CSR       SysTick->CTRL     System Timer Control and status register.
       SYST_RVR       SysTick->LOAD     System Timer Reload value register.
@@ -47,7 +47,7 @@ void timer_init() {
   */
   NVIC_SetPriority(SysTick_IRQn, 0);              // Highest priority.
 
-  // SysTick defined in cmsis-core_cm0.h.
+  // SysTick defined in cmsis_core_cm0.h.
   SysTick->LOAD  = TICK_TIME - 1;
   SysTick->VAL   = 0;                             // Actually load LOAD.
 

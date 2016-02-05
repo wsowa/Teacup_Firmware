@@ -20,7 +20,7 @@
   interrupt safe and also a few clock cycles faster. See macros in pinio.h.
 */
 
-#include "cmsis-lpc11xx.h"
+#include "cmsis_lpc11xx.h"
 
 #define F_CPU __SYSTEM_CLOCK
 

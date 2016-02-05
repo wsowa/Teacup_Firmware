@@ -7,7 +7,7 @@
 
 #if defined TEACUP_C_INCLUDE && defined __ARMEL__
 
-#include "cmsis-lpc11xx.h"
+#include "cmsis_lpc11xx.h"
 #include <stddef.h>
 #include "pinio.h"
 #include "sersendf.h"

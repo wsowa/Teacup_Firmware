@@ -5,7 +5,7 @@
 
 #if defined TEACUP_C_INCLUDE && defined __ARMEL__
 
-#include "cmsis-lpc11xx.h"  // For __ASM() and __SYSTEM_CLOCK.
+#include "cmsis_lpc11xx.h"  // For __ASM() and __SYSTEM_CLOCK.
 
 
 /** Delay in microseconds.

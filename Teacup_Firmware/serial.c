@@ -11,8 +11,8 @@
 */
 
 #define TEACUP_C_INCLUDE
-#include "serial-avr.c"
-#include "serial-arm.c"
+#include "serial_avr.c"
+#include "serial_arm.c"
 #undef TEACUP_C_INCLUDE
 
 

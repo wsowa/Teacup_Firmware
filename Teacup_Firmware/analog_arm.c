@@ -13,7 +13,7 @@
 
 #if defined TEACUP_C_INCLUDE && defined __ARMEL__
 
-#include "cmsis-lpc11xx.h"
+#include "cmsis_lpc11xx.h"
 #include "arduino.h"
 
 
@@ -36,7 +36,7 @@ void analog_init() {
     /**
       Register name mapping from LPC111x User Manual to CMSIS headers:
 
-        chap. 25.5     cmsis-lpc11xx.h   description
+        chap. 25.5     cmsis_lpc11xx.h   description
 
         AD0CR          LPC_ADC->CR       A/D control register.
         AD0GDR         LPC_ADC->GDR      A/D global data register.

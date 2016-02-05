@@ -8,8 +8,8 @@
 #include "cpu.h"
 
 #define TEACUP_C_INCLUDE
-#include "cpu-avr.c"
-#include "cpu-arm.c"
+#include "cpu_avr.c"
+#include "cpu_arm.c"
 #undef TEACUP_C_INCLUDE
 
 /* No common code so far. */

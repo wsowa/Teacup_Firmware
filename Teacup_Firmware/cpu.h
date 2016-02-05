@@ -8,7 +8,7 @@
 
 #elif defined __ARMEL__
 
-  #include "cmsis-lpc11xx.h"  // For __ASM().
+  #include "cmsis_lpc11xx.h"  // For __ASM().
 
   /** Enable interrupts.
 

@@ -14,13 +14,13 @@
 #if defined TEACUP_C_INCLUDE && defined __ARMEL__
 
 #include "arduino.h"
-#include "cmsis-lpc11xx.h"
+#include "cmsis_lpc11xx.h"
 #include "delay.h"
 #include "sersendf.h"
 
 #ifdef XONXOFF
   #error XON/XOFF protocol not yet implemented for ARM. \
-         See serial-avr.c for inspiration.
+         See serial_avr.c for inspiration.
 #endif
 
 
@@ -198,7 +198,7 @@ void serial_init() {
     delay_ms(500);
     serial_writestr_P(PSTR("\nSerial port parameters were calculated at "));
     serial_writestr_P(PSTR("runtime.\nInsert these values to the list of "));
-    serial_writestr_P(PSTR("known settings in serial-arm.c:\n"));
+    serial_writestr_P(PSTR("known settings in serial_arm.c:\n"));
     sersendf_P(PSTR("  UART_DLM %sx\n"), (DL >> 8) & 0xFF);
     sersendf_P(PSTR("  UART_DLL %sx\n"), (DL >> 0) & 0xFF);
     sersendf_P(PSTR("  UART_FDR %sx\n"), (DivAddVal << 0) | (MulVal << 4));

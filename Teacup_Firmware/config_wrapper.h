@@ -59,7 +59,7 @@
      the board configuration or drop it entirely in favour of PID settings in
      Configtool.
 
-   - Remove this silent discard in favour of the #error in heater-arm.c.
+   - Remove this silent discard in favour of the #error in heater_arm.c.
 */
 #if defined __ARMEL__ && defined EECONFIG
   #undef EECONFIG
@@ -73,7 +73,7 @@
    - BANG_BANG is currently misplaced as a printer property. Move BANG_BANG to
      the board configuration.
 
-   - Remove this silent discard in favour of the #error in heater-arm.c.
+   - Remove this silent discard in favour of the #error in heater_arm.c.
 */
 #if defined __ARMEL__ && defined BANG_BANG
   #undef BANG_BANG
