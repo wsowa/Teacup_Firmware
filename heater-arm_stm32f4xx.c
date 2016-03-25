@@ -218,9 +218,7 @@ void heater_init() {
     #include "config_wrapper.h"
     #undef DEFINE_HEATER
 
-#if 0
-  pid_init(i);
-#endif /* 0 */
+  pid_init();
 }
 
 /** Set PWM output.
