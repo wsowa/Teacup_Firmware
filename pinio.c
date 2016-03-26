@@ -16,11 +16,19 @@ void pinio_init(void) {
   SET_OUTPUT(X_DIR_PIN); WRITE(X_DIR_PIN, 0);
   #ifdef X_MIN_PIN
     SET_INPUT(X_MIN_PIN);
-    PULLUP_OFF(X_MIN_PIN);
+    #ifndef X_MIN_PULLUP
+      PULLUP_OFF(X_MIN_PIN);
+    #else
+      PULLUP_ON(X_MIN_PIN);
+    #endif
   #endif
   #ifdef X_MAX_PIN
     SET_INPUT(X_MAX_PIN);
-    PULLUP_OFF(X_MAX_PIN);
+    #ifndef X_MAX_PULLUP
+      PULLUP_OFF(X_MAX_PIN);
+    #else
+      PULLUP_ON(X_MAX_PIN);
+    #endif
   #endif
 
   /// Y Stepper.
@@ -28,11 +36,19 @@ void pinio_init(void) {
   SET_OUTPUT(Y_DIR_PIN); WRITE(Y_DIR_PIN, 0);
   #ifdef Y_MIN_PIN
     SET_INPUT(Y_MIN_PIN);
-    PULLUP_OFF(Y_MIN_PIN);
+    #ifndef Y_MIN_PULLUP
+      PULLUP_OFF(Y_MIN_PIN);
+    #else
+      PULLUP_ON(Y_MIN_PIN);
+    #endif
   #endif
   #ifdef Y_MAX_PIN
     SET_INPUT(Y_MAX_PIN);
-    PULLUP_OFF(Y_MAX_PIN);
+    #ifndef Y_MAX_PULLUP
+      PULLUP_OFF(Y_MAX_PIN);
+    #else
+      PULLUP_ON(Y_MAX_PIN);
+    #endif
   #endif
 
   /// Z Stepper.
@@ -42,11 +58,19 @@ void pinio_init(void) {
   #endif
   #ifdef Z_MIN_PIN
     SET_INPUT(Z_MIN_PIN);
-    PULLUP_OFF(Z_MIN_PIN);
+    #ifndef Z_MIN_PULLUP
+      PULLUP_OFF(Z_MIN_PIN);
+    #else
+      PULLUP_ON(Z_MIN_PIN);
+    #endif
   #endif
   #ifdef Z_MAX_PIN
     SET_INPUT(Z_MAX_PIN);
-    PULLUP_OFF(Z_MAX_PIN);
+    #ifndef Z_MAX_PULLUP
+      PULLUP_OFF(Z_MAX_PIN);
+    #else
+      PULLUP_ON(Z_MAX_PIN);
+    #endif
   #endif
 
   #if defined E_STEP_PIN && defined E_DIR_PIN
