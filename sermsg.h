@@ -1,5 +1,5 @@
 #ifndef  _SERMSG_H
-#define	_SERMSG_H
+#define  _SERMSG_H
 
 #include  <stdint.h>
 

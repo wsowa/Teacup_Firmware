@@ -1,25 +1,25 @@
 /** \file
-	\brief Main file - this is where it all starts, and ends
+  \brief Main file - this is where it all starts, and ends
 */
 
 /** \mainpage Teacup Reprap Firmware
   \section intro_sec Introduction
-		Teacup Reprap Firmware (originally named FiveD on Arduino) is a firmware package for numerous reprap electronics sets.
+    Teacup Reprap Firmware (originally named FiveD on Arduino) is a firmware package for numerous reprap electronics sets.
 
     Please see README for a full introduction and long-winded waffle about this project
   \section install_sec  Installation
     \subsection step1 Step 1: Download
-			\code git clone git://github.com/traumflug/Teacup_Firmware \endcode
+      \code git clone git://github.com/traumflug/Teacup_Firmware \endcode
     \subsection step2 Step 2: configure
       \code cp config.[yourboardhere].h config.h \endcode
       Edit config.h to suit your machone
       Edit Makefile to select the correct chip and programming settings
-		\subsection step3 Step 3: Compile
+    \subsection step3 Step 3: Compile
       \code make \endcode
       \code make program \endcode
     \subsection step4 Step 4: Test!
       \code ./func.sh mendel_reset
-			./func.sh mendel_talk
+      ./func.sh mendel_talk
       M115
       ctrl+d \endcode
 */
@@ -34,12 +34,12 @@
 #include  "dda_queue.h"
 #include  "gcode_parse.h"
 #include  "timer.h"
-#include	"temp.h"
+#include  "temp.h"
 #include  "watchdog.h"
 #include  "debug.h"
 #include  "heater.h"
 #include  "analog.h"
-#include	"pinio.h"
+#include  "pinio.h"
 #include  "clock.h"
 #include  "intercom.h"
 #include "spi.h"
@@ -74,12 +74,12 @@ void init(void) {
   wd_init();
 
   // set up serial
-	serial_init();
+  serial_init();
 
   // set up G-code parsing
   gcode_init();
 
-	// set up inputs and outputs
+  // set up inputs and outputs
   pinio_init();
 
   #ifdef SPI
@@ -89,17 +89,17 @@ void init(void) {
   // set up timers
   timer_init();
 
-	heater_init();
+  heater_init();
 
   // set up dda
   dda_init();
 
-	// start up analog read interrupt loop,
+  // start up analog read interrupt loop,
   // if any of the temp sensors in your config.h use analog interface
   analog_init();
 
   // set up temperature inputs
-	temp_init();
+  temp_init();
 
   #ifdef SD
     sd_init();
@@ -109,12 +109,12 @@ void init(void) {
   sei();
 
   // reset watchdog
-	wd_reset();
+  wd_reset();
 
   // prepare the power supply
   power_init();
 
-	// say hi to host
+  // say hi to host
   serial_writestr_P(PSTR("start\nok\n"));
 
 }
@@ -134,7 +134,7 @@ int main (void)
 
   init();
 
-	// main loop
+  // main loop
   for (;;)
   {
     // if queue is full, no point in reading chars- host will just have to wait

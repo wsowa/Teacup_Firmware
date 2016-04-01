@@ -9,12 +9,12 @@
 #include  "sersendf.h"
 #include  "dda_queue.h"
 #include  "watchdog.h"
-#include	"timer.h"
+#include  "timer.h"
 #include  "debug.h"
 #include  "heater.h"
 #include  "serial.h"
 #ifdef  TEMP_INTERCOM
-	#include	"intercom.h"
+  #include  "intercom.h"
 #endif
 #include  "memory_barrier.h"
 
@@ -74,7 +74,7 @@ static void clock_250ms(void) {
 
   if (heaters_all_zero()) {
     if (psu_timeout > (30 * 4)) {
-			power_off();
+      power_off();
     }
     else {
       ATOMIC_START
@@ -84,12 +84,12 @@ static void clock_250ms(void) {
   }
 
   ifclock(clock_flag_1s) {
-		if (DEBUG_POSITION && (debug_flags & DEBUG_POSITION)) {
+    if (DEBUG_POSITION && (debug_flags & DEBUG_POSITION)) {
       // current position
       update_current_position();
       sersendf_P(PSTR("Pos: %lq,%lq,%lq,%lq,%lu\n"), current_position.axis[X], current_position.axis[Y], current_position.axis[Z], current_position.axis[E], current_position.F);
 
-			// target position
+      // target position
       sersendf_P(PSTR("Dst: %lq,%lq,%lq,%lq,%lu\n"), movebuffer[mb_tail].endpoint.axis[X], movebuffer[mb_tail].endpoint.axis[Y], movebuffer[mb_tail].endpoint.axis[Z], movebuffer[mb_tail].endpoint.axis[E], movebuffer[mb_tail].endpoint.F);
 
       // Queue
@@ -99,17 +99,17 @@ static void clock_250ms(void) {
       serial_writechar('\n');
     }
     // temperature
-		/*		if (temp_get_target())
+    /*    if (temp_get_target())
     temp_print();*/
   }
   #ifdef  TEMP_INTERCOM
   start_send();
-	#endif
+  #endif
 }
 
 /*! do stuff every 10 milliseconds
 
-	called from clock(), do not call directly
+  called from clock(), do not call directly
 */
 static void clock_10ms(void) {
   // reset watchdog
@@ -119,17 +119,17 @@ static void clock_10ms(void) {
 
   ifclock(clock_flag_250ms) {
     clock_250ms();
-	}
+  }
 }
 
 /*! do reoccuring stuff
 
-	call it occasionally in busy loops
+  call it occasionally in busy loops
 */
 void clock() {
   ifclock(clock_flag_10ms) {
     clock_10ms();
-	}
+  }
 #ifdef SIMULATOR
   sim_time_warp();
 #endif

@@ -4,7 +4,7 @@
   \brief primitives for sending numbers over the serial link
 */
 
-#include	"serial.h"
+#include  "serial.h"
 
 /** write a single hex digit
   \param v hex digit to write, higher nibble ignored
@@ -14,7 +14,7 @@ void serwrite_hex4(uint8_t v) {
   if (v < 10)
     serial_writechar('0' + v);
   else
-		serial_writechar('A' - 10 + v);
+    serial_writechar('A' - 10 + v);
 }
 
 /** write a pair of hex digits
@@ -29,12 +29,12 @@ void serwrite_hex8(uint8_t v) {
   \param v word to write
 */
 void serwrite_hex16(uint16_t v) {
-	serwrite_hex8(v >> 8);
+  serwrite_hex8(v >> 8);
   serwrite_hex8(v & 0xFF);
 }
 
 /** write eight hex digits
-	\param v long word to write
+  \param v long word to write
 */
 void serwrite_hex32(uint32_t v) {
   serwrite_hex16(v >> 16);
@@ -59,17 +59,17 @@ void serwrite_uint32(uint32_t v) {
   {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
-	}
+  }
   while (e--);
 }
 
 /** write decimal digits from a long signed int
-	\param v number to send
+  \param v number to send
 */
 void serwrite_int32(int32_t v) {
   if (v < 0) {
     serial_writechar('-');
-		v = -v;
+    v = -v;
   }
 
   serwrite_uint32(v);
@@ -84,7 +84,7 @@ void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
 
   for (e = 9; e > 0; e--) {
     if (v >= powers[e])
-			break;
+      break;
   }
 
   if (e < fp)
@@ -94,7 +94,7 @@ void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
   {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
-		if (e == fp)
+    if (e == fp)
       serial_writechar('.');
   }
   while (e--);

@@ -24,15 +24,15 @@ uint16_t _crc16_update(uint16_t crc, uint8_t a) {
 
 /** block-at-once CRC16 calculator
   \param *data data to find crc16 for
-	\param len length of data
+  \param len length of data
   \return uint16 crc16 of passed data
 
   uses avr-libc's optimised crc16 routine
 */
-uint16_t	crc_block(void *data, uint16_t len) {
+uint16_t  crc_block(void *data, uint16_t len) {
   uint16_t  crc = 0xfeed;
   for (; len; data++, len--) {
     crc = _crc16_update(crc, *((uint8_t *) data));
   }
-	return crc;
+  return crc;
 }

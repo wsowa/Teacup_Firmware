@@ -1,5 +1,5 @@
 #ifndef  _SERIAL_H
-#define	_SERIAL_H
+#define  _SERIAL_H
 
 #include "config_wrapper.h"
 #include  <stdint.h>

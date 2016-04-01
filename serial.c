@@ -19,7 +19,7 @@
 /// send a string- look for null byte instead of expecting a length
 void serial_writestr(uint8_t *data)
 {
-	uint8_t i = 0, r;
+  uint8_t i = 0, r;
   // yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
   while ((r = data[i++]))
     serial_writechar(r);
@@ -39,6 +39,6 @@ void serial_writestr_P(PGM_P data_P)
 {
   uint8_t r, i = 0;
   // yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
-	while ((r = pgm_read_byte(&data_P[i++])))
+  while ((r = pgm_read_byte(&data_P[i++])))
     serial_writechar(r);
 }

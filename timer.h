@@ -1,5 +1,5 @@
 #ifndef  _TIMER_H
-#define	_TIMER_H
+#define  _TIMER_H
 
 #include  <stdint.h>
 #include "arduino.h"  // For F_CPU on ARM.

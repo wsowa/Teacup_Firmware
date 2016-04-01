@@ -19,22 +19,22 @@ void analog_init() {
     // clear ADC bit in power reduction register because of ADC use.
     #ifdef  PRR
       PRR &= ~MASK(PRADC);
-		#elif defined PRR0
+    #elif defined PRR0
       PRR0 &= ~MASK(PRADC);
     #endif
 
     // select reference signal to use, set right adjusted results and select ADC input 0
-		ADMUX = REFERENCE;
+    ADMUX = REFERENCE;
 
     // ADC frequency must be less than 200khz or we lose precision. At 16MHz system clock, we must use the full prescale value of 128 to get an ADC clock of 125khz.
     ADCSRA = MASK(ADEN) | MASK(ADPS2) | MASK(ADPS1) | MASK(ADPS0);
     #ifdef  ADCSRB
-			ADCSRB = 0;
+      ADCSRB = 0;
     #endif
 
     adc_counter = 0;
 
-		// clear analog inputs in the data direction register(s)
+    // clear analog inputs in the data direction register(s)
     AIO0_DDR &= ~analog_mask;
     #ifdef  AIO8_DDR
       AIO8_DDR &= ~(analog_mask >> 8);
@@ -44,7 +44,7 @@ void analog_init() {
     DIDR0 = analog_mask & 0xFF;
     #ifdef  DIDR2
       DIDR2 = (analog_mask >> 8) & 0xFF;
-		#endif
+    #endif
 
     // now we start the first conversion and leave the rest to the interrupt
     ADCSRA |= MASK(ADIE) | MASK(ADSC);
@@ -59,27 +59,27 @@ ISR(ADC_vect, ISR_NOBLOCK) {
   // emulate free-running mode but be more deterministic about exactly which result we have, since this project has long-running interrupts
   if (analog_mask) {
     // store next result
-		adc_result[adc_counter] = ADC;
+    adc_result[adc_counter] = ADC;
 
     // next channel
     do {
       adc_counter++;
-			if (adc_counter >= sizeof(adc_channel))
+      if (adc_counter >= sizeof(adc_channel))
         adc_counter = 0;
     } while (adc_channel[adc_counter] == 255);
 
     // start next conversion
-		ADMUX = (adc_channel[adc_counter] & 0x07) | REFERENCE;
+    ADMUX = (adc_channel[adc_counter] & 0x07) | REFERENCE;
     #ifdef  MUX5
       if (adc_channel[adc_counter] & 0x08)
         ADCSRB |= MASK(MUX5);
       else
-				ADCSRB &= ~MASK(MUX5);
+        ADCSRB &= ~MASK(MUX5);
     #endif
 
     // After the mux has been set, start a new conversion
     ADCSRA |= MASK(ADSC);
-	}
+  }
 }
 
 /** Read analog value from saved result array.

@@ -1,5 +1,5 @@
 #ifndef  _DEBUG_H
-#define	_DEBUG_H
+#define  _DEBUG_H
 
 #include  <stdint.h>
 
@@ -29,7 +29,7 @@
   #define    DEBUG_PID        0
   #define    DEBUG_DDA        0
   #define    DEBUG_POSITION  0
-	#define		DEBUG_ECHO			0
+  #define    DEBUG_ECHO      0
   #define DEBUG_INFO       0
   #define DEBUG_DRYRUN     0
 #endif

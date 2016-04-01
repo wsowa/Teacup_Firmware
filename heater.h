@@ -1,5 +1,5 @@
 #ifndef  _HEATER_H
-#define	_HEATER_H
+#define  _HEATER_H
 
 #include "config_wrapper.h"
 #include  <stdint.h>
@@ -34,7 +34,7 @@
 #define DEFINE_HEATER(name, pin, invert, pwm) HEATER_ ## name,
 typedef enum
 {
-	#include "config_wrapper.h"
+  #include "config_wrapper.h"
   NUM_HEATERS,
   HEATER_noheater
 } heater_t;

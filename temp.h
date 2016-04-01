@@ -1,5 +1,5 @@
 #ifndef  _TEMP_H
-#define	_TEMP_H
+#define  _TEMP_H
 
 #include  "config_wrapper.h"
 #include  <stdint.h>
@@ -24,7 +24,7 @@ typedef enum {
 typedef enum {
   TT_THERMISTOR,
   TT_MAX6675,
-	TT_AD595,
+  TT_AD595,
   TT_PT100,
   TT_INTERCOM,
   TT_DUMMY,

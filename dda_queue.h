@@ -1,5 +1,5 @@
 #ifndef  _DDA_QUEUE
-#define	_DDA_QUEUE
+#define  _DDA_QUEUE
 
 #include  "dda.h"
 #include  "timer.h"

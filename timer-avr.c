@@ -4,7 +4,7 @@
 
   To be included from timer.c.
 
-	Teacup uses timer1 to generate both step pulse clock and system clock.
+  Teacup uses timer1 to generate both step pulse clock and system clock.
 
   We achieve this by using the output compare registers to generate the two clocks while the timer free-runs.
 
@@ -19,7 +19,7 @@
 #include "cpu.h"
 #include "memory_barrier.h"
 
-#ifdef	MOTHERBOARD
+#ifdef  MOTHERBOARD
 #include  "dda_queue.h"
 #endif
 
@@ -44,7 +44,7 @@ ISR(TIMER1_COMPB_vect) {
   static volatile uint8_t busy = 0;
 
   // set output compare register to the next clock tick
-	OCR1B = (OCR1B + TICK_TIME) & 0xFFFF;
+  OCR1B = (OCR1B + TICK_TIME) & 0xFFFF;
 
   clock_tick();
 
@@ -69,22 +69,22 @@ ISR(TIMER1_COMPB_vect) {
   Comparator A is the step timer. It has higher priority then B.
 */
 ISR(TIMER1_COMPA_vect) {
-	// Check if this is a real step, or just a next_step_time "overflow"
+  // Check if this is a real step, or just a next_step_time "overflow"
   if (next_step_time < 65536) {
     // step!
     #ifdef DEBUG_LED_PIN
       WRITE(DEBUG_LED_PIN, 1);
-		#endif
+    #endif
 
     // disable this interrupt. if we set a new timeout, it will be re-enabled when appropriate
     TIMSK1 &= ~MASK(OCIE1A);
 
-		// stepper tick
+    // stepper tick
     queue_step();
 
     // led off
     #ifdef DEBUG_LED_PIN
-			WRITE(DEBUG_LED_PIN, 0);
+      WRITE(DEBUG_LED_PIN, 0);
     #endif
 
     return;
@@ -94,12 +94,12 @@ ISR(TIMER1_COMPA_vect) {
 
   // Similar algorithm as described in timer_set() below.
   if (next_step_time < 65536) {
-		OCR1A = (OCR1A + next_step_time) & 0xFFFF;
+    OCR1A = (OCR1A + next_step_time) & 0xFFFF;
   } else if(next_step_time < 75536){
     OCR1A = (OCR1A - 10000) & 0xFFFF;
     next_step_time += 10000;
   }
-	// leave OCR1A as it was
+  // leave OCR1A as it was
 }
 #endif /* ifdef MOTHERBOARD */
 
@@ -109,12 +109,12 @@ ISR(TIMER1_COMPA_vect) {
   enabled later, when we start using it.
 */
 void timer_init() {
-	// no outputs
+  // no outputs
   TCCR1A = 0;
   // Normal Mode
   TCCR1B = MASK(CS10);
   // set up "clock" comparator for first tick
-	OCR1B = TICK_TIME & 0xFFFF;
+  OCR1B = TICK_TIME & 0xFFFF;
   // enable interrupt
   TIMSK1 = MASK(OCIE1B);
 #ifdef SIMULATOR
@@ -149,7 +149,7 @@ void timer_init() {
   offering smooth and even step distribution. Flipside of this coin is,
   one has to call timer_reset() before scheduling a step at an arbitrary time.
 
-	This enables the step interrupt, but also disables interrupts globally.
+  This enables the step interrupt, but also disables interrupts globally.
   So, if you use it from inside the step interrupt, make sure to do so
   as late as possible. If you use it from outside the step interrupt,
   do a sei() after it to make the interrupt actually fire.
@@ -169,7 +169,7 @@ uint8_t timer_set(int32_t delay, uint8_t check_short) {
   // from one step to the next one, which should be more or less the same
   // as from one step interrupt to the next one. The last step interrupt happend
   // at OCR1A, so start delay from there.
-	step_start = OCR1A;
+  step_start = OCR1A;
   next_step_time = delay;
 
   #ifdef ACCELERATION_TEMPORAL
@@ -189,22 +189,22 @@ uint8_t timer_set(int32_t delay, uint8_t check_short) {
   // happen.
 
   // Now we know how long we actually want to delay, so set the timer.
-	if (next_step_time < 65536) {
+  if (next_step_time < 65536) {
     // set the comparator directly to the next real step
     OCR1A = (next_step_time + step_start) & 0xFFFF;
   }
   else if (next_step_time < 75536) {
-		// Next comparator interrupt would have to trigger another
+    // Next comparator interrupt would have to trigger another
     // interrupt within a short time (possibly within 1 cycle).
     // Avoid the impossible by firing the interrupt earlier.
     OCR1A = (step_start - 10000) & 0xFFFF;
     next_step_time += 10000;
-	}
+  }
   else {
     OCR1A = step_start;
   }
 
-	// Enable this interrupt, but only do it after disabling
+  // Enable this interrupt, but only do it after disabling
   // global interrupts (see above). This will cause push any possible
   // timer1a interrupt to the far side of the return, protecting the
   // stack from recursively clobbering memory.
@@ -234,7 +234,7 @@ void timer_reset() {
 */
 void timer_stop() {
   // disable all interrupts
-	TIMSK1 = 0;
+  TIMSK1 = 0;
   #ifdef SIMULATOR
     // Tell simulator
     sim_timer_stop();

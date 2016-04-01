@@ -4,12 +4,12 @@
   \brief DDA Queue - manage the move queue
 */
 
-#include	<string.h>
+#include  <string.h>
 
 #include  "config_wrapper.h"
 #include  "timer.h"
 #include  "serial.h"
-#include	"sermsg.h"
+#include  "sermsg.h"
 #include  "temp.h"
 #include  "delay.h"
 #include  "sersendf.h"
@@ -24,7 +24,7 @@ uint8_t  mb_head = 0;
 
 /// movebuffer tail pointer. Points to the currently executing move
 /// this variable is read/written both in and out of interrupts.
-uint8_t	mb_tail = 0;
+uint8_t  mb_tail = 0;
 
 /// move buffer.
 /// holds move queue
@@ -89,12 +89,12 @@ void queue_step() {
       }
     }
     else {
-			dda_step(current_movebuffer);
+      dda_step(current_movebuffer);
     }
   }
 
   // Start the next move if this one is done.
-	if (current_movebuffer->live == 0)
+  if (current_movebuffer->live == 0)
     next_move();
 }
 
@@ -104,7 +104,7 @@ void queue_step() {
 void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
   // don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
   while (queue_full())
-		delay_us(100);
+    delay_us(100);
 
   uint8_t h = MB_NEXT(mb_head);
 
@@ -119,12 +119,12 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
     new_movebuffer->endstop_stop_cond = endstop_stop_cond;
   }
   else {
-		// it's a wait for temp
+    // it's a wait for temp
     new_movebuffer->waitfor_temp = 1;
   }
   dda_create(new_movebuffer, t);
 
-	// make certain all writes to global memory
+  // make certain all writes to global memory
   // are flushed before modifying mb_head.
   MEMORY_BARRIER();
 
@@ -154,7 +154,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 /// timer interrupt is disabled).
 void next_move() {
   while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
-		// next item
+    // next item
     uint8_t t = MB_NEXT(mb_tail);
     DDA* current_movebuffer = &movebuffer[t];
     // Tail must be set before calling timer_set(), as timer_set() reenables
@@ -169,7 +169,7 @@ void next_move() {
     else {
       dda_start(current_movebuffer);
     }
-	}
+  }
 }
 
 /// DEBUG - print queue.

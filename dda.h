@@ -1,5 +1,5 @@
 #ifndef  _DDA_H
-#define	_DDA_H
+#define  _DDA_H
 
 #include  <stdint.h>
 
@@ -54,17 +54,17 @@ typedef struct {
   // bresenham counters
   axes_int32_t      counter; ///< counter for total_steps vs each axis
 
-	// step counters
+  // step counters
   axes_uint32_t     steps;   ///< number of steps on each axis
 
   #ifdef ACCELERATION_RAMPING
   /// counts actual steps done
-	uint32_t					step_no;
+  uint32_t          step_no;
   #endif
   #ifdef ACCELERATION_TEMPORAL
   axes_uint32_t     time;       ///< time of the last step on each axis
   uint32_t          last_time;  ///< time of the last step of any axis
-	#endif
+  #endif
 
   /// Endstop handling.
   uint8_t endstop_stop; ///< Stop due to endstop trigger
@@ -79,17 +79,17 @@ typedef struct {
   This struct is filled in by dda_create(), called from enqueue(), called mostly from gcode_process() and from a few other places too (eg \file homing.c)
 */
 typedef struct {
-	/// this is where we should finish
+  /// this is where we should finish
   TARGET            endpoint;
 
   union {
     struct {
-			// status fields
+      // status fields
       uint8_t            nullmove      :1; ///< bool: no axes move, maybe we wait for temperatures or change speed
       uint8_t            live          :1; ///< bool: this DDA is running and still has steps to do
       uint8_t           done          :1; ///< bool: this DDA is done.
       #ifdef ACCELERATION_REPRAP
-			uint8_t						accel					:1; ///< bool: speed changes during this move, run accel code
+      uint8_t            accel          :1; ///< bool: speed changes during this move, run accel code
       #endif
 
       // wait for temperature to stabilise flag
@@ -99,7 +99,7 @@ typedef struct {
       // As we have muldiv() now, overflows became much less an issue and
       // it's likely time to get rid of these flags and use int instead of
       // uint for distance/speed calculations. --Traumflug 2014-07-04
-			uint8_t						x_direction		:1; ///< direction flag for X axis
+      uint8_t            x_direction    :1; ///< direction flag for X axis
       uint8_t            y_direction    :1; ///< direction flag for Y axis
       uint8_t            z_direction    :1; ///< direction flag for Z axis
       uint8_t            e_direction    :1; ///< direction flag for E axis
@@ -119,12 +119,12 @@ typedef struct {
 
   #ifdef ACCELERATION_REPRAP
   uint32_t          end_c; ///< time between 2nd last step and last step
-	#endif
+  #endif
   #ifdef ACCELERATION_RAMPING
   /// precalculated step time offset variable
   int32_t           n;
   /// number of steps accelerating
-	uint32_t					rampup_steps;
+  uint32_t          rampup_steps;
   /// number of last step before decelerating
   uint32_t          rampdown_steps;
   /// 24.8 fixed point timer value, maximum speed
@@ -159,7 +159,7 @@ typedef struct {
   /// gaps. See e.g. NXP application note AN10963, page 10f.
   uint8_t           fast_axis;       ///< number of the fast axis
 
-	/// Endstop homing
+  /// Endstop homing
   uint8_t endstop_check; ///< Do we need to check endstops? 0x1=Check X, 0x2=Check Y, 0x4=Check Z
   uint8_t endstop_stop_cond; ///< Endstop condition on which to stop motion: 0=Stop on detrigger, 1=Stop on trigger
 } DDA;

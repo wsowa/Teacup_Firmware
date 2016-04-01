@@ -14,7 +14,7 @@
 
 #include  <avr/wdt.h>
 #include  <avr/interrupt.h>
-#include	"memory_barrier.h"
+#include  "memory_barrier.h"
 
 #include  "arduino.h"
 #ifndef  EXTRUDER
@@ -34,7 +34,7 @@ volatile uint8_t  wd_flag = 0;
 ISR(WDT_vect) {
   // watchdog has tripped- no main loop activity for 0.5s, probably a bad thing
   // if watchdog fires again, we will reset
-	// perhaps we should do something more intelligent in this interrupt?
+  // perhaps we should do something more intelligent in this interrupt?
   wd_flag |= 1;
 }
 
@@ -44,7 +44,7 @@ void wd_init() {
 //   if (mcusr_mirror & MASK(WDRF))
 //     serial_writestr_P(PSTR("Watchdog Reset!\n"));
 
-	// 0.5s timeout, interrupt and system reset
+  // 0.5s timeout, interrupt and system reset
   wdt_enable(WDTO_500MS);
   WDTCSR |= MASK(WDIE);
 }
@@ -54,7 +54,7 @@ void wd_reset() {
   wdt_reset();
   if (wd_flag) {
     WDTCSR |= MASK(WDIE);
-		wd_flag &= ~1;
+    wd_flag &= ~1;
   }
 }
 

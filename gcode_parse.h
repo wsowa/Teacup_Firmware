@@ -1,5 +1,5 @@
 #ifndef  _GCODE_PARSE_H
-#define	_GCODE_PARSE_H
+#define  _GCODE_PARSE_H
 
 #include  <stdint.h>
 
@@ -19,22 +19,22 @@
 typedef struct {
   uint32_t  mantissa;    ///< the actual digits of our floating point number
   uint8_t  exponent  :7;  ///< scale mantissa by \f$10^{-exponent}\f$
-	uint8_t	sign			:1; ///< positive or negative?
+  uint8_t  sign      :1; ///< positive or negative?
 } decfloat;
 
 /// this holds all the possible data from a received command
 typedef struct {
-	struct {
+  struct {
     uint8_t          seen_G  :1;
     uint8_t          seen_M  :1;
     uint8_t          seen_X  :1;
     uint8_t          seen_Y  :1;
-		uint8_t					seen_Z	:1;
+    uint8_t          seen_Z  :1;
     uint8_t          seen_E  :1;
     uint8_t          seen_F  :1;
     uint8_t          seen_S  :1;
     uint8_t          seen_P  :1;
-		uint8_t					seen_T	:1;
+    uint8_t          seen_T  :1;
     uint8_t          seen_N  :1;
     uint8_t          seen_checksum        :1; ///< seen a checksum?
     uint8_t          seen_semi_comment    :1; ///< seen a semicolon?

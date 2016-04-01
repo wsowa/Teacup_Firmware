@@ -34,7 +34,7 @@
 #endif /* __AVR__, ! __AVR__ */
 
 /*
-	ports and functions
+  ports and functions
 
   added as necessary or if I feel like it- not a comprehensive list!
 */
@@ -64,7 +64,7 @@
 #endif
 
 #if defined (__AVR_ATmega32U4__)
-	#include    "arduino_32U4.h"
+  #include    "arduino_32U4.h"
 #endif
 
 #elif defined __ARMEL__

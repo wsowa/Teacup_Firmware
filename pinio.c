@@ -1,10 +1,10 @@
 #include  "pinio.h"
-#include	"delay.h"
+#include  "delay.h"
 
 static char ps_is_on = 0;
 
 /// step/psu timeout
-volatile uint8_t	psu_timeout = 0;
+volatile uint8_t  psu_timeout = 0;
 
 /** Initialise all I/O.
 
@@ -119,7 +119,7 @@ void power_on() {
   if (ps_is_on == 0) {
     #ifdef  PS_ON_PIN
       SET_OUTPUT(PS_ON_PIN);
-			WRITE(PS_ON_PIN, 0);
+      WRITE(PS_ON_PIN, 0);
       delay_ms(500);
     #endif
     #ifdef PS_MOSFET_PIN
@@ -129,12 +129,12 @@ void power_on() {
     ps_is_on = 1;
   }
 
-	psu_timeout = 0;
+  psu_timeout = 0;
 }
 
 void power_off() {
 
-	stepper_disable();
+  stepper_disable();
   x_disable();
   y_disable();
   z_disable();
@@ -149,5 +149,5 @@ void power_off() {
     WRITE(PS_MOSFET_PIN, 0);
   #endif
 
-	ps_is_on = 0;
+  ps_is_on = 0;
 }

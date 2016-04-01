@@ -1,5 +1,5 @@
 #ifndef  _WATCHDOG_H
-#define	_WATCHDOG_H
+#define  _WATCHDOG_H
 
 #include "config_wrapper.h"
 
