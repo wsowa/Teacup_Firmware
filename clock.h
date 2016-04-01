@@ -7,4 +7,4 @@ void clock_tick(void);
 
 void clock(void);
 
-#endif	/* _CLOCK_H */
+#endif  /* _CLOCK_H */

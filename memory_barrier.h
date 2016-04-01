@@ -27,7 +27,7 @@
 // compilers.
 
 #if __AVR_LIBC_VERSION__ < 10700UL
-	#define CLI_SEI_BUG_MEMORY_BARRIER() MEMORY_BARRIER()
+  #define CLI_SEI_BUG_MEMORY_BARRIER() MEMORY_BARRIER()
 #else
 	#define CLI_SEI_BUG_MEMORY_BARRIER()
 #endif

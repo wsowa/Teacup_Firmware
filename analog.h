@@ -12,7 +12,7 @@
   This also requires a voltage to be actually provided on the Aref pin, which
   none of the commonly available controllers or Arduinos do.
 */
-#define	REFERENCE_AREF	0
+#define  REFERENCE_AREF  0
 
 /** \def REFERENCE_AVCC
   This compares the voltage to be measured against the voltage on the Aref pin,
@@ -32,7 +32,7 @@
     defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
 	#define	REFERENCE_1V1		192
 #else
-	#define	REFERENCE_1V1		128
+  #define  REFERENCE_1V1    128
   #define  REFERENCE_2V56  192
 #endif
 

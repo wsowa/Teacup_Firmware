@@ -7,7 +7,7 @@
 */
 
 #ifndef	_ARDUINO_H
-#define	_ARDUINO_H
+#define  _ARDUINO_H
 
 
 /**
@@ -42,7 +42,7 @@
 
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || \
     defined (__AVR_ATmega328P__)
-	#include	"arduino_168_328p.h"
+  #include  "arduino_168_328p.h"
 #endif
 
 #if defined (__AVR_ATmega644__) || defined (__AVR_ATmega644P__) || \
@@ -52,7 +52,7 @@
 #endif
 
 #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega2560__)
-	#include	"arduino_1280.h"
+  #include  "arduino_1280.h"
 #endif
 
 #if defined (__AVR_AT90USB1286__)

@@ -7,12 +7,12 @@
 #include <stdint.h>
 #include	"pinio.h"
 #include	"sersendf.h"
-#include	"dda_queue.h"
+#include  "dda_queue.h"
 #include  "watchdog.h"
 #include	"timer.h"
 #include	"debug.h"
 #include	"heater.h"
-#include	"serial.h"
+#include  "serial.h"
 #ifdef  TEMP_INTERCOM
 	#include	"intercom.h"
 #endif
@@ -92,17 +92,17 @@ static void clock_250ms(void) {
 			// target position
       sersendf_P(PSTR("Dst: %lq,%lq,%lq,%lq,%lu\n"), movebuffer[mb_tail].endpoint.axis[X], movebuffer[mb_tail].endpoint.axis[Y], movebuffer[mb_tail].endpoint.axis[Z], movebuffer[mb_tail].endpoint.axis[E], movebuffer[mb_tail].endpoint.F);
 
-			// Queue
+      // Queue
       print_queue();
 
 			// newline
 			serial_writechar('\n');
-		}
+    }
     // temperature
 		/*		if (temp_get_target())
 		temp_print();*/
 	}
-	#ifdef	TEMP_INTERCOM
+  #ifdef  TEMP_INTERCOM
   start_send();
 	#endif
 }
@@ -112,12 +112,12 @@ static void clock_250ms(void) {
 	called from clock(), do not call directly
 */
 static void clock_10ms(void) {
-	// reset watchdog
+  // reset watchdog
   wd_reset();
 
 	temp_sensor_tick();
 
-	ifclock(clock_flag_250ms) {
+  ifclock(clock_flag_250ms) {
     clock_250ms();
 	}
 }
@@ -127,7 +127,7 @@ static void clock_10ms(void) {
 	call it occasionally in busy loops
 */
 void clock() {
-	ifclock(clock_flag_10ms) {
+  ifclock(clock_flag_10ms) {
     clock_10ms();
 	}
 #ifdef SIMULATOR

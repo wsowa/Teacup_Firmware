@@ -7,12 +7,12 @@
 #include	<string.h>
 
 #include	"config_wrapper.h"
-#include	"timer.h"
+#include  "timer.h"
 #include  "serial.h"
 #include	"sermsg.h"
 #include	"temp.h"
 #include	"delay.h"
-#include	"sersendf.h"
+#include  "sersendf.h"
 #include  "clock.h"
 #include "cpu.h"
 #include	"memory_barrier.h"
@@ -52,7 +52,7 @@ uint8_t queue_empty() {
     result = (mb_tail == mb_head && movebuffer[mb_tail].live == 0);
   ATOMIC_END
 
-	return result;
+  return result;
 }
 
 /// Return the current movement, or NULL, if there's no movement going on.
@@ -77,17 +77,17 @@ DDA *queue_current_movement() {
 void queue_step() {
 	// do our next step
 	DDA* current_movebuffer = &movebuffer[mb_tail];
-	if (current_movebuffer->live) {
+  if (current_movebuffer->live) {
     if (current_movebuffer->waitfor_temp) {
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 			if (temp_achieved()) {
 				current_movebuffer->live = current_movebuffer->done = 0;
-				serial_writestr_P(PSTR("Temp achieved\n"));
+        serial_writestr_P(PSTR("Temp achieved\n"));
       }
       else {
         temp_print(TEMP_SENSOR_none);
       }
-		}
+    }
     else {
 			dda_step(current_movebuffer);
 		}
@@ -102,7 +102,7 @@ void queue_step() {
 /// \note this function waits for space to be available if necessary, check queue_full() first if waiting is a problem
 /// This is the only function that modifies mb_head and it always called from outside an interrupt.
 void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
-	// don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
+  // don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
   while (queue_full())
 		delay_us(100);
 
@@ -117,7 +117,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
   if (t != NULL) {
 		new_movebuffer->endstop_check = endstop_check;
 		new_movebuffer->endstop_stop_cond = endstop_stop_cond;
-	}
+  }
   else {
 		// it's a wait for temp
 		new_movebuffer->waitfor_temp = 1;
@@ -162,12 +162,12 @@ void next_move() {
     // interrupt routine.
 		mb_tail = t;
 		if (current_movebuffer->waitfor_temp) {
-			serial_writestr_P(PSTR("Waiting for target temp\n"));
+      serial_writestr_P(PSTR("Waiting for target temp\n"));
       current_movebuffer->live = 1;
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 		}
 		else {
-			dda_start(current_movebuffer);
+      dda_start(current_movebuffer);
     }
 	}
 }
@@ -192,6 +192,6 @@ void queue_flush() {
 
 /// wait for queue to empty
 void queue_wait() {
-	while (queue_empty() == 0)
+  while (queue_empty() == 0)
     clock();
 }

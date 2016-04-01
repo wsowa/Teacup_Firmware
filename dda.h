@@ -7,7 +7,7 @@
 
 #ifdef ACCELERATION_REPRAP
 	#ifdef ACCELERATION_RAMPING
-		#error Cant use ACCELERATION_REPRAP and ACCELERATION_RAMPING together.
+    #error Cant use ACCELERATION_REPRAP and ACCELERATION_RAMPING together.
   #endif
 #endif
 
@@ -32,7 +32,7 @@ typedef uint32_t axes_uint32_t[AXIS_COUNT];
 typedef int32_t axes_int32_t[AXIS_COUNT];
 
 /**
-	\struct TARGET
+  \struct TARGET
   \brief target is simply a point in space/time
 
 	X, Y, Z and E are in micrometers unless explcitely stated. F is in mm/min.
@@ -57,7 +57,7 @@ typedef struct {
 	// step counters
   axes_uint32_t     steps;   ///< number of steps on each axis
 
-	#ifdef ACCELERATION_RAMPING
+  #ifdef ACCELERATION_RAMPING
   /// counts actual steps done
 	uint32_t					step_no;
 	#endif
@@ -72,7 +72,7 @@ typedef struct {
 } MOVE_STATE;
 
 /**
-	\struct DDA
+  \struct DDA
   \brief this is a digital differential analyser data struct
 
 	This struct holds all the details of an individual multi-axis move, including pre-calculated acceleration data.
@@ -82,7 +82,7 @@ typedef struct {
 	/// this is where we should finish
 	TARGET						endpoint;
 
-	union {
+  union {
     struct {
 			// status fields
 			uint8_t						nullmove			:1; ///< bool: no axes move, maybe we wait for temperatures or change speed
@@ -92,7 +92,7 @@ typedef struct {
 			uint8_t						accel					:1; ///< bool: speed changes during this move, run accel code
 			#endif
 
-			// wait for temperature to stabilise flag
+      // wait for temperature to stabilise flag
       uint8_t            waitfor_temp  :1; ///< bool: wait for temperatures to reach their set values
 
 			// directions
@@ -102,12 +102,12 @@ typedef struct {
 			uint8_t						x_direction		:1; ///< direction flag for X axis
 			uint8_t						y_direction		:1; ///< direction flag for Y axis
 			uint8_t						z_direction		:1; ///< direction flag for Z axis
-			uint8_t						e_direction		:1; ///< direction flag for E axis
+      uint8_t            e_direction    :1; ///< direction flag for E axis
     };
     uint16_t            allflags; ///< used for clearing all flags
 	};
 
-	// distances
+  // distances
   axes_uint32_t     delta;       ///< number of steps on each axis
 
   // uint8_t        fast_axis;   (see below)
@@ -117,7 +117,7 @@ typedef struct {
 
 	uint32_t					c; ///< time until next step, 24.8 fixed point
 
-	#ifdef ACCELERATION_REPRAP
+  #ifdef ACCELERATION_REPRAP
   uint32_t          end_c; ///< time between 2nd last step and last step
 	#endif
 	#ifdef ACCELERATION_RAMPING
@@ -127,7 +127,7 @@ typedef struct {
 	uint32_t					rampup_steps;
 	/// number of last step before decelerating
 	uint32_t					rampdown_steps;
-	/// 24.8 fixed point timer value, maximum speed
+  /// 24.8 fixed point timer value, maximum speed
   uint32_t          c_min;
   #ifdef LOOKAHEAD
   // With the look-ahead functionality, it is possible to retain physical
@@ -147,7 +147,7 @@ typedef struct {
   // MOVEBUFFER_SIZE is already enough.
   uint8_t           id;
   #endif
-	#endif
+  #endif
   #ifdef ACCELERATION_TEMPORAL
   axes_uint32_t     step_interval;   ///< time between steps on each axis
 	uint8_t						axis_to_step;    ///< axis to be stepped on the next interrupt
@@ -202,4 +202,4 @@ void dda_clock(void);
 // update current_position
 void update_current_position(void);
 
-#endif	/* _DDA_H */
+#endif  /* _DDA_H */

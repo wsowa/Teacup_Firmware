@@ -2,7 +2,7 @@
 #define	_HEATER_H
 
 #include "config_wrapper.h"
-#include	<stdint.h>
+#include  <stdint.h>
 #include "simulator.h"
 #include "temp.h"
 

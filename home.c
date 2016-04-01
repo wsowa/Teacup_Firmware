@@ -7,7 +7,7 @@
 #include <math.h>
 #include	"dda.h"
 #include	"dda_queue.h"
-#include	"pinio.h"
+#include  "pinio.h"
 #include  "gcode_parse.h"
 
 // Check configuration.
@@ -82,17 +82,17 @@ void home_x_negative() {
     if (SEARCH_FAST_X > SEARCH_FEEDRATE_X) {
 			// back off slowly
       t.axis[X] = +1000000;
-			t.F = SEARCH_FEEDRATE_X;
+      t.F = SEARCH_FEEDRATE_X;
       enqueue_home(&t, 0x01, 0);
     }
 
 		// set X home
-		queue_wait(); // we have to wait here, see G92
+    queue_wait(); // we have to wait here, see G92
     #ifdef X_MIN
       startpoint.axis[X] = next_target.target.axis[X] = (int32_t)(X_MIN * 1000.0);
 		#else
       startpoint.axis[X] = next_target.target.axis[X] = 0;
-		#endif
+    #endif
     dda_new_startpoint();
 	#endif
 }
@@ -102,7 +102,7 @@ void home_x_positive() {
 	#if defined X_MAX_PIN && ! defined X_MAX
 		#warning X_MAX_PIN defined, but not X_MAX. home_x_positive() disabled.
 	#endif
-	#if defined X_MAX_PIN && defined X_MAX
+  #if defined X_MAX_PIN && defined X_MAX
     TARGET t = startpoint;
 
     t.axis[X] = +1000000;
@@ -122,7 +122,7 @@ void home_x_positive() {
 		queue_wait();
 		// set position to MAX
     startpoint.axis[X] = next_target.target.axis[X] = (int32_t)(X_MAX * 1000.);
-		dda_new_startpoint();
+    dda_new_startpoint();
   #endif
 }
 
@@ -152,12 +152,12 @@ void home_y_negative() {
       startpoint.axis[Y] = next_target.target.axis[Y] = 0;
 		#endif
 		dda_new_startpoint();
-	#endif
+  #endif
 }
 
 /// find Y MAX endstop
 void home_y_positive() {
-	#if defined Y_MAX_PIN && ! defined Y_MAX
+  #if defined Y_MAX_PIN && ! defined Y_MAX
     #warning Y_MAX_PIN defined, but not Y_MAX. home_y_positive() disabled.
 	#endif
 	#if defined Y_MAX_PIN && defined Y_MAX
@@ -172,12 +172,12 @@ void home_y_positive() {
 
     if (SEARCH_FAST_Y > SEARCH_FEEDRATE_Y) {
       t.axis[Y] = -1000000;
-			t.F = SEARCH_FEEDRATE_Y;
+      t.F = SEARCH_FEEDRATE_Y;
       enqueue_home(&t, 0x08, 0);
     }
 
 		// set Y home
-		queue_wait();
+    queue_wait();
     // set position to MAX
     startpoint.axis[Y] = next_target.target.axis[Y] = (int32_t)(Y_MAX * 1000.);
 		dda_new_startpoint();
@@ -187,7 +187,7 @@ void home_y_positive() {
 /// find Z MIN endstop
 void home_z_negative() {
 	#if defined Z_MIN_PIN
-		TARGET t = startpoint;
+    TARGET t = startpoint;
 
     t.axis[Z] = -1000000;
     if (SEARCH_FAST_Z > SEARCH_FEEDRATE_Z)
@@ -202,7 +202,7 @@ void home_z_negative() {
       enqueue_home(&t, 0x10, 0);
     }
 
-		// set Z home
+    // set Z home
     queue_wait();
 		#ifdef Z_MIN
       startpoint.axis[Z] = next_target.target.axis[Z] = (int32_t)(Z_MIN * 1000.);
@@ -217,7 +217,7 @@ void home_z_negative() {
 void home_z_positive() {
 	#if defined Z_MAX_PIN && ! defined Z_MAX
 		#warning Z_MAX_PIN defined, but not Z_MAX. home_z_positive() disabled.
-	#endif
+  #endif
   #if defined Z_MAX_PIN && defined Z_MAX
 		TARGET t = startpoint;
 

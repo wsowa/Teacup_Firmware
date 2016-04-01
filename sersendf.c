@@ -7,12 +7,12 @@
 #include	<stdarg.h>
 
 #include	"serial.h"
-#include	"sermsg.h"
+#include  "sermsg.h"
 
 
 /** \brief Simplified printf
 	\param format pointer to output format specifier string stored in FLASH.
-	\param ... output data
+  \param ... output data
 
 	Implements only a tiny subset of printf's format specifiers :-
 
@@ -22,12 +22,12 @@
 	s - following data is short (8 bits)\n
 	none - following data is 16 bits.
 
-	u - unsigned int\n
+  u - unsigned int\n
   d - signed int\n
 	q - signed int with decimal before the third digit from the right\n
 	c - character\n
 	x - hex\n
-	% - send a literal % character
+  % - send a literal % character
 
 	Example:
 
@@ -47,17 +47,17 @@
 
 void sersendf_P(PGM_P format_P, ...) {
 	va_list args;
-	va_start(args, format_P);
+  va_start(args, format_P);
 
 	uint16_t i = 0;
 	uint8_t c = 1, j = 0;
 	while ((c = pgm_read_byte(&format_P[i++]))) {
-		if (j) {
+    if (j) {
       switch(c) {
 				case 's':
 					j = 1;
 					break;
-				case 'l':
+        case 'l':
           j = 4;
 					break;
 				case 'u':
@@ -67,7 +67,7 @@ void sersendf_P(PGM_P format_P, ...) {
             serwrite_uint16((uint16_t)GET_ARG(uint16_t));
 					else
             serwrite_uint32(GET_ARG(uint32_t));
-					j = 0;
+          j = 0;
           break;
 				case 'd':
           if (j == 1)
@@ -77,12 +77,12 @@ void sersendf_P(PGM_P format_P, ...) {
 					else
             serwrite_int32(GET_ARG(int32_t));
 					j = 0;
-					break;
+          break;
         case 'c':
           serial_writechar((uint8_t)GET_ARG(uint16_t));
 					j = 0;
 					break;
-				case 'x':
+        case 'x':
           serial_writestr_P(PSTR("0x"));
           if (j == 1)
             serwrite_hex8((uint8_t)GET_ARG(uint16_t));
@@ -92,26 +92,26 @@ void sersendf_P(PGM_P format_P, ...) {
             serwrite_hex32(GET_ARG(uint32_t));
 					j = 0;
 					break;
-/*				case 'p':
+/*        case 'p':
           serwrite_hex16(GET_ARG(uint16_t));*/
 				case 'q':
           serwrite_int32_vf(GET_ARG(uint32_t), 3);
 					j = 0;
-					break;
+          break;
         default:
 					serial_writechar(c);
 					j = 0;
 					break;
-			}
+      }
     }
 		else {
 			if (c == '%') {
 				j = 2;
-			}
+      }
       else {
 				serial_writechar(c);
 			}
 		}
-	}
+  }
   va_end(args);
 }

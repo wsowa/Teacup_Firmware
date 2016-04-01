@@ -7,7 +7,7 @@
 
 #if defined TEACUP_C_INCLUDE && defined __AVR__
 
-#include	<stdlib.h>
+#include  <stdlib.h>
 #include "pinio.h"
 #include	"crc.h"
 #include "sersendf.h"
@@ -17,7 +17,7 @@
 /// \brief simply holds pinout data- port, pin, pwm channel if used
 typedef struct {
 	volatile uint8_t *heater_port; ///< pointer to port. DDR is inferred from this pointer too
-	uint8_t						heater_pin;  ///< heater pin, not masked. eg for PB3 enter '3' here, or PB3_PIN or similar
+  uint8_t            heater_pin;  ///< heater pin, not masked. eg for PB3 enter '3' here, or PB3_PIN or similar
   /// Wether the heater pin signal needs to be inverted.
   uint8_t          invert;
 	volatile uint8_t *heater_pwm;  ///< pointer to 8-bit PWM register, eg OCR0A (8-bit) or ORC3L (low byte, 16-bit)
@@ -37,17 +37,17 @@ static const heater_definition_t heaters[NUM_HEATERS] =
 /// \brief initialise heater subsystem
 /// Set directions, initialise PWM timers, read PID factors from eeprom, etc
 void heater_init() {
-	heater_t i;
+  heater_t i;
 
 	// setup PWM timers: fast PWM
 	// Warning 2012-01-11: these are not consistent across all AVRs
 	TCCR0A = MASK(WGM01) | MASK(WGM00);
-	// PWM frequencies in TCCR0B, see page 108 of the ATmega644 reference.
+  // PWM frequencies in TCCR0B, see page 108 of the ATmega644 reference.
   TCCR0B = MASK(CS00); // F_CPU / 256 (about 78(62.5) kHz on a 20(16) MHz chip)
 	#ifndef FAST_PWM
 		TCCR0B = MASK(CS00) | MASK(CS02); // F_CPU / 256 / 1024  (about 76(61) Hz)
 	#endif
-	TIMSK0 = 0;
+  TIMSK0 = 0;
   OCR0A = 0;
 	OCR0B = 0;
 
@@ -67,7 +67,7 @@ void heater_init() {
 
 	#ifdef	TCCR3A
 		TCCR3A = MASK(WGM30);
-		TCCR3B = MASK(WGM32) | MASK(CS30);
+    TCCR3B = MASK(WGM32) | MASK(CS30);
     TIMSK3 = 0;
 		OCR3A = 0;
 		OCR3B = 0;
@@ -77,22 +77,22 @@ void heater_init() {
 		#ifdef TIMER4_IS_10_BIT
 			// ATmega16/32U4 fourth timer is a special 10 bit timer
 			TCCR4A = MASK(PWM4A) | MASK(PWM4B) ; // enable A and B
-			TCCR4C = MASK(PWM4D); // and D
+      TCCR4C = MASK(PWM4D); // and D
       TCCR4D = MASK(WGM40); // Phase correct
 			TCCR4B = MASK(CS40);  // no prescaler
 			#ifndef FAST_PWM
 				TCCR4B = MASK(CS40) | MASK(CS42) | MASK(CS43); // 16 MHz / 1024 / 256
-				//TCCR4B = MASK(CS40) | MASK(CS41) | MASK(CS43); // 16 MHz / 4096 / 256
+        //TCCR4B = MASK(CS40) | MASK(CS41) | MASK(CS43); // 16 MHz / 4096 / 256
       #endif
 			TC4H   = 0;           // clear high bits
 			OCR4C  = 0xff;        // 8 bit max count at top before reset
 		#else
-			TCCR4A = MASK(WGM40);
+      TCCR4A = MASK(WGM40);
       TCCR4B = MASK(WGM42) | MASK(CS40);
 		#endif
 		TIMSK4 = 0;
 		OCR4A = 0;
-		OCR4B = 0;
+    OCR4B = 0;
     #ifdef OCR4D
 			OCR4D = 0;
 		#endif
@@ -102,7 +102,7 @@ void heater_init() {
 		TCCR5A = MASK(WGM50);
 		TCCR5B = MASK(WGM52) | MASK(CS50);
 		TIMSK5 = 0;
-		OCR5A = 0;
+    OCR5A = 0;
     OCR5B = 0;
 	#endif
 
@@ -122,17 +122,17 @@ void heater_init() {
 	for (i = 0; i < NUM_HEATERS; i++) {
 		if (heaters[i].heater_pwm) {
 			*heaters[i].heater_pwm = heaters[i].invert ? 255 : 0;
-			// this is somewhat ugly too, but switch() won't accept pointers for reasons unknown
+      // this is somewhat ugly too, but switch() won't accept pointers for reasons unknown
       switch((uint16_t) heaters[i].heater_pwm) {
 				case (uint16_t) &OCR0A:
 					TCCR0A |= MASK(COM0A1);
 					break;
-				case (uint16_t) &OCR0B:
+        case (uint16_t) &OCR0B:
           TCCR0A |= MASK(COM0B1);
 					break;
         #ifdef TCCR2A
 				case (uint16_t) &OCR2A:
-					TCCR2A |= MASK(COM2A1);
+          TCCR2A |= MASK(COM2A1);
           break;
 				case (uint16_t) &OCR2B:
 					TCCR2A |= MASK(COM2B1);
@@ -142,52 +142,52 @@ void heater_init() {
 				case (uint16_t) &OCR3AL:
 					TCCR3A |= MASK(COM3A1);
 					break;
-				case (uint16_t) &OCR3BL:
+        case (uint16_t) &OCR3BL:
           TCCR3A |= MASK(COM3B1);
 					break;
 				#ifdef COM3C1
 				case (uint16_t) &OCR3CL:
-					TCCR3A |= MASK(COM3C1);
+          TCCR3A |= MASK(COM3C1);
           break;
 				#endif
 				#endif
 				#ifdef	TCCR4A
-					#if defined (OCR4AL)
+          #if defined (OCR4AL)
           case (uint16_t) &OCR4AL:
 						TCCR4A |= MASK(COM4A1);
 						break;
 					case (uint16_t) &OCR4BL:
-						TCCR4A |= MASK(COM4B1);
+            TCCR4A |= MASK(COM4B1);
             break;
 					case (uint16_t) &OCR4CL:
 						TCCR4A |= MASK(COM4C1);
 						break;
-					#else
+          #else
           // 10 bit timer
 					case (uint16_t) &OCR4A:
 						TCCR4A |= MASK(COM4A1);
 						break;
-					case (uint16_t) &OCR4B:
+          case (uint16_t) &OCR4B:
             TCCR4A |= MASK(COM4B1);
 						break;
 					#ifdef OCR4D
 						case (uint16_t) &OCR4D:
-							TCCR4C |= MASK(COM4D1);
+              TCCR4C |= MASK(COM4D1);
               break;
 					#endif
 					#endif
 				#endif
-				#ifdef	TCCR5A
+        #ifdef  TCCR5A
         case (uint16_t) &OCR5AL:
 					TCCR5A |= MASK(COM5A1);
 					break;
 				case (uint16_t) &OCR5BL:
-					TCCR5A |= MASK(COM5B1);
+          TCCR5A |= MASK(COM5B1);
           break;
 				case (uint16_t) &OCR5CL:
 					TCCR5A |= MASK(COM5C1);
 					break;
-				#endif
+        #endif
       }
 		}
 
@@ -212,7 +212,7 @@ void heater_init() {
 */
 void heater_set(heater_t index, uint8_t value) {
 	if (index >= NUM_HEATERS)
-		return;
+    return;
 
 	heaters_runtime[index].heater_output = value;
 
@@ -222,12 +222,12 @@ void heater_set(heater_t index, uint8_t value) {
 
 		if (DEBUG_PID && (debug_flags & DEBUG_PID))
 			sersendf_P(PSTR("PWM{%u = %u}\n"), index, *heaters[index].heater_pwm);
-	}
+  }
   else {
     if ((value >= HEATER_THRESHOLD && ! heaters[index].invert) ||
         (value < HEATER_THRESHOLD && heaters[index].invert))
 			*(heaters[index].heater_port) |= MASK(heaters[index].heater_pin);
-		else
+    else
       *(heaters[index].heater_port) &= ~MASK(heaters[index].heater_pin);
 	}
 

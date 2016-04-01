@@ -12,4 +12,4 @@ extern uint8_t next_tool;
 // when we have a whole line, feed it to this
 void process_gcode_command(void);
 
-#endif	/* _GCODE_PROCESS_H */
+#endif  /* _GCODE_PROCESS_H */

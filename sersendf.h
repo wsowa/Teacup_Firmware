@@ -7,4 +7,4 @@
 // No __attribute__ ((format (printf, 1, 2)) here because %q isn't supported.
 void sersendf_P(PGM_P format_P, ...);
 
-#endif	/* _SERSENDF_H */
+#endif  /* _SERSENDF_H */

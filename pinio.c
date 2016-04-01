@@ -117,7 +117,7 @@ void pinio_init(void) {
 void power_on() {
 
 	if (ps_is_on == 0) {
-		#ifdef	PS_ON_PIN
+    #ifdef  PS_ON_PIN
       SET_OUTPUT(PS_ON_PIN);
 			WRITE(PS_ON_PIN, 0);
 			delay_ms(500);
@@ -127,7 +127,7 @@ void power_on() {
       delay_ms(10);
     #endif
 		ps_is_on = 1;
-	}
+  }
 
 	psu_timeout = 0;
 }
@@ -137,7 +137,7 @@ void power_off() {
 	stepper_disable();
 	x_disable();
 	y_disable();
-	z_disable();
+  z_disable();
   e_disable();
 
 	#ifdef	PS_ON_PIN

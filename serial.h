@@ -2,7 +2,7 @@
 #define	_SERIAL_H
 
 #include "config_wrapper.h"
-#include	<stdint.h>
+#include  <stdint.h>
 #include "simulator.h"
 
 #ifdef USB_SERIAL
