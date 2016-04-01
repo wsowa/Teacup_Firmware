@@ -1,9 +1,9 @@
-#ifndef	_DDA_MATHS_H
+#ifndef  _DDA_MATHS_H
 #define	_DDA_MATHS_H
 
 #include	<stdint.h>
 
-#include	"config_wrapper.h"
+#include  "config_wrapper.h"
 #include "dda.h"
 
 // return rounded result of multiplicand * multiplier / divisor

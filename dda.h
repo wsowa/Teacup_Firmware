@@ -1,14 +1,14 @@
-#ifndef	_DDA_H
+#ifndef  _DDA_H
 #define	_DDA_H
 
 #include	<stdint.h>
 
-#include	"config_wrapper.h"
+#include  "config_wrapper.h"
 
 #ifdef ACCELERATION_REPRAP
 	#ifdef ACCELERATION_RAMPING
 		#error Cant use ACCELERATION_REPRAP and ACCELERATION_RAMPING together.
-	#endif
+  #endif
 #endif
 
 
@@ -33,7 +33,7 @@ typedef int32_t axes_int32_t[AXIS_COUNT];
 
 /**
 	\struct TARGET
-	\brief target is simply a point in space/time
+  \brief target is simply a point in space/time
 
 	X, Y, Z and E are in micrometers unless explcitely stated. F is in mm/min.
 */
@@ -48,7 +48,7 @@ typedef struct {
 	\struct MOVE_STATE
 	\brief this struct is made for tracking the current state of the movement
 
-	Parts of this struct are initialised only once per reboot, so make sure dda_step() leaves them with a value compatible to begin a new movement at the end of the movement. Other parts are filled in by dda_start().
+  Parts of this struct are initialised only once per reboot, so make sure dda_step() leaves them with a value compatible to begin a new movement at the end of the movement. Other parts are filled in by dda_start().
 */
 typedef struct {
 	// bresenham counters
@@ -58,7 +58,7 @@ typedef struct {
   axes_uint32_t     steps;   ///< number of steps on each axis
 
 	#ifdef ACCELERATION_RAMPING
-	/// counts actual steps done
+  /// counts actual steps done
 	uint32_t					step_no;
 	#endif
 	#ifdef ACCELERATION_TEMPORAL
@@ -73,7 +73,7 @@ typedef struct {
 
 /**
 	\struct DDA
-	\brief this is a digital differential analyser data struct
+  \brief this is a digital differential analyser data struct
 
 	This struct holds all the details of an individual multi-axis move, including pre-calculated acceleration data.
 	This struct is filled in by dda_create(), called from enqueue(), called mostly from gcode_process() and from a few other places too (eg \file homing.c)
@@ -83,17 +83,17 @@ typedef struct {
 	TARGET						endpoint;
 
 	union {
-		struct {
+    struct {
 			// status fields
 			uint8_t						nullmove			:1; ///< bool: no axes move, maybe we wait for temperatures or change speed
 			uint8_t						live					:1; ///< bool: this DDA is running and still has steps to do
       uint8_t           done          :1; ///< bool: this DDA is done.
-			#ifdef ACCELERATION_REPRAP
+      #ifdef ACCELERATION_REPRAP
 			uint8_t						accel					:1; ///< bool: speed changes during this move, run accel code
 			#endif
 
 			// wait for temperature to stabilise flag
-			uint8_t						waitfor_temp	:1; ///< bool: wait for temperatures to reach their set values
+      uint8_t            waitfor_temp  :1; ///< bool: wait for temperatures to reach their set values
 
 			// directions
       // As we have muldiv() now, overflows became much less an issue and
@@ -103,7 +103,7 @@ typedef struct {
 			uint8_t						y_direction		:1; ///< direction flag for Y axis
 			uint8_t						z_direction		:1; ///< direction flag for Z axis
 			uint8_t						e_direction		:1; ///< direction flag for E axis
-		};
+    };
     uint16_t            allflags; ///< used for clearing all flags
 	};
 
@@ -118,17 +118,17 @@ typedef struct {
 	uint32_t					c; ///< time until next step, 24.8 fixed point
 
 	#ifdef ACCELERATION_REPRAP
-	uint32_t					end_c; ///< time between 2nd last step and last step
+  uint32_t          end_c; ///< time between 2nd last step and last step
 	#endif
 	#ifdef ACCELERATION_RAMPING
   /// precalculated step time offset variable
   int32_t           n;
-	/// number of steps accelerating
+  /// number of steps accelerating
 	uint32_t					rampup_steps;
 	/// number of last step before decelerating
 	uint32_t					rampdown_steps;
 	/// 24.8 fixed point timer value, maximum speed
-	uint32_t					c_min;
+  uint32_t          c_min;
   #ifdef LOOKAHEAD
   // With the look-ahead functionality, it is possible to retain physical
   // movement between G1 moves. These variables keep track of the entry and
@@ -148,7 +148,7 @@ typedef struct {
   uint8_t           id;
   #endif
 	#endif
-	#ifdef ACCELERATION_TEMPORAL
+  #ifdef ACCELERATION_TEMPORAL
   axes_uint32_t     step_interval;   ///< time between steps on each axis
 	uint8_t						axis_to_step;    ///< axis to be stepped on the next interrupt
 	#endif
@@ -178,7 +178,7 @@ extern TARGET startpoint_steps;
 extern TARGET current_position;
 
 /*
-	methods
+  methods
 */
 
 // initialize dda structures

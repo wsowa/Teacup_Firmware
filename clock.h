@@ -1,4 +1,4 @@
-#ifndef	_CLOCK_H
+#ifndef  _CLOCK_H
 #define	_CLOCK_H
 
 

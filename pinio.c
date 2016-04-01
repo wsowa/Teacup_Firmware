@@ -1,4 +1,4 @@
-#include	"pinio.h"
+#include  "pinio.h"
 #include	"delay.h"
 
 static char ps_is_on = 0;
@@ -138,12 +138,12 @@ void power_off() {
 	x_disable();
 	y_disable();
 	z_disable();
-	e_disable();
+  e_disable();
 
 	#ifdef	PS_ON_PIN
 		SET_INPUT(PS_ON_PIN);
     PULLUP_OFF(PS_ON_PIN);
-	#endif
+  #endif
 
   #ifdef PS_MOSFET_PIN
     WRITE(PS_MOSFET_PIN, 0);

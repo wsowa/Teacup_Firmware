@@ -1,9 +1,9 @@
-#include	"serial.h"
+#include  "serial.h"
 
 /** \file
 	\brief Serial subsystem
 
-	Teacup's serial subsystem is a powerful, thoroughly tested and highly modular serial management system.
+  Teacup's serial subsystem is a powerful, thoroughly tested and highly modular serial management system.
 
 	It uses ringbuffers for both transmit and receive, and intelligently decides whether to wait or drop transmitted characters if the buffer is full.
 
@@ -38,7 +38,7 @@ void serial_writestr(uint8_t *data)
 void serial_writestr_P(PGM_P data_P)
 {
 	uint8_t r, i = 0;
-	// yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
+  // yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
 	while ((r = pgm_read_byte(&data_P[i++])))
 		serial_writechar(r);
 }

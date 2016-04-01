@@ -1,4 +1,4 @@
-#ifndef	_GCODE_PROCESS_H
+#ifndef  _GCODE_PROCESS_H
 #define	_GCODE_PROCESS_H
 
 #include	"gcode_parse.h"

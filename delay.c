@@ -1,4 +1,4 @@
-#include	"delay.h"
+#include  "delay.h"
 
 /** \file
 	\brief Delay routines
@@ -23,10 +23,10 @@
 void delay_ms(uint32_t delay) {
 	wd_reset();
 	while (delay > 65) {
-		delay_us(64999);
+    delay_us(64999);
 		delay -= 65;
 		wd_reset();
 	}
   delay_us(delay * 1000 - 2);
-	wd_reset();
+  wd_reset();
 }

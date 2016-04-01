@@ -1,9 +1,9 @@
-#include	"watchdog.h"
+#include  "watchdog.h"
 
 /** \file
 	\brief Watchdog - reset if main loop doesn't run for too long
 
-	The usefulness of this feature is questionable at best.
+  The usefulness of this feature is questionable at best.
 
 	What do you think will happen if your avr resets in the middle of a print?
 
@@ -13,12 +13,12 @@
 #ifdef USE_WATCHDOG
 
 #include	<avr/wdt.h>
-#include	<avr/interrupt.h>
+#include  <avr/interrupt.h>
 #include	"memory_barrier.h"
 
 #include	"arduino.h"
 #ifndef	EXTRUDER
-	#include	"serial.h"
+  #include  "serial.h"
 #endif
 
 volatile uint8_t	wd_flag = 0;
@@ -28,12 +28,12 @@ volatile uint8_t	wd_flag = 0;
 // void get_mcusr(void) {
 // 	mcusr_mirror = MCUSR;
 // 	MCUSR = 0;
-// 	wdt_disable();
+//   wdt_disable();
 // }
 
 ISR(WDT_vect) {
 	// watchdog has tripped- no main loop activity for 0.5s, probably a bad thing
-	// if watchdog fires again, we will reset
+  // if watchdog fires again, we will reset
 	// perhaps we should do something more intelligent in this interrupt?
 	wd_flag |= 1;
 }
@@ -53,7 +53,7 @@ void wd_init() {
 void wd_reset() {
 	wdt_reset();
 	if (wd_flag) {
-		WDTCSR |= MASK(WDIE);
+    WDTCSR |= MASK(WDIE);
 		wd_flag &= ~1;
 	}
 }

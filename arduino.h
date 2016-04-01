@@ -48,7 +48,7 @@
 #if defined (__AVR_ATmega644__) || defined (__AVR_ATmega644P__) || \
     defined (__AVR_ATmega644PA__) || defined (__AVR_ATmega1284__) || \
     defined (__AVR_ATmega1284P__)
-	#include	"arduino_644.h"
+  #include  "arduino_644.h"
 #endif
 
 #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega2560__)

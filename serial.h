@@ -1,4 +1,4 @@
-#ifndef	_SERIAL_H
+#ifndef  _SERIAL_H
 #define	_SERIAL_H
 
 #include "config_wrapper.h"

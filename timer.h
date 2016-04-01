@@ -1,4 +1,4 @@
-#ifndef	_TIMER_H
+#ifndef  _TIMER_H
 #define	_TIMER_H
 
 #include	<stdint.h>

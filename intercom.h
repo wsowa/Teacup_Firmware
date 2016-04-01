@@ -1,4 +1,4 @@
-#ifndef	_INTERCOM_H
+#ifndef  _INTERCOM_H
 #define	_INTERCOM_H
 
 #include	<stdint.h>
@@ -23,17 +23,17 @@ enum {
 */
 typedef struct {
 	uint8_t		start; ///< start byte, must be 0x55
-	uint8_t		dio;	///< gpio
+  uint8_t    dio;  ///< gpio
 	uint8_t		controller_num; ///< controller index
 	uint8_t		control_word;		///< what to do
 	uint8_t		control_index;	///< what to do it to
 	/// data with which to do it
-	union {
+  union {
 		int32_t		control_data_int32;
 		uint32_t	control_data_uint32;
 		float			control_data_float;
 		uint16_t	temp[2];
-	};
+  };
 	uint8_t		err;	///< error code, if any
 	uint8_t		crc;	///< crc for packet verification. packets with bad crc are simply ignored
 } intercom_packet_t;
@@ -78,7 +78,7 @@ void start_send(void);
 
 #define	FLAG_RX_IN_PROGRESS	1
 #define	FLAG_TX_IN_PROGRESS	2
-#define FLAG_NEW_RX					4
+#define FLAG_NEW_RX          4
 #define	FLAG_TX_FINISHED		8
 extern volatile uint8_t	intercom_flags;
 

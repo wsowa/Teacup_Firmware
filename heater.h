@@ -1,4 +1,4 @@
-#ifndef	_HEATER_H
+#ifndef  _HEATER_H
 #define	_HEATER_H
 
 #include "config_wrapper.h"

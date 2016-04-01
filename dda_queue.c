@@ -1,4 +1,4 @@
-#include	"dda_queue.h"
+#include  "dda_queue.h"
 
 /** \file
 	\brief DDA Queue - manage the move queue
@@ -8,12 +8,12 @@
 
 #include	"config_wrapper.h"
 #include	"timer.h"
-#include	"serial.h"
+#include  "serial.h"
 #include	"sermsg.h"
 #include	"temp.h"
 #include	"delay.h"
 #include	"sersendf.h"
-#include	"clock.h"
+#include  "clock.h"
 #include "cpu.h"
 #include	"memory_barrier.h"
 
@@ -78,17 +78,17 @@ void queue_step() {
 	// do our next step
 	DDA* current_movebuffer = &movebuffer[mb_tail];
 	if (current_movebuffer->live) {
-		if (current_movebuffer->waitfor_temp) {
+    if (current_movebuffer->waitfor_temp) {
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 			if (temp_achieved()) {
 				current_movebuffer->live = current_movebuffer->done = 0;
 				serial_writestr_P(PSTR("Temp achieved\n"));
-			}
+      }
       else {
         temp_print(TEMP_SENSOR_none);
       }
 		}
-		else {
+    else {
 			dda_step(current_movebuffer);
 		}
 	}
@@ -103,12 +103,12 @@ void queue_step() {
 /// This is the only function that modifies mb_head and it always called from outside an interrupt.
 void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 	// don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
-	while (queue_full())
+  while (queue_full())
 		delay_us(100);
 
   uint8_t h = MB_NEXT(mb_head);
 
-	DDA* new_movebuffer = &(movebuffer[h]);
+  DDA* new_movebuffer = &(movebuffer[h]);
 
   // Initialise queue entry to a known state. This also clears flags like
   // dda->live, dda->done and dda->wait_for_temp.
@@ -118,7 +118,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 		new_movebuffer->endstop_check = endstop_check;
 		new_movebuffer->endstop_stop_cond = endstop_stop_cond;
 	}
-	else {
+  else {
 		// it's a wait for temp
 		new_movebuffer->waitfor_temp = 1;
 	}
@@ -128,7 +128,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 	// are flushed before modifying mb_head.
 	MEMORY_BARRIER();
 
-	mb_head = h;
+  mb_head = h;
 
   uint8_t isdead;
 
@@ -138,7 +138,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 
 	if (isdead) {
     timer_reset();
-		next_move();
+    next_move();
     // Compensate for the cli() in timer_set().
 		sei();
 	}
@@ -153,7 +153,7 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 /// move buffer was dead in the non-interrupt case (which indicates that the
 /// timer interrupt is disabled).
 void next_move() {
-	while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
+  while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
 		// next item
     uint8_t t = MB_NEXT(mb_tail);
 		DDA* current_movebuffer = &movebuffer[t];
@@ -163,12 +163,12 @@ void next_move() {
 		mb_tail = t;
 		if (current_movebuffer->waitfor_temp) {
 			serial_writestr_P(PSTR("Waiting for target temp\n"));
-			current_movebuffer->live = 1;
+      current_movebuffer->live = 1;
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 		}
 		else {
 			dda_start(current_movebuffer);
-		}
+    }
 	}
 }
 
@@ -193,5 +193,5 @@ void queue_flush() {
 /// wait for queue to empty
 void queue_wait() {
 	while (queue_empty() == 0)
-		clock();
+    clock();
 }

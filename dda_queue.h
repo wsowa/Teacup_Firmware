@@ -1,4 +1,4 @@
-#ifndef	_DDA_QUEUE
+#ifndef  _DDA_QUEUE
 #define	_DDA_QUEUE
 
 #include	"dda.h"
@@ -48,4 +48,4 @@ void queue_flush(void);
 // wait for queue to empty
 void queue_wait(void);
 
-#endif	/* _DDA_QUEUE */
+#endif  /* _DDA_QUEUE */

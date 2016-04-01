@@ -1,4 +1,4 @@
-#ifndef	_ANALOG_H
+#ifndef  _ANALOG_H
 #define	_ANALOG_H
 
 #include	<stdint.h>
@@ -33,7 +33,7 @@
 	#define	REFERENCE_1V1		192
 #else
 	#define	REFERENCE_1V1		128
-	#define	REFERENCE_2V56	192
+  #define  REFERENCE_2V56  192
 #endif
 
 /** \def REFERENCE
@@ -53,6 +53,6 @@
 
 void 			analog_init(void);
 
-uint16_t	analog_read(uint8_t index);
+uint16_t  analog_read(uint8_t index);
 
 #endif	/* _ANALOG_H */
