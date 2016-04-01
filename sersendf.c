@@ -20,12 +20,12 @@
 
   l - following data is (32 bits)\n
 	s - following data is short (8 bits)\n
-	none - following data is 16 bits.
+  none - following data is 16 bits.
 
   u - unsigned int\n
   d - signed int\n
 	q - signed int with decimal before the third digit from the right\n
-	c - character\n
+  c - character\n
   x - hex\n
   % - send a literal % character
 
@@ -50,22 +50,22 @@ void sersendf_P(PGM_P format_P, ...) {
   va_start(args, format_P);
 
 	uint16_t i = 0;
-	uint8_t c = 1, j = 0;
+  uint8_t c = 1, j = 0;
   while ((c = pgm_read_byte(&format_P[i++]))) {
     if (j) {
       switch(c) {
 				case 's':
-					j = 1;
+          j = 1;
           break;
         case 'l':
           j = 4;
 					break;
-				case 'u':
+        case 'u':
           if (j == 1)
             serwrite_uint8((uint8_t)GET_ARG(uint16_t));
           else if (j == 2)
             serwrite_uint16((uint16_t)GET_ARG(uint16_t));
-					else
+          else
             serwrite_uint32(GET_ARG(uint32_t));
           j = 0;
           break;
@@ -80,7 +80,7 @@ void sersendf_P(PGM_P format_P, ...) {
           break;
         case 'c':
           serial_writechar((uint8_t)GET_ARG(uint16_t));
-					j = 0;
+          j = 0;
           break;
         case 'x':
           serial_writestr_P(PSTR("0x"));
@@ -90,7 +90,7 @@ void sersendf_P(PGM_P format_P, ...) {
             serwrite_hex16((uint16_t)GET_ARG(uint16_t));
           else
             serwrite_hex32(GET_ARG(uint32_t));
-					j = 0;
+          j = 0;
           break;
 /*        case 'p':
           serwrite_hex16(GET_ARG(uint16_t));*/
@@ -100,17 +100,17 @@ void sersendf_P(PGM_P format_P, ...) {
           break;
         default:
 					serial_writechar(c);
-					j = 0;
+          j = 0;
           break;
       }
     }
 		else {
-			if (c == '%') {
+      if (c == '%') {
         j = 2;
       }
       else {
 				serial_writechar(c);
-			}
+      }
     }
   }
   va_end(args);

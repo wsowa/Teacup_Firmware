@@ -120,7 +120,7 @@ void power_on() {
     #ifdef  PS_ON_PIN
       SET_OUTPUT(PS_ON_PIN);
 			WRITE(PS_ON_PIN, 0);
-			delay_ms(500);
+      delay_ms(500);
     #endif
     #ifdef PS_MOSFET_PIN
       WRITE(PS_MOSFET_PIN, 1);
@@ -135,12 +135,12 @@ void power_on() {
 void power_off() {
 
 	stepper_disable();
-	x_disable();
+  x_disable();
   y_disable();
   z_disable();
   e_disable();
 
-	#ifdef	PS_ON_PIN
+  #ifdef  PS_ON_PIN
     SET_INPUT(PS_ON_PIN);
     PULLUP_OFF(PS_ON_PIN);
   #endif

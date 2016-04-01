@@ -5,12 +5,12 @@
 */
 
 #include <stdint.h>
-#include	"pinio.h"
+#include  "pinio.h"
 #include  "sersendf.h"
 #include  "dda_queue.h"
 #include  "watchdog.h"
 #include	"timer.h"
-#include	"debug.h"
+#include  "debug.h"
 #include  "heater.h"
 #include  "serial.h"
 #ifdef  TEMP_INTERCOM
@@ -75,17 +75,17 @@ static void clock_250ms(void) {
   if (heaters_all_zero()) {
     if (psu_timeout > (30 * 4)) {
 			power_off();
-		}
+    }
     else {
       ATOMIC_START
         psu_timeout++;
       ATOMIC_END
-		}
+    }
   }
 
   ifclock(clock_flag_1s) {
 		if (DEBUG_POSITION && (debug_flags & DEBUG_POSITION)) {
-			// current position
+      // current position
       update_current_position();
       sersendf_P(PSTR("Pos: %lq,%lq,%lq,%lq,%lu\n"), current_position.axis[X], current_position.axis[Y], current_position.axis[Z], current_position.axis[E], current_position.F);
 
@@ -95,12 +95,12 @@ static void clock_250ms(void) {
       // Queue
       print_queue();
 
-			// newline
+      // newline
       serial_writechar('\n');
     }
     // temperature
 		/*		if (temp_get_target())
-		temp_print();*/
+    temp_print();*/
   }
   #ifdef  TEMP_INTERCOM
   start_send();
@@ -115,7 +115,7 @@ static void clock_10ms(void) {
   // reset watchdog
   wd_reset();
 
-	temp_sensor_tick();
+  temp_sensor_tick();
 
   ifclock(clock_flag_250ms) {
     clock_250ms();

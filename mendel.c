@@ -10,37 +10,37 @@
   \section install_sec  Installation
     \subsection step1 Step 1: Download
 			\code git clone git://github.com/traumflug/Teacup_Firmware \endcode
-		\subsection step2 Step 2: configure
+    \subsection step2 Step 2: configure
       \code cp config.[yourboardhere].h config.h \endcode
       Edit config.h to suit your machone
       Edit Makefile to select the correct chip and programming settings
 		\subsection step3 Step 3: Compile
-			\code make \endcode
+      \code make \endcode
       \code make program \endcode
     \subsection step4 Step 4: Test!
       \code ./func.sh mendel_reset
 			./func.sh mendel_talk
-			M115
+      M115
       ctrl+d \endcode
 */
 
 #ifdef __AVR__
-#include	<avr/interrupt.h>
+#include  <avr/interrupt.h>
 #endif
 
 #include  "config_wrapper.h"
 #include "cpu.h"
-#include	"serial.h"
+#include  "serial.h"
 #include  "dda_queue.h"
 #include  "gcode_parse.h"
 #include  "timer.h"
 #include	"temp.h"
-#include	"watchdog.h"
+#include  "watchdog.h"
 #include  "debug.h"
 #include  "heater.h"
 #include  "analog.h"
 #include	"pinio.h"
-#include	"clock.h"
+#include  "clock.h"
 #include  "intercom.h"
 #include "spi.h"
 #include "sd.h"
@@ -70,7 +70,7 @@ void init(void) {
 
   cpu_init();
 
-	// set up watchdog
+  // set up watchdog
   wd_init();
 
   // set up serial
@@ -95,7 +95,7 @@ void init(void) {
   dda_init();
 
 	// start up analog read interrupt loop,
-	// if any of the temp sensors in your config.h use analog interface
+  // if any of the temp sensors in your config.h use analog interface
   analog_init();
 
   // set up temperature inputs
@@ -105,7 +105,7 @@ void init(void) {
     sd_init();
   #endif
 
-	// enable interrupts
+  // enable interrupts
   sei();
 
   // reset watchdog
@@ -115,7 +115,7 @@ void init(void) {
   power_init();
 
 	// say hi to host
-	serial_writestr_P(PSTR("start\nok\n"));
+  serial_writestr_P(PSTR("start\nok\n"));
 
 }
 
@@ -135,7 +135,7 @@ int main (void)
   init();
 
 	// main loop
-	for (;;)
+  for (;;)
   {
     // if queue is full, no point in reading chars- host will just have to wait
     if (queue_full() == 0) {
@@ -205,6 +205,6 @@ int main (void)
       #endif /* CANNED_CYCLE */
     }
 
-		clock();
+    clock();
   }
 }

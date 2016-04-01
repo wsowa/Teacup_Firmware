@@ -10,7 +10,7 @@
   #define disable_transmit()      do { WRITE(TX_ENABLE_PIN,0);  UCSR1B &= ~(MASK(TXCIE1) | MASK(UDRIE1)); UCSR1B |= MASK(RXEN1); } while(0)
 #else
 	#define enable_transmit()			do { WRITE(TX_ENABLE_PIN,1);  UCSR0B &= ~MASK(RXEN0); } while(0)
-	#define disable_transmit()			do { WRITE(TX_ENABLE_PIN,0);  UCSR0B &= ~(MASK(TXCIE0) | MASK(UDRIE0)); UCSR0B |= MASK(RXEN0); } while(0)
+  #define disable_transmit()      do { WRITE(TX_ENABLE_PIN,0);  UCSR0B &= ~(MASK(TXCIE0) | MASK(UDRIE0)); UCSR0B |= MASK(RXEN0); } while(0)
 #endif
 #endif
 
@@ -25,22 +25,22 @@ typedef struct {
   uint8_t    start; ///< start byte, must be 0x55
   uint8_t    dio;  ///< gpio
 	uint8_t		controller_num; ///< controller index
-	uint8_t		control_word;		///< what to do
+  uint8_t    control_word;    ///< what to do
   uint8_t    control_index;  ///< what to do it to
   /// data with which to do it
   union {
 		int32_t		control_data_int32;
-		uint32_t	control_data_uint32;
+    uint32_t  control_data_uint32;
     float      control_data_float;
     uint16_t  temp[2];
   };
 	uint8_t		err;	///< error code, if any
-	uint8_t		crc;	///< crc for packet verification. packets with bad crc are simply ignored
+  uint8_t    crc;  ///< crc for packet verification. packets with bad crc are simply ignored
 } intercom_packet_t;
 
 /// this allows us to fill the packet struct, then pass it to something that expects an array of bytes
 typedef union {
-	intercom_packet_t packet;
+  intercom_packet_t packet;
   uint8_t            data[sizeof(intercom_packet_t)];
 } intercom_packet;
 
@@ -80,7 +80,7 @@ void start_send(void);
 #define  FLAG_TX_IN_PROGRESS  2
 #define FLAG_NEW_RX          4
 #define	FLAG_TX_FINISHED		8
-extern volatile uint8_t	intercom_flags;
+extern volatile uint8_t  intercom_flags;
 
 
 

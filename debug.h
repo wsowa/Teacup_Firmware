@@ -25,7 +25,7 @@
   #define DEBUG_DDA       32
   #define DEBUG_POSITION  64
 #else
-	// by setting these to zero, the compiler should optimise the relevant code out
+  // by setting these to zero, the compiler should optimise the relevant code out
   #define    DEBUG_PID        0
   #define    DEBUG_DDA        0
   #define    DEBUG_POSITION  0
@@ -35,6 +35,6 @@
 #endif
 
 
-extern volatile uint8_t	debug_flags;
+extern volatile uint8_t  debug_flags;
 
 #endif  /* _DEBUG_H */

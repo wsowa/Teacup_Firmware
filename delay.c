@@ -25,7 +25,7 @@ void delay_ms(uint32_t delay) {
   while (delay > 65) {
     delay_us(64999);
 		delay -= 65;
-		wd_reset();
+    wd_reset();
   }
   delay_us(delay * 1000 - 2);
   wd_reset();

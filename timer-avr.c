@@ -20,7 +20,7 @@
 #include "memory_barrier.h"
 
 #ifdef	MOTHERBOARD
-#include	"dda_queue.h"
+#include  "dda_queue.h"
 #endif
 
 
@@ -70,7 +70,7 @@ ISR(TIMER1_COMPB_vect) {
 */
 ISR(TIMER1_COMPA_vect) {
 	// Check if this is a real step, or just a next_step_time "overflow"
-	if (next_step_time < 65536) {
+  if (next_step_time < 65536) {
     // step!
     #ifdef DEBUG_LED_PIN
       WRITE(DEBUG_LED_PIN, 1);
@@ -80,22 +80,22 @@ ISR(TIMER1_COMPA_vect) {
     TIMSK1 &= ~MASK(OCIE1A);
 
 		// stepper tick
-		queue_step();
+    queue_step();
 
     // led off
     #ifdef DEBUG_LED_PIN
 			WRITE(DEBUG_LED_PIN, 0);
-		#endif
+    #endif
 
     return;
   }
 
-	next_step_time -= 65536;
+  next_step_time -= 65536;
 
   // Similar algorithm as described in timer_set() below.
   if (next_step_time < 65536) {
 		OCR1A = (OCR1A + next_step_time) & 0xFFFF;
-	} else if(next_step_time < 75536){
+  } else if(next_step_time < 75536){
     OCR1A = (OCR1A - 10000) & 0xFFFF;
     next_step_time += 10000;
   }
@@ -110,12 +110,12 @@ ISR(TIMER1_COMPA_vect) {
 */
 void timer_init() {
 	// no outputs
-	TCCR1A = 0;
+  TCCR1A = 0;
   // Normal Mode
   TCCR1B = MASK(CS10);
   // set up "clock" comparator for first tick
 	OCR1B = TICK_TIME & 0xFFFF;
-	// enable interrupt
+  // enable interrupt
   TIMSK1 = MASK(OCIE1B);
 #ifdef SIMULATOR
   // Tell simulator
@@ -150,27 +150,27 @@ void timer_init() {
   one has to call timer_reset() before scheduling a step at an arbitrary time.
 
 	This enables the step interrupt, but also disables interrupts globally.
-	So, if you use it from inside the step interrupt, make sure to do so
+  So, if you use it from inside the step interrupt, make sure to do so
   as late as possible. If you use it from outside the step interrupt,
   do a sei() after it to make the interrupt actually fire.
 */
 uint8_t timer_set(int32_t delay, uint8_t check_short) {
-	uint16_t step_start = 0;
+  uint16_t step_start = 0;
   #ifdef ACCELERATION_TEMPORAL
   uint16_t current_time;
   #endif /* ACCELERATION_TEMPORAL */
 
-	// An interrupt would make all our timing calculations invalid,
+  // An interrupt would make all our timing calculations invalid,
   // so stop that here.
   cli();
   CLI_SEI_BUG_MEMORY_BARRIER();
 
-	// Assume all steps belong to one move. Within one move the delay is
+  // Assume all steps belong to one move. Within one move the delay is
   // from one step to the next one, which should be more or less the same
   // as from one step interrupt to the next one. The last step interrupt happend
   // at OCR1A, so start delay from there.
 	step_start = OCR1A;
-	next_step_time = delay;
+  next_step_time = delay;
 
   #ifdef ACCELERATION_TEMPORAL
     if (check_short) {
@@ -190,22 +190,22 @@ uint8_t timer_set(int32_t delay, uint8_t check_short) {
 
   // Now we know how long we actually want to delay, so set the timer.
 	if (next_step_time < 65536) {
-		// set the comparator directly to the next real step
+    // set the comparator directly to the next real step
     OCR1A = (next_step_time + step_start) & 0xFFFF;
   }
   else if (next_step_time < 75536) {
 		// Next comparator interrupt would have to trigger another
-		// interrupt within a short time (possibly within 1 cycle).
+    // interrupt within a short time (possibly within 1 cycle).
     // Avoid the impossible by firing the interrupt earlier.
     OCR1A = (step_start - 10000) & 0xFFFF;
     next_step_time += 10000;
 	}
-	else {
+  else {
     OCR1A = step_start;
   }
 
 	// Enable this interrupt, but only do it after disabling
-	// global interrupts (see above). This will cause push any possible
+  // global interrupts (see above). This will cause push any possible
   // timer1a interrupt to the far side of the return, protecting the
   // stack from recursively clobbering memory.
   TIMSK1 |= MASK(OCIE1A);

@@ -5,7 +5,7 @@
 
   Teacup's serial subsystem is a powerful, thoroughly tested and highly modular serial management system.
 
-	It uses ringbuffers for both transmit and receive, and intelligently decides whether to wait or drop transmitted characters if the buffer is full.
+  It uses ringbuffers for both transmit and receive, and intelligently decides whether to wait or drop transmitted characters if the buffer is full.
 
   It also supports XON/XOFF flow control of the receive buffer, to help avoid overruns.
 */
@@ -20,7 +20,7 @@
 void serial_writestr(uint8_t *data)
 {
 	uint8_t i = 0, r;
-	// yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
+  // yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
   while ((r = data[i++]))
     serial_writechar(r);
 }
@@ -40,5 +40,5 @@ void serial_writestr_P(PGM_P data_P)
   uint8_t r, i = 0;
   // yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
 	while ((r = pgm_read_byte(&data_P[i++])))
-		serial_writechar(r);
+    serial_writechar(r);
 }

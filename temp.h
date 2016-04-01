@@ -15,7 +15,7 @@ we still need to specify which analog pins we use in machine.h for the analog se
 #undef DEFINE_TEMP_SENSOR
 #define DEFINE_TEMP_SENSOR(name, type, pin, additional) TEMP_SENSOR_ ## name,
 typedef enum {
-	#include "config_wrapper.h"
+  #include "config_wrapper.h"
   NUM_TEMP_SENSORS,
   TEMP_SENSOR_none
 } temp_sensor_t;
@@ -25,7 +25,7 @@ typedef enum {
   TT_THERMISTOR,
   TT_MAX6675,
 	TT_AD595,
-	TT_PT100,
+  TT_PT100,
   TT_INTERCOM,
   TT_DUMMY,
 } temp_type_t;
@@ -35,7 +35,7 @@ void temp_init(void);
 
 void temp_sensor_tick(void);
 
-uint8_t	temp_achieved(void);
+uint8_t  temp_achieved(void);
 
 void temp_set(temp_sensor_t index, uint16_t temperature);
 uint16_t temp_get(temp_sensor_t index);

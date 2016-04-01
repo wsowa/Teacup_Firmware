@@ -5,7 +5,7 @@
 #include "arduino.h"  // For F_CPU on ARM.
 
 // time-related constants
-#define	US	* (F_CPU / 1000000)
+#define  US  * (F_CPU / 1000000)
 #define  MS  * (F_CPU / 1000)
 
 /// How often we overflow and update our clock.
@@ -25,4 +25,4 @@ void timer_reset(void);
 
 void timer_stop(void);
 
-#endif	/* _TIMER_H */
+#endif  /* _TIMER_H */

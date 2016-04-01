@@ -5,7 +5,7 @@
 
   The usefulness of this feature is questionable at best.
 
-	What do you think will happen if your avr resets in the middle of a print?
+  What do you think will happen if your avr resets in the middle of a print?
 
   Is that preferable to it simply locking up?
 */
@@ -35,17 +35,17 @@ ISR(WDT_vect) {
   // watchdog has tripped- no main loop activity for 0.5s, probably a bad thing
   // if watchdog fires again, we will reset
 	// perhaps we should do something more intelligent in this interrupt?
-	wd_flag |= 1;
+  wd_flag |= 1;
 }
 
 /// intialise watchdog
 void wd_init() {
-	// check if we were reset by the watchdog
+  // check if we were reset by the watchdog
 //   if (mcusr_mirror & MASK(WDRF))
 //     serial_writestr_P(PSTR("Watchdog Reset!\n"));
 
 	// 0.5s timeout, interrupt and system reset
-	wdt_enable(WDTO_500MS);
+  wdt_enable(WDTO_500MS);
   WDTCSR |= MASK(WDIE);
 }
 
@@ -55,7 +55,7 @@ void wd_reset() {
   if (wd_flag) {
     WDTCSR |= MASK(WDIE);
 		wd_flag &= ~1;
-	}
+  }
 }
 
 #endif /* USE_WATCHDOG */

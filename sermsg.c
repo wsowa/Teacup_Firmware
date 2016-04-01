@@ -10,7 +10,7 @@
   \param v hex digit to write, higher nibble ignored
 */
 void serwrite_hex4(uint8_t v) {
-	v &= 0xF;
+  v &= 0xF;
   if (v < 10)
     serial_writechar('0' + v);
   else
@@ -30,7 +30,7 @@ void serwrite_hex8(uint8_t v) {
 */
 void serwrite_hex16(uint16_t v) {
 	serwrite_hex8(v >> 8);
-	serwrite_hex8(v & 0xFF);
+  serwrite_hex8(v & 0xFF);
 }
 
 /** write eight hex digits
@@ -45,22 +45,22 @@ void serwrite_hex32(uint32_t v) {
 const uint32_t powers[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
 /** write decimal digits from a long unsigned int
-	\param v number to send
+  \param v number to send
 */
 void serwrite_uint32(uint32_t v) {
   uint8_t e, t;
 
-	for (e = 9; e > 0; e--) {
+  for (e = 9; e > 0; e--) {
     if (v >= powers[e])
       break;
   }
 
-	do
+  do
   {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
 	}
-	while (e--);
+  while (e--);
 }
 
 /** write decimal digits from a long signed int
@@ -70,7 +70,7 @@ void serwrite_int32(int32_t v) {
   if (v < 0) {
     serial_writechar('-');
 		v = -v;
-	}
+  }
 
   serwrite_uint32(v);
 }
@@ -80,22 +80,22 @@ void serwrite_int32(int32_t v) {
 \param fp number of decimal places to the right of the decimal point
 */
 void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
-	uint8_t e, t;
+  uint8_t e, t;
 
   for (e = 9; e > 0; e--) {
     if (v >= powers[e])
 			break;
-	}
+  }
 
   if (e < fp)
     e = fp;
 
-	do
+  do
   {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
 		if (e == fp)
-			serial_writechar('.');
+      serial_writechar('.');
   }
   while (e--);
 }
@@ -105,10 +105,10 @@ void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
 \param fp number of decimal places to the right of the decimal point
 */
 void serwrite_int32_vf(int32_t v, uint8_t fp) {
-	if (v < 0) {
+  if (v < 0) {
     serial_writechar('-');
     v = -v;
   }
 
-	serwrite_uint32_vf(v, fp);
+  serwrite_uint32_vf(v, fp);
 }

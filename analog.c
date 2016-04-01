@@ -1,6 +1,6 @@
 
 /** \file
-	\brief Analog subsystem
+  \brief Analog subsystem
 */
 
 #include "analog.h"

@@ -20,7 +20,7 @@ void analog_init() {
     #ifdef  PRR
       PRR &= ~MASK(PRADC);
 		#elif defined PRR0
-			PRR0 &= ~MASK(PRADC);
+      PRR0 &= ~MASK(PRADC);
     #endif
 
     // select reference signal to use, set right adjusted results and select ADC input 0
@@ -30,17 +30,17 @@ void analog_init() {
     ADCSRA = MASK(ADEN) | MASK(ADPS2) | MASK(ADPS1) | MASK(ADPS0);
     #ifdef  ADCSRB
 			ADCSRB = 0;
-		#endif
+    #endif
 
     adc_counter = 0;
 
 		// clear analog inputs in the data direction register(s)
-		AIO0_DDR &= ~analog_mask;
+    AIO0_DDR &= ~analog_mask;
     #ifdef  AIO8_DDR
       AIO8_DDR &= ~(analog_mask >> 8);
     #endif
 
-		// disable the analog inputs for digital use.
+    // disable the analog inputs for digital use.
     DIDR0 = analog_mask & 0xFF;
     #ifdef  DIDR2
       DIDR2 = (analog_mask >> 8) & 0xFF;
@@ -65,17 +65,17 @@ ISR(ADC_vect, ISR_NOBLOCK) {
     do {
       adc_counter++;
 			if (adc_counter >= sizeof(adc_channel))
-				adc_counter = 0;
+        adc_counter = 0;
     } while (adc_channel[adc_counter] == 255);
 
     // start next conversion
 		ADMUX = (adc_channel[adc_counter] & 0x07) | REFERENCE;
-		#ifdef	MUX5
+    #ifdef  MUX5
       if (adc_channel[adc_counter] & 0x08)
         ADCSRB |= MASK(MUX5);
       else
 				ADCSRB &= ~MASK(MUX5);
-		#endif
+    #endif
 
     // After the mux has been set, start a new conversion
     ADCSRA |= MASK(ADSC);

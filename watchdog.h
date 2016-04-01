@@ -25,5 +25,5 @@ void wd_reset(void);
 #define wd_init()  /* empty */
 #define wd_reset() /* empty */
 
-#endif	/* USE_WATCHDOG */
+#endif  /* USE_WATCHDOG */
 #endif  /* _WATCHDOG_H */
