@@ -1,12 +1,12 @@
 #ifndef  _TIMER_H
 #define	_TIMER_H
 
-#include	<stdint.h>
+#include  <stdint.h>
 #include "arduino.h"  // For F_CPU on ARM.
 
 // time-related constants
 #define	US	* (F_CPU / 1000000)
-#define	MS	* (F_CPU / 1000)
+#define  MS  * (F_CPU / 1000)
 
 /// How often we overflow and update our clock.
 /// With F_CPU = 16MHz, max is < 4.096ms (TICK_TIME = 65535).

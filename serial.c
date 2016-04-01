@@ -1,7 +1,7 @@
 #include  "serial.h"
 
 /** \file
-	\brief Serial subsystem
+  \brief Serial subsystem
 
   Teacup's serial subsystem is a powerful, thoroughly tested and highly modular serial management system.
 
@@ -21,7 +21,7 @@ void serial_writestr(uint8_t *data)
 {
 	uint8_t i = 0, r;
 	// yes, this is *supposed* to be assignment rather than comparison, so we break when r is assigned zero
-	while ((r = data[i++]))
+  while ((r = data[i++]))
     serial_writechar(r);
 }
 

@@ -6,7 +6,7 @@
   do some fundamental platform related stuff.
 */
 
-#ifndef	_ARDUINO_H
+#ifndef  _ARDUINO_H
 #define  _ARDUINO_H
 
 
@@ -36,7 +36,7 @@
 /*
 	ports and functions
 
-	added as necessary or if I feel like it- not a comprehensive list!
+  added as necessary or if I feel like it- not a comprehensive list!
 */
 #if defined __AVR__
 

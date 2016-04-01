@@ -171,17 +171,17 @@ X Stepper
   #ifndef X_INVERT_MIN
 		#define x_min()						(READ(X_MIN_PIN)?1:0)
 	#else
-		#define x_min()						(READ(X_MIN_PIN)?0:1)
+    #define x_min()            (READ(X_MIN_PIN)?0:1)
   #endif
 #else
 	#define	x_min()							(0)
 #endif
-#ifdef	X_MAX_PIN
+#ifdef  X_MAX_PIN
   #ifndef X_INVERT_MAX
     #define x_max()            (READ(X_MAX_PIN)?1:0)
 	#else
 		#define x_max()						(READ(X_MAX_PIN)?0:1)
-	#endif
+  #endif
 #else
   #define  x_max()              (0)
 #endif
@@ -201,17 +201,17 @@ Y Stepper
   #ifndef Y_INVERT_MIN
 		#define y_min()						(READ(Y_MIN_PIN)?1:0)
 	#else
-		#define y_min()						(READ(Y_MIN_PIN)?0:1)
+    #define y_min()            (READ(Y_MIN_PIN)?0:1)
   #endif
 #else
 	#define	y_min()							(0)
 #endif
-#ifdef	Y_MAX_PIN
+#ifdef  Y_MAX_PIN
   #ifndef Y_INVERT_MAX
     #define y_max()            (READ(Y_MAX_PIN)?1:0)
 	#else
 		#define y_max()						(READ(Y_MAX_PIN)?0:1)
-	#endif
+  #endif
 #else
   #define  y_max()              (0)
 #endif
@@ -221,22 +221,22 @@ Z Stepper
 */
 
 #if defined Z_STEP_PIN && defined Z_DIR_PIN
-	#define	_z_step(st)					WRITE(Z_STEP_PIN, st)
+  #define  _z_step(st)          WRITE(Z_STEP_PIN, st)
   #define z_step()            _z_step(1)
   #ifndef  Z_INVERT_DIR
 		#define	z_direction(dir)	WRITE(Z_DIR_PIN, dir)
 	#else
-		#define	z_direction(dir)	WRITE(Z_DIR_PIN, (dir)^1)
+    #define  z_direction(dir)  WRITE(Z_DIR_PIN, (dir)^1)
   #endif
 #else
 	#define	_z_step(x)					do { } while (0)
 	#define	z_step()						do { } while (0)
-	#define	z_direction(x)			do { } while (0)
+  #define  z_direction(x)      do { } while (0)
 #endif
 #ifdef  Z_MIN_PIN
 	#ifndef Z_INVERT_MIN
 		#define z_min()						(READ(Z_MIN_PIN)?1:0)
-	#else
+  #else
     #define z_min()            (READ(Z_MIN_PIN)?0:1)
   #endif
 #else
@@ -246,7 +246,7 @@ Z Stepper
   #ifndef Z_INVERT_MAX
 		#define z_max()						(READ(Z_MAX_PIN)?1:0)
 	#else
-		#define z_max()						(READ(Z_MAX_PIN)?0:1)
+    #define z_max()            (READ(Z_MAX_PIN)?0:1)
   #endif
 #else
 	#define	z_max()							(0)
@@ -261,12 +261,12 @@ Extruder
   #define e_step()            _e_step(1)
 	#ifndef	E_INVERT_DIR
 		#define	e_direction(dir)	WRITE(E_DIR_PIN, dir)
-	#else
+  #else
     #define  e_direction(dir)  WRITE(E_DIR_PIN, (dir)^1)
   #endif
 #else
 	#define	_e_step(st)					do { } while (0)
-	#define	e_step()						do { } while (0)
+  #define  e_step()            do { } while (0)
   #define  e_direction(dir)    do { } while (0)
 #endif
 
@@ -281,27 +281,27 @@ End Step - All Steppers
 Stepper Enable Pins
 */
 
-#ifdef	STEPPER_ENABLE_PIN
+#ifdef  STEPPER_ENABLE_PIN
   #ifdef  STEPPER_INVERT_ENABLE
     #define stepper_enable()  do { WRITE(STEPPER_ENABLE_PIN, 0); } while (0)
 		#define stepper_disable()	do { WRITE(STEPPER_ENABLE_PIN, 1); } while (0)
 	#else
-		#define stepper_enable()	do { WRITE(STEPPER_ENABLE_PIN, 1); } while (0)
+    #define stepper_enable()  do { WRITE(STEPPER_ENABLE_PIN, 1); } while (0)
     #define stepper_disable()  do { WRITE(STEPPER_ENABLE_PIN, 0); } while (0)
   #endif
 #else
 	#define	stepper_enable()		do { } while (0)
-	#define	stepper_disable()		do { } while (0)
+  #define  stepper_disable()    do { } while (0)
 #endif
 
 #ifdef	X_ENABLE_PIN
 	#ifdef	X_INVERT_ENABLE
-		#define	x_enable()				do { WRITE(X_ENABLE_PIN, 0); } while (0)
+    #define  x_enable()        do { WRITE(X_ENABLE_PIN, 0); } while (0)
     #define  x_disable()        do { WRITE(X_ENABLE_PIN, 1); } while (0)
   #else
 		#define	x_enable()				do { WRITE(X_ENABLE_PIN, 1); } while (0)
 		#define	x_disable()				do { WRITE(X_ENABLE_PIN, 0); } while (0)
-	#endif
+  #endif
 #else
   #define  x_enable()          do { } while (0)
 	#define	x_disable()					do { } while (0)
@@ -311,22 +311,22 @@ Stepper Enable Pins
   #ifdef  Y_INVERT_ENABLE
 		#define	y_enable()				do { WRITE(Y_ENABLE_PIN, 0); } while (0)
 		#define	y_disable()				do { WRITE(Y_ENABLE_PIN, 1); } while (0)
-	#else
+  #else
     #define  y_enable()        do { WRITE(Y_ENABLE_PIN, 1); } while (0)
     #define  y_disable()        do { WRITE(Y_ENABLE_PIN, 0); } while (0)
 	#endif
 #else
-	#define	y_enable()					do { } while (0)
+  #define  y_enable()          do { } while (0)
   #define  y_disable()          do { } while (0)
 #endif
 
 #ifdef	Z_ENABLE_PIN
-	#ifdef	Z_INVERT_ENABLE
+  #ifdef  Z_INVERT_ENABLE
     #define  z_enable()        do { WRITE(Z_ENABLE_PIN, 0); } while (0)
     #define  z_disable()        do { WRITE(Z_ENABLE_PIN, 1); } while (0)
 	#else
 		#define	z_enable()				do { WRITE(Z_ENABLE_PIN, 1); } while (0)
-		#define	z_disable()				do { WRITE(Z_ENABLE_PIN, 0); } while (0)
+    #define  z_disable()        do { WRITE(Z_ENABLE_PIN, 0); } while (0)
   #endif
 #else
 	#define	z_enable()					do { } while (0)
@@ -336,7 +336,7 @@ Stepper Enable Pins
 #ifdef  E_ENABLE_PIN
 	#ifdef	E_INVERT_ENABLE
 		#define	e_enable()				do { WRITE(E_ENABLE_PIN, 0); } while (0)
-		#define	e_disable()				do { WRITE(E_ENABLE_PIN, 1); } while (0)
+    #define  e_disable()        do { WRITE(E_ENABLE_PIN, 1); } while (0)
   #else
     #define  e_enable()        do { WRITE(E_ENABLE_PIN, 1); } while (0)
 		#define	e_disable()				do { WRITE(E_ENABLE_PIN, 0); } while (0)
@@ -351,7 +351,7 @@ Internal pullup resistors for endstops
 */
 static void endstops_on(void) __attribute__ ((always_inline));
 inline void endstops_on(void) {
-	#ifdef USE_INTERNAL_PULLUPS
+  #ifdef USE_INTERNAL_PULLUPS
     #ifdef X_MIN_PIN
       PULLUP_ON(X_MIN_PIN);
 		#endif
@@ -361,12 +361,12 @@ inline void endstops_on(void) {
     #ifdef Y_MIN_PIN
       PULLUP_ON(Y_MIN_PIN);
 		#endif
-		#ifdef Y_MAX_PIN
+    #ifdef Y_MAX_PIN
       PULLUP_ON(Y_MAX_PIN);
     #endif
 		#ifdef Z_MIN_PIN
       PULLUP_ON(Z_MIN_PIN);
-		#endif
+    #endif
     #ifdef Z_MAX_PIN
       PULLUP_ON(Z_MAX_PIN);
 		#endif
@@ -376,12 +376,12 @@ inline void endstops_on(void) {
 static void endstops_off(void) __attribute__ ((always_inline));
 inline void endstops_off(void) {
 	#ifdef USE_INTERNAL_PULLUPS
-		#ifdef X_MIN_PIN
+    #ifdef X_MIN_PIN
       PULLUP_OFF(X_MIN_PIN);
     #endif
 		#ifdef X_MAX_PIN
       PULLUP_OFF(X_MAX_PIN);
-		#endif
+    #endif
     #ifdef Y_MIN_PIN
       PULLUP_OFF(Y_MIN_PIN);
 		#endif
@@ -391,7 +391,7 @@ inline void endstops_off(void) {
     #ifdef Z_MIN_PIN
       PULLUP_OFF(Z_MIN_PIN);
 		#endif
-		#ifdef Z_MAX_PIN
+    #ifdef Z_MAX_PIN
       PULLUP_OFF(Z_MAX_PIN);
     #endif
 	#endif

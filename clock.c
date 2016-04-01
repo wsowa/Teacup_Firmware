@@ -1,22 +1,22 @@
 #include  "clock.h"
 
 /** \file
-	\brief Do stuff periodically
+  \brief Do stuff periodically
 */
 
 #include <stdint.h>
 #include	"pinio.h"
-#include	"sersendf.h"
+#include  "sersendf.h"
 #include  "dda_queue.h"
 #include  "watchdog.h"
 #include	"timer.h"
 #include	"debug.h"
-#include	"heater.h"
+#include  "heater.h"
 #include  "serial.h"
 #ifdef  TEMP_INTERCOM
 	#include	"intercom.h"
 #endif
-#include	"memory_barrier.h"
+#include  "memory_barrier.h"
 
 /**
   If the specific bit is set, execute the following block exactly once
@@ -66,7 +66,7 @@ void clock_tick(void) {
   }
 }
 
-/*!	do stuff every 1/4 second
+/*!  do stuff every 1/4 second
 
   called from clock_10ms(), do not call directly
 */
@@ -76,17 +76,17 @@ static void clock_250ms(void) {
     if (psu_timeout > (30 * 4)) {
 			power_off();
 		}
-		else {
+    else {
       ATOMIC_START
         psu_timeout++;
       ATOMIC_END
 		}
-	}
+  }
 
   ifclock(clock_flag_1s) {
 		if (DEBUG_POSITION && (debug_flags & DEBUG_POSITION)) {
 			// current position
-			update_current_position();
+      update_current_position();
       sersendf_P(PSTR("Pos: %lq,%lq,%lq,%lq,%lu\n"), current_position.axis[X], current_position.axis[Y], current_position.axis[Z], current_position.axis[E], current_position.F);
 
 			// target position
@@ -96,12 +96,12 @@ static void clock_250ms(void) {
       print_queue();
 
 			// newline
-			serial_writechar('\n');
+      serial_writechar('\n');
     }
     // temperature
 		/*		if (temp_get_target())
 		temp_print();*/
-	}
+  }
   #ifdef  TEMP_INTERCOM
   start_send();
 	#endif

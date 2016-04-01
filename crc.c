@@ -1,7 +1,7 @@
 #include  "crc.h"
 
 /** \file
-	\brief crc16 routine
+  \brief crc16 routine
 */
 
 #ifdef __AVR__
@@ -31,7 +31,7 @@ uint16_t _crc16_update(uint16_t crc, uint8_t a) {
 */
 uint16_t	crc_block(void *data, uint16_t len) {
 	uint16_t	crc = 0xfeed;
-	for (; len; data++, len--) {
+  for (; len; data++, len--) {
     crc = _crc16_update(crc, *((uint8_t *) data));
   }
 	return crc;

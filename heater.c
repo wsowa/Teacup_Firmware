@@ -31,7 +31,7 @@
 #include  <stdlib.h>
 #include	"arduino.h"
 #include	"debug.h"
-#include	"crc.h"
+#include  "crc.h"
 #ifndef  EXTRUDER
   #include  "sersendf.h"
 #endif
@@ -41,7 +41,7 @@
 
 /**
 	\var heaters_pid
-	\brief this struct holds the heater PID factors
+  \brief this struct holds the heater PID factors
 
   PID is a fascinating way to control any closed loop control, combining the error (P), cumulative error (I) and rate at which we're approacing the setpoint (D) in such a way that when correctly tuned, the system will achieve target temperature quickly and with little to no overshoot
 
@@ -61,7 +61,7 @@ struct {
 #ifdef EECONFIG
 /// this lives in the eeprom so we can save our PID settings for each heater
 typedef struct {
-	int32_t		EE_p_factor;
+  int32_t    EE_p_factor;
   int32_t    EE_i_factor;
   int32_t    EE_d_factor;
 	int16_t		EE_i_limit;
@@ -116,7 +116,7 @@ void pid_init() {
   \param h which heater we're running the loop for
 	\param type which temp sensor type this heater is attached to
 	\param current_temp the temperature that the associated temp sensor is reporting
-	\param target_temp the temperature we're trying to achieve
+  \param target_temp the temperature we're trying to achieve
 */
 void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t target_temp) {
   // Static, so it's not mandatory to calculate a new value, see BANG_BANG.
@@ -126,27 +126,27 @@ void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t t
     int16_t    heater_p;
 		int16_t		heater_d;
 		int16_t		t_error = target_temp - current_temp;
-	#endif	/* BANG_BANG */
+  #endif  /* BANG_BANG */
 
   if (h >= NUM_HEATERS)
 		return;
 
-	if (target_temp == 0) {
+  if (target_temp == 0) {
     heater_set(h, 0);
     return;
 	}
 
-	#ifndef	BANG_BANG
+  #ifndef  BANG_BANG
     heaters_runtime[h].temp_history[heaters_runtime[h].temp_history_pointer++] = current_temp;
     heaters_runtime[h].temp_history_pointer &= (TH_COUNT - 1);
 
 		// PID stuff
-		// proportional
+    // proportional
     heater_p = t_error; // Units: qC where 4qC=1C
 
 		// integral
 		heaters_runtime[h].heater_i += t_error;  // Units: qC*qs where 16qC*qs=1C*s
-		// prevent integrator wind-up
+    // prevent integrator wind-up
     if (heaters_runtime[h].heater_i > heaters_pid[h].i_limit)
       heaters_runtime[h].heater_i = heaters_pid[h].i_limit;
 		else if (heaters_runtime[h].heater_i < -heaters_pid[h].i_limit)
@@ -156,12 +156,12 @@ void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t t
     // note: D follows temp rather than error so there's no large derivative when the target changes
 		heater_d = heaters_runtime[h].temp_history[heaters_runtime[h].temp_history_pointer] - current_temp;
 
-		// combine factors
+    // combine factors
     int32_t pid_output_intermed = ( // Units: counts
                      (
 										(((int32_t) heater_p) * heaters_pid[h].p_factor) +
 										(((int32_t) heaters_runtime[h].heater_i) * heaters_pid[h].i_factor) +
-										(((int32_t) heater_d) * heaters_pid[h].d_factor)
+                    (((int32_t) heater_d) * heaters_pid[h].d_factor)
                     ) / PID_SCALE
                      );
 
@@ -176,12 +176,12 @@ void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t t
         heaters_runtime[h].heater_i -= t_error; // un-integrate
       pid_output = 0;
     }
-		else
+    else
       pid_output = pid_output_intermed & 0xFF;
 
 		if (DEBUG_PID && (debug_flags & DEBUG_PID))
 			sersendf_P(PSTR("T{E:%d, P:%d * %ld = %ld / I:%d * %ld = %ld / D:%d * %ld = %ld # O: %ld = %u}\n"), t_error, heater_p, heaters_pid[h].p_factor, (int32_t) heater_p * heaters_pid[h].p_factor / PID_SCALE, heaters_runtime[h].heater_i, heaters_pid[h].i_factor, (int32_t) heaters_runtime[h].heater_i * heaters_pid[h].i_factor / PID_SCALE, heater_d, heaters_pid[h].d_factor, (int32_t) heater_d * heaters_pid[h].d_factor / PID_SCALE, pid_output_intermed, pid_output);
-	#else
+  #else
     if (current_temp >= target_temp + (TEMP_HYSTERESIS))
       pid_output = BANG_BANG_OFF;
     else if (current_temp <= target_temp - (TEMP_HYSTERESIS))
@@ -191,47 +191,47 @@ void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t t
 
 	#ifdef	HEATER_SANITY_CHECK
 	// check heater sanity
-	// implementation is a moving window with some slow-down to compensate for thermal mass
+  // implementation is a moving window with some slow-down to compensate for thermal mass
   if (target_temp > (current_temp + (TEMP_HYSTERESIS*4))) {
     // heating
 		if (current_temp > heaters_runtime[h].sane_temperature)
 			// hotter than sane- good since we're heating unless too hot
-			heaters_runtime[h].sane_temperature = current_temp;
+      heaters_runtime[h].sane_temperature = current_temp;
     else {
       if (heaters_runtime[h].sanity_counter < 40)
 				heaters_runtime[h].sanity_counter++;
 			else {
-				heaters_runtime[h].sanity_counter = 0;
+        heaters_runtime[h].sanity_counter = 0;
         // ratchet up expected temp
         heaters_runtime[h].sane_temperature++;
 			}
 		}
-		// limit to target, so if we overshoot by too much for too long an error is flagged
+    // limit to target, so if we overshoot by too much for too long an error is flagged
     if (heaters_runtime[h].sane_temperature > target_temp)
       heaters_runtime[h].sane_temperature = target_temp;
 	}
 	else if (target_temp < (current_temp - (TEMP_HYSTERESIS*4))) {
-		// cooling
+    // cooling
     if (current_temp < heaters_runtime[h].sane_temperature)
       // cooler than sane- good since we're cooling
 			heaters_runtime[h].sane_temperature = current_temp;
 		else {
-			if (heaters_runtime[h].sanity_counter < 125)
+      if (heaters_runtime[h].sanity_counter < 125)
         heaters_runtime[h].sanity_counter++;
       else {
 				heaters_runtime[h].sanity_counter = 0;
 				// ratchet down expected temp
-				heaters_runtime[h].sane_temperature--;
+        heaters_runtime[h].sane_temperature--;
       }
     }
 		// if we're at or below 60 celsius, don't freak out if we can't drop any more.
 		if (current_temp <= 240)
-			heaters_runtime[h].sane_temperature = current_temp;
+      heaters_runtime[h].sane_temperature = current_temp;
     // limit to target, so if we don't cool down for too long an error is flagged
     else if (heaters_runtime[h].sane_temperature < target_temp)
 			heaters_runtime[h].sane_temperature = target_temp;
 	}
-	// we're within HYSTERESIS of our target
+  // we're within HYSTERESIS of our target
   else {
     heaters_runtime[h].sane_temperature = current_temp;
 		heaters_runtime[h].sanity_counter = 0;
@@ -241,7 +241,7 @@ void heater_tick(heater_t h, temp_type_t type, uint16_t current_temp, uint16_t t
   if (labs((int16_t)(current_temp - heaters_runtime[h].sane_temperature)) > (TEMP_HYSTERESIS*4)) {
 		// no change, or change in wrong direction for a long time- heater is broken!
 		pid_output = 0;
-		sersendf_P(PSTR("!! heater %d or its temp sensor broken - temp is %d.%dC, target is %d.%dC, didn't reach %d.%dC in %d0 milliseconds\n"), h, current_temp >> 2, (current_temp & 3) * 25, target_temp >> 2, (target_temp & 3) * 25, heaters_runtime[h].sane_temperature >> 2, (heaters_runtime[h].sane_temperature & 3) * 25, heaters_runtime[h].sanity_counter);
+    sersendf_P(PSTR("!! heater %d or its temp sensor broken - temp is %d.%dC, target is %d.%dC, didn't reach %d.%dC in %d0 milliseconds\n"), h, current_temp >> 2, (current_temp & 3) * 25, target_temp >> 2, (target_temp & 3) * 25, heaters_runtime[h].sane_temperature >> 2, (heaters_runtime[h].sane_temperature & 3) * 25, heaters_runtime[h].sanity_counter);
   }
   #endif /* HEATER_SANITY_CHECK */
 
@@ -266,22 +266,22 @@ uint8_t heaters_all_zero() {
   \param p scaled P factor
 */
 void pid_set_p(heater_t index, int32_t p) {
-	#ifndef	BANG_BANG
+  #ifndef  BANG_BANG
     if (index >= NUM_HEATERS)
       return;
 
 		heaters_pid[index].p_factor = p;
-	#endif /* BANG_BANG */
+  #endif /* BANG_BANG */
 }
 
 /** \brief set heater I factor
 	\param index heater to change I factor for
-	\param i scaled I factor
+  \param i scaled I factor
 */
 void pid_set_i(heater_t index, int32_t i) {
 	#ifndef	BANG_BANG
 		if (index >= NUM_HEATERS)
-			return;
+      return;
 
     heaters_pid[index].i_factor = i;
 	#endif /* BANG_BANG */
@@ -296,17 +296,17 @@ void pid_set_d(heater_t index, int32_t d) {
     if (index >= NUM_HEATERS)
 			return;
 
-		heaters_pid[index].d_factor = d;
+    heaters_pid[index].d_factor = d;
   #endif /* BANG_BANG */
 }
 
 /** \brief set heater I limit
-	\param index heater to set I limit for
+  \param index heater to set I limit for
   \param i_limit scaled I limit
 */
 void pid_set_i_limit(heater_t index, int32_t i_limit) {
 	#ifndef	BANG_BANG
-		if (index >= NUM_HEATERS)
+    if (index >= NUM_HEATERS)
       return;
 
 		heaters_pid[index].i_limit = i_limit;

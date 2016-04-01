@@ -6,22 +6,22 @@
   \section intro_sec Introduction
 		Teacup Reprap Firmware (originally named FiveD on Arduino) is a firmware package for numerous reprap electronics sets.
 
-		Please see README for a full introduction and long-winded waffle about this project
+    Please see README for a full introduction and long-winded waffle about this project
   \section install_sec  Installation
     \subsection step1 Step 1: Download
 			\code git clone git://github.com/traumflug/Teacup_Firmware \endcode
 		\subsection step2 Step 2: configure
-			\code cp config.[yourboardhere].h config.h \endcode
+      \code cp config.[yourboardhere].h config.h \endcode
       Edit config.h to suit your machone
       Edit Makefile to select the correct chip and programming settings
 		\subsection step3 Step 3: Compile
 			\code make \endcode
-			\code make program \endcode
+      \code make program \endcode
     \subsection step4 Step 4: Test!
       \code ./func.sh mendel_reset
 			./func.sh mendel_talk
 			M115
-			ctrl+d \endcode
+      ctrl+d \endcode
 */
 
 #ifdef __AVR__
@@ -31,17 +31,17 @@
 #include  "config_wrapper.h"
 #include "cpu.h"
 #include	"serial.h"
-#include	"dda_queue.h"
+#include  "dda_queue.h"
 #include  "gcode_parse.h"
 #include  "timer.h"
 #include	"temp.h"
 #include	"watchdog.h"
-#include	"debug.h"
+#include  "debug.h"
 #include  "heater.h"
 #include  "analog.h"
 #include	"pinio.h"
 #include	"clock.h"
-#include	"intercom.h"
+#include  "intercom.h"
 #include "spi.h"
 #include "sd.h"
 #include "simulator.h"
@@ -71,12 +71,12 @@ void init(void) {
   cpu_init();
 
 	// set up watchdog
-	wd_init();
+  wd_init();
 
   // set up serial
 	serial_init();
 
-	// set up G-code parsing
+  // set up G-code parsing
   gcode_init();
 
 	// set up inputs and outputs
@@ -86,17 +86,17 @@ void init(void) {
     spi_init();
   #endif
 
-	// set up timers
+  // set up timers
   timer_init();
 
 	heater_init();
 
-	// set up dda
+  // set up dda
   dda_init();
 
 	// start up analog read interrupt loop,
 	// if any of the temp sensors in your config.h use analog interface
-	analog_init();
+  analog_init();
 
   // set up temperature inputs
 	temp_init();
@@ -106,7 +106,7 @@ void init(void) {
   #endif
 
 	// enable interrupts
-	sei();
+  sei();
 
   // reset watchdog
 	wd_reset();
@@ -136,7 +136,7 @@ int main (void)
 
 	// main loop
 	for (;;)
-	{
+  {
     // if queue is full, no point in reading chars- host will just have to wait
     if (queue_full() == 0) {
       /**
@@ -206,5 +206,5 @@ int main (void)
     }
 
 		clock();
-	}
+  }
 }

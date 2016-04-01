@@ -1,7 +1,7 @@
 #include  "sermsg.h"
 
 /** \file sermsg.c
-	\brief primitives for sending numbers over the serial link
+  \brief primitives for sending numbers over the serial link
 */
 
 #include	"serial.h"
@@ -11,7 +11,7 @@
 */
 void serwrite_hex4(uint8_t v) {
 	v &= 0xF;
-	if (v < 10)
+  if (v < 10)
     serial_writechar('0' + v);
   else
 		serial_writechar('A' - 10 + v);
@@ -21,12 +21,12 @@ void serwrite_hex4(uint8_t v) {
   \param v byte to write. One byte gives two hex digits
 */
 void serwrite_hex8(uint8_t v) {
-	serwrite_hex4(v >> 4);
+  serwrite_hex4(v >> 4);
   serwrite_hex4(v & 0x0F);
 }
 
 /** write four hex digits
-	\param v word to write
+  \param v word to write
 */
 void serwrite_hex16(uint16_t v) {
 	serwrite_hex8(v >> 8);
@@ -51,12 +51,12 @@ void serwrite_uint32(uint32_t v) {
   uint8_t e, t;
 
 	for (e = 9; e > 0; e--) {
-		if (v >= powers[e])
+    if (v >= powers[e])
       break;
   }
 
 	do
-	{
+  {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
 	}
@@ -91,12 +91,12 @@ void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
     e = fp;
 
 	do
-	{
+  {
     for (t = 0; v >= powers[e]; v -= powers[e], t++);
     serial_writechar(t + '0');
 		if (e == fp)
 			serial_writechar('.');
-	}
+  }
   while (e--);
 }
 
@@ -106,7 +106,7 @@ void serwrite_uint32_vf(uint32_t v, uint8_t fp) {
 */
 void serwrite_int32_vf(int32_t v, uint8_t fp) {
 	if (v < 0) {
-		serial_writechar('-');
+    serial_writechar('-');
     v = -v;
   }
 

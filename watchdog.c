@@ -1,7 +1,7 @@
 #include  "watchdog.h"
 
 /** \file
-	\brief Watchdog - reset if main loop doesn't run for too long
+  \brief Watchdog - reset if main loop doesn't run for too long
 
   The usefulness of this feature is questionable at best.
 
@@ -16,17 +16,17 @@
 #include  <avr/interrupt.h>
 #include	"memory_barrier.h"
 
-#include	"arduino.h"
+#include  "arduino.h"
 #ifndef  EXTRUDER
   #include  "serial.h"
 #endif
 
-volatile uint8_t	wd_flag = 0;
+volatile uint8_t  wd_flag = 0;
 
 // uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 // void get_mcusr(void) __attribute__((naked)) __attribute__((section(".init3")));
 // void get_mcusr(void) {
-// 	mcusr_mirror = MCUSR;
+//   mcusr_mirror = MCUSR;
 //   MCUSR = 0;
 //   wdt_disable();
 // }
@@ -41,17 +41,17 @@ ISR(WDT_vect) {
 /// intialise watchdog
 void wd_init() {
 	// check if we were reset by the watchdog
-// 	if (mcusr_mirror & MASK(WDRF))
+//   if (mcusr_mirror & MASK(WDRF))
 //     serial_writestr_P(PSTR("Watchdog Reset!\n"));
 
 	// 0.5s timeout, interrupt and system reset
 	wdt_enable(WDTO_500MS);
-	WDTCSR |= MASK(WDIE);
+  WDTCSR |= MASK(WDIE);
 }
 
 /// reset watchdog. MUST be called every 0.5s after init or avr will reset.
 void wd_reset() {
-	wdt_reset();
+  wdt_reset();
   if (wd_flag) {
     WDTCSR |= MASK(WDIE);
 		wd_flag &= ~1;

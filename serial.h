@@ -31,4 +31,4 @@ void serial_writestr(uint8_t *data);
 // write from flash
 void serial_writestr_P(PGM_P data_P);
 
-#endif	/* _SERIAL_H */
+#endif  /* _SERIAL_H */

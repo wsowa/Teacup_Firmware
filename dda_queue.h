@@ -1,7 +1,7 @@
 #ifndef  _DDA_QUEUE
 #define	_DDA_QUEUE
 
-#include	"dda.h"
+#include  "dda.h"
 #include  "timer.h"
 
 #define HEATER_WAIT_TIMEOUT 1000 MS
@@ -11,12 +11,12 @@
 */
 
 // this is the ringbuffer that holds the current and pending moves.
-extern uint8_t	mb_head;
+extern uint8_t  mb_head;
 extern uint8_t  mb_tail;
 extern DDA movebuffer[MOVEBUFFER_SIZE];
 
 /*
-	methods
+  methods
 */
 
 // queue status methods

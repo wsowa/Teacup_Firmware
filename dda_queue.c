@@ -1,17 +1,17 @@
 #include  "dda_queue.h"
 
 /** \file
-	\brief DDA Queue - manage the move queue
+  \brief DDA Queue - manage the move queue
 */
 
 #include	<string.h>
 
-#include	"config_wrapper.h"
+#include  "config_wrapper.h"
 #include  "timer.h"
 #include  "serial.h"
 #include	"sermsg.h"
 #include	"temp.h"
-#include	"delay.h"
+#include  "delay.h"
 #include  "sersendf.h"
 #include  "clock.h"
 #include "cpu.h"
@@ -76,12 +76,12 @@ DDA *queue_current_movement() {
 /// Take a step or go to the next move.
 void queue_step() {
 	// do our next step
-	DDA* current_movebuffer = &movebuffer[mb_tail];
+  DDA* current_movebuffer = &movebuffer[mb_tail];
   if (current_movebuffer->live) {
     if (current_movebuffer->waitfor_temp) {
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 			if (temp_achieved()) {
-				current_movebuffer->live = current_movebuffer->done = 0;
+        current_movebuffer->live = current_movebuffer->done = 0;
         serial_writestr_P(PSTR("Temp achieved\n"));
       }
       else {
@@ -91,7 +91,7 @@ void queue_step() {
     else {
 			dda_step(current_movebuffer);
 		}
-	}
+  }
 
   // Start the next move if this one is done.
 	if (current_movebuffer->live == 0)
@@ -116,17 +116,17 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
 
   if (t != NULL) {
 		new_movebuffer->endstop_check = endstop_check;
-		new_movebuffer->endstop_stop_cond = endstop_stop_cond;
+    new_movebuffer->endstop_stop_cond = endstop_stop_cond;
   }
   else {
 		// it's a wait for temp
 		new_movebuffer->waitfor_temp = 1;
-	}
+  }
   dda_create(new_movebuffer, t);
 
 	// make certain all writes to global memory
 	// are flushed before modifying mb_head.
-	MEMORY_BARRIER();
+  MEMORY_BARRIER();
 
   mb_head = h;
 
@@ -136,12 +136,12 @@ void enqueue_home(TARGET *t, uint8_t endstop_check, uint8_t endstop_stop_cond) {
     isdead = (movebuffer[mb_tail].live == 0);
   ATOMIC_END
 
-	if (isdead) {
+  if (isdead) {
     timer_reset();
     next_move();
     // Compensate for the cli() in timer_set().
 		sei();
-	}
+  }
 }
 
 /// go to the next move.
@@ -156,17 +156,17 @@ void next_move() {
   while ((queue_empty() == 0) && (movebuffer[mb_tail].live == 0)) {
 		// next item
     uint8_t t = MB_NEXT(mb_tail);
-		DDA* current_movebuffer = &movebuffer[t];
+    DDA* current_movebuffer = &movebuffer[t];
     // Tail must be set before calling timer_set(), as timer_set() reenables
     // the timer interrupt, potentially exposing mb_tail to the timer
     // interrupt routine.
 		mb_tail = t;
-		if (current_movebuffer->waitfor_temp) {
+    if (current_movebuffer->waitfor_temp) {
       serial_writestr_P(PSTR("Waiting for target temp\n"));
       current_movebuffer->live = 1;
       timer_set(HEATER_WAIT_TIMEOUT, 0);
 		}
-		else {
+    else {
       dda_start(current_movebuffer);
     }
 	}

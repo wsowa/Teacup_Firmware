@@ -1,7 +1,7 @@
 #ifndef  _ANALOG_H
 #define	_ANALOG_H
 
-#include	<stdint.h>
+#include  <stdint.h>
 
 #ifdef __AVR__
   // TODO: these reference selectors should go away. A nice feature, but
@@ -51,7 +51,7 @@
 
 #endif /* __AVR__ */
 
-void 			analog_init(void);
+void       analog_init(void);
 
 uint16_t  analog_read(uint8_t index);
 

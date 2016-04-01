@@ -36,7 +36,7 @@ typedef enum
 {
 	#include "config_wrapper.h"
 	NUM_HEATERS,
-	HEATER_noheater
+  HEATER_noheater
 } heater_t;
 #undef DEFINE_HEATER
 
@@ -86,4 +86,4 @@ void heater_save_settings(void);
 
 void heater_print(uint16_t i);
 
-#endif	/* _HEATER_H */
+#endif  /* _HEATER_H */
