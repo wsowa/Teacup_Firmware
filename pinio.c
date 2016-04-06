@@ -12,8 +12,10 @@ volatile uint8_t	psu_timeout = 0;
 */
 void pinio_init(void) {
   /// X Stepper.
+  #if defined X_STEP_PIN && defined X_DIR_PIN
   SET_OUTPUT(X_STEP_PIN); WRITE(X_STEP_PIN, 0);
   SET_OUTPUT(X_DIR_PIN); WRITE(X_DIR_PIN, 0);
+  #endif
   #ifdef X_MIN_PIN
     SET_INPUT(X_MIN_PIN);
     PULLUP_OFF(X_MIN_PIN);
@@ -24,8 +26,10 @@ void pinio_init(void) {
   #endif
 
   /// Y Stepper.
+  #if defined Y_STEP_PIN && defined Y_DIR_PIN
   SET_OUTPUT(Y_STEP_PIN); WRITE(Y_STEP_PIN, 0);
   SET_OUTPUT(Y_DIR_PIN); WRITE(Y_DIR_PIN, 0);
+  #endif
   #ifdef Y_MIN_PIN
     SET_INPUT(Y_MIN_PIN);
     PULLUP_OFF(Y_MIN_PIN);

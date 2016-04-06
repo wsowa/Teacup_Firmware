@@ -159,13 +159,18 @@ void power_off(void);
 /*
 X Stepper
 */
-
-#define	_x_step(st)						WRITE(X_STEP_PIN, st)
-#define x_step()              _x_step(1)
-#ifndef	X_INVERT_DIR
-	#define	x_direction(dir)		WRITE(X_DIR_PIN, dir)
+#if defined X_STEP_PIN && defined X_DIR_PIN
+	#define	_x_step(st)						WRITE(X_STEP_PIN, st)
+	#define x_step()              _x_step(1)
+	#ifndef	X_INVERT_DIR
+		#define	x_direction(dir)		WRITE(X_DIR_PIN, dir)
+	#else
+		#define	x_direction(dir)		WRITE(X_DIR_PIN, (dir)^1)
+	#endif
 #else
-	#define	x_direction(dir)		WRITE(X_DIR_PIN, (dir)^1)
+	#define	_x_step(x)					do { } while (0)
+	#define	x_step()						do { } while (0)
+	#define	x_direction(x)			do { } while (0)
 #endif
 #ifdef	X_MIN_PIN
 	#ifndef X_INVERT_MIN
@@ -189,13 +194,18 @@ X Stepper
 /*
 Y Stepper
 */
-
-#define	_y_step(st)						WRITE(Y_STEP_PIN, st)
-#define y_step()              _y_step(1)
-#ifndef	Y_INVERT_DIR
-	#define	y_direction(dir)		WRITE(Y_DIR_PIN, dir)
+#if defined Y_STEP_PIN && defined Y_DIR_PIN
+	#define	_y_step(st)						WRITE(Y_STEP_PIN, st)
+	#define y_step()              _y_step(1)
+	#ifndef	Y_INVERT_DIR
+		#define	y_direction(dir)		WRITE(Y_DIR_PIN, dir)
+	#else
+		#define	y_direction(dir)		WRITE(Y_DIR_PIN, (dir)^1)
+	#endif
 #else
-	#define	y_direction(dir)		WRITE(Y_DIR_PIN, (dir)^1)
+	#define	_y_step(x)					do { } while (0)
+	#define	y_step()						do { } while (0)
+	#define	y_direction(x)			do { } while (0)
 #endif
 #ifdef	Y_MIN_PIN
 	#ifndef Y_INVERT_MIN
