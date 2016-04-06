@@ -5,6 +5,7 @@
 */
 
 #include	<string.h>
+//#include	<stdio.h>
 
 #include	"gcode_parse.h"
 
@@ -25,6 +26,7 @@
 #include	"config_wrapper.h"
 #include	"home.h"
 #include "sd.h"
+#include "machine.h"
 
 
 /// the current tool
@@ -32,6 +34,10 @@ uint8_t tool;
 
 /// the tool to be changed when we get an M6
 uint8_t next_tool;
+
+TIME_t m_time;
+char buf[16];
+uint32_t counter;
 
 /************************************************************************//**
 
@@ -815,6 +821,23 @@ void process_gcode_command() {
 				// newline is sent from gcode_parse after we return
 				break;
       #endif /* DEBUG */
+		case 245:
+			//m_time = get_time();
+			//sprintf(buf, "%06d:%02d:%02d\n", get_time().hours, get_time().minutes, get_time().seconds);
+			//serial_writestr((uint8_t *)buf);
+			//counter = get_counter();
+			//serial_writestr_P(PSTR("TEST"));
+			//sersendf_P(PSTR("Counter: %d"), 5000);
+			sersendf_P(PSTR("s_tart: %su/%lu/%su\n"), button_start.triggered, button_start.counter, button_start.wait);
+			sersendf_P(PSTR("t_est: %su/%lu/%su\n"), button_test.triggered, button_test.counter, button_test.wait);
+			sersendf_P(PSTR("s_ensor: %su/%lu/%su\n"), button_sensor.triggered, button_sensor.counter, button_sensor.wait);
+			break;
+		case 246:
+			sersendf_P(PSTR("p1_machine: %su/%su/%lu\n"), p1_machine.active, p1_machine.ready, p1_machine.clock_10ms);
+			break;
+		case 247:
+			button_start.wait = 0;
+			break;
 
 				// unknown mcode: spit an error
 			default:

@@ -1552,6 +1552,8 @@ void chess_Step(uint8_t keycode);
 
 /*===============================================================*/
 /* font definitions */
+extern const u8g_fntpgm_uint8_t u8g_font_6x9[] U8G_FONT_SECTION("u8g_font_6x9");
+
 extern const u8g_fntpgm_uint8_t u8g_font_m2icon_5[] U8G_FONT_SECTION("u8g_font_m2icon_5");
 extern const u8g_fntpgm_uint8_t u8g_font_m2icon_7[] U8G_FONT_SECTION("u8g_font_m2icon_7");
 extern const u8g_fntpgm_uint8_t u8g_font_m2icon_9[] U8G_FONT_SECTION("u8g_font_m2icon_9");

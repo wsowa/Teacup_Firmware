@@ -68,7 +68,7 @@
 
 //#define Z_STEP_PIN               DIO4
 //#define Z_DIR_PIN                DIO7
-#define Z_MIN_PIN                DIO2
+#define Z_MIN_PIN                DIO6
 //#define Z_MAX_PIN                DIO31
 //#define Z_ENABLE_PIN             DIO8
 //#define Z_INVERT_DIR
@@ -112,6 +112,22 @@
   pins are choosen by Teacup automatically.
 */
 //#define SD_CARD_SELECT_PIN       xxxx
+
+/** Special pins for machine.h etc. 
+*/
+
+#define B_START                     DIO2
+#define B_START_PULLUP
+
+#define B_SENSOR                    DIO9
+#define B_SENSOR_PULLUP
+
+#define B_TEST                      DIO4
+#define B_TEST_PULLUP
+
+#define DIODE_1                     DIO12
+#define DIODE_2                     DIO11
+#define DIODE_3                     DIO10
 
 
 /***************************************************************************\
@@ -220,13 +236,13 @@
 */
 //DEFINE_HEATERS_START
 //            name      pin      invert  pwm
-DEFINE_HEATER(fan2,     AIO3,    0,      0)
-DEFINE_HEATER(fan3,     AIO2,    0,      0)
-DEFINE_HEATER(fan4,     AIO1,    0,      0)
+DEFINE_HEATER(fan,      AIO3,    0,      0)
+DEFINE_HEATER(fan2,     AIO2,    0,      0)
+DEFINE_HEATER(fan3,     AIO1,    0,      0)
 
+#define HEATER_FAN HEATER_fan
 #define HEATER_FAN2 HEATER_fan2
 #define HEATER_FAN3 HEATER_fan3
-#define HEATER_FAN4 HEATER_fan4
 //DEFINE_HEATERS_END
 
 
@@ -264,6 +280,7 @@ DEFINE_HEATER(fan4,     AIO1,    0,      0)
 *                                                                           *
 \***************************************************************************/
 
+#define DISPLAY_ACTIVE
 /** \def DISPLAY_BUS
   Display buses a user should be able to choose from in configtool. All
   commented out.

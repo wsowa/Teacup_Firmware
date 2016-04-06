@@ -17,7 +17,12 @@
 	#include	"intercom.h"
 #endif
 #include	"memory_barrier.h"
-
+#ifdef DISPLAY_ACTIVE
+	#include "display.h"
+#endif
+#include "machine.h"
+#include <stdio.h>
+#include <string.h>
 /**
   If the specific bit is set, execute the following block exactly once
   and then clear the flag.
@@ -70,6 +75,9 @@ void clock_tick(void) {
 
 	called from clock_10ms(), do not call directly
 */
+
+//char buf[16] = "";
+static uint8_t toggle_1sec = 0;
 static void clock_250ms(void) {
 
   if (heaters_all_zero()) {
@@ -83,7 +91,36 @@ static void clock_250ms(void) {
 		}
 	}
 
+	#ifdef DISPLAY_ACTIVE
+	//char counter[16];
+	//sprintf(counter, "%07lu", button_start.counter);
+	//display_show("Zeit", buf, "Zyklen", counter);
+	display_show();
+
+	#endif
 	ifclock(clock_flag_1s) {
+		static TIME_t m_time;
+		//char buf[16];
+		//char sec[2];
+    	m_time = get_time();
+        m_time.seconds++;
+        if ( ! (m_time.seconds % 60)) {
+          m_time.seconds = 0;
+          m_time.minutes++;
+        }
+        if ( ! (m_time.minutes % 60) && m_time.minutes != 0) {
+          m_time.minutes = 0;
+          m_time.hours++;
+        }
+        set_time(m_time);
+        if (p1_machine.active) {
+        	WRITE(DIODE_3, toggle_1sec);
+        	toggle_1sec = !toggle_1sec;
+        }
+        //sprintf(buf, "%4d:%02d:%02d", m_time.hours, m_time.minutes, m_time.seconds);
+
+          //serial_writechar('0');
+        //sersendf_P(PSTR("%su\n"), seconds);
 		if (DEBUG_POSITION && (debug_flags & DEBUG_POSITION)) {
 			// current position
 			update_current_position();
@@ -116,6 +153,8 @@ static void clock_10ms(void) {
 	wd_reset();
 
 	temp_sensor_tick();
+	button_tick();
+	machine_tick();
 
 	ifclock(clock_flag_250ms) {
 		clock_250ms();

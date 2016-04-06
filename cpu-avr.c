@@ -23,12 +23,16 @@ void cpu_init() {
     #else
       PRR = MASK(PRTWI) | MASK(PRADC) | MASK(PRSPI);
     #endif
+    PRR &= ~(MASK(PRTWI));
   #elif defined PRR0
-    #if defined SPI
+    #if (defined TWI || defined SPI)
+      PRR0 = MASK(PRADC)
+    #elif defined SPI
       PRR0 = MASK(PRTWI) | MASK(PRADC);
     #else
       PRR0 = MASK(PRTWI) | MASK(PRADC) | MASK(PRSPI);
     #endif
+    PRR0 &= ~(MASK(PRTWI));
     #if defined(PRUSART3)
       // Don't use USART2 or USART3. Leave USART1 for GEN3 and derivatives.
       PRR1 |= MASK(PRUSART3) | MASK(PRUSART2);
